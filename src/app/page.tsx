@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import {
   SimpleLetterForm,
   type SimpleLetterData,
@@ -103,6 +103,63 @@ export default function Home() {
 
   const contentRef = useRef<HTMLDivElement>(null);
   const addressRef = useRef<HTMLDivElement>(null);
+
+  // Persist form state to sessionStorage so back-from-checkout restores it
+  const STORAGE_KEY = "sendletter-draft";
+
+  const saveToSession = useCallback(() => {
+    try {
+      sessionStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify({ mode, letterSize, settings, letterData, htmlContent, fileName, from, to })
+      );
+    } catch { /* quota exceeded — ignore */ }
+  }, [mode, letterSize, settings, letterData, htmlContent, fileName, from, to]);
+
+  // Save on every meaningful change
+  useEffect(() => {
+    saveToSession();
+  }, [saveToSession]);
+
+  // Restore from sessionStorage on mount (back from Stripe, page reload, etc.)
+  useEffect(() => {
+    try {
+      const saved = sessionStorage.getItem(STORAGE_KEY);
+      if (!saved) return;
+      const d = JSON.parse(saved);
+      if (d.mode) setMode(d.mode);
+      if (d.letterSize) setLetterSize(d.letterSize);
+      if (d.settings) setSettings(d.settings);
+      if (d.letterData) setLetterData(d.letterData);
+      if (d.htmlContent) setHtmlContent(d.htmlContent);
+      if (d.fileName) setFileName(d.fileName);
+      if (d.from) setFrom(d.from);
+      if (d.to) setTo(d.to);
+    } catch { /* corrupt data — ignore */ }
+    // Reset sending state in case user came back from checkout
+    setSending(false);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Preview overlay: use history so back button closes it instead of navigating away
+  const openPreview = useCallback(() => {
+    setMobilePreview(true);
+    history.pushState({ preview: true }, "");
+  }, []);
+
+  const closePreview = useCallback(() => {
+    setMobilePreview(false);
+  }, []);
+
+  useEffect(() => {
+    const onPopState = () => {
+      if (mobilePreview) {
+        // Back pressed while preview open — close it
+        setMobilePreview(false);
+      }
+    };
+    window.addEventListener("popstate", onPopState);
+    return () => window.removeEventListener("popstate", onPopState);
+  }, [mobilePreview]);
 
   const isAddressValid = (a: Address) =>
     !!(a.name && a.line1 && a.city && a.province && a.postalCode);
@@ -283,7 +340,7 @@ export default function Home() {
 
         <div className="flex items-center gap-3">
           <button
-            onClick={() => setMobilePreview(true)}
+            onClick={openPreview}
             className="lg:hidden flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-white/10 hover:bg-white/20 rounded-lg transition-colors"
           >
             <Eye className="w-3.5 h-3.5" />
@@ -358,7 +415,7 @@ export default function Home() {
 
             {/* Inline preview button */}
             <button
-              onClick={() => setMobilePreview(true)}
+              onClick={openPreview}
               className={`lg:hidden w-full flex items-center justify-center gap-2 h-11 rounded-xl border-2 border-gray-200 text-gray-600 hover:text-gray-900 hover:border-gray-300 transition-colors text-sm font-semibold`}
             >
               <Eye className="w-4 h-4" />
@@ -424,7 +481,7 @@ export default function Home() {
       {/* Mobile: sticky bar */}
       <div className="lg:hidden border-t border-gray-200/80 bg-white px-4 py-3 flex items-center gap-2.5 shrink-0">
         <button
-          onClick={() => setMobilePreview(true)}
+          onClick={openPreview}
           className="h-12 px-4 rounded-xl border-2 border-gray-200 flex items-center gap-2 text-gray-600 hover:text-gray-900 hover:border-gray-300 transition-colors shrink-0 text-sm font-semibold"
         >
           <Eye className="w-4 h-4" />
@@ -441,7 +498,7 @@ export default function Home() {
               {isFr ? "Aperçu du courrier" : "Mail preview"}
             </span>
             <button
-              onClick={() => setMobilePreview(false)}
+              onClick={closePreview}
               className="p-1.5 rounded-lg hover:bg-white/10 text-white/70 transition-colors"
             >
               <X className="w-5 h-5" />
