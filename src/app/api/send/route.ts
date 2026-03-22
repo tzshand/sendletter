@@ -2,24 +2,23 @@ import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
   const body = await req.json();
-  const { htmlContent, from, to } = body;
+  const { htmlContent, from, to, mode, letterData } = body;
 
-  // Validate required fields
-  if (!htmlContent || !from || !to) {
+  if (!from || !to) {
     return NextResponse.json(
       { error: "Missing required fields" },
       { status: 400 }
     );
   }
 
-  // TODO: Integrate with Stripe for payment
-  // TODO: Integrate with a print-and-mail API (e.g., Lob, PostGrid, Click2Mail)
-  // For now, just acknowledge receipt
+  // TODO: Verify Stripe payment was completed (check session_id)
+  // TODO: Integrate with print-and-mail API (Lob, PostGrid, Click2Mail)
   console.log("Letter submission received:", {
+    mode,
     from: from.name,
     to: to.name,
-    contentLength: htmlContent.length,
+    contentLength: mode === "simple" ? letterData?.body?.length : htmlContent?.length,
   });
 
-  return NextResponse.json({ success: true, message: "Letter queued for sending" });
+  return NextResponse.json({ success: true });
 }

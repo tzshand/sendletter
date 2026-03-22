@@ -1,5 +1,7 @@
 "use client";
 
+import { MapPin } from "lucide-react";
+
 export type Address = {
   name: string;
   line1: string;
@@ -10,22 +12,10 @@ export type Address = {
 };
 
 const PROVINCES = [
-  "AB",
-  "BC",
-  "MB",
-  "NB",
-  "NL",
-  "NS",
-  "NT",
-  "NU",
-  "ON",
-  "PE",
-  "QC",
-  "SK",
-  "YT",
+  "AB", "BC", "MB", "NB", "NL", "NS", "NT", "NU", "ON", "PE", "QC", "SK", "YT",
 ];
 
-function AddressFields({
+function AddressBlock({
   label,
   value,
   onChange,
@@ -38,62 +28,63 @@ function AddressFields({
     onChange({ ...value, [field]: v });
 
   return (
-    <fieldset className="bg-white rounded-xl border border-gray-200 p-6">
-      <legend className="text-sm font-semibold text-gray-700 px-1">
-        {label}
-      </legend>
-      <div className="space-y-3 mt-2">
+    <div>
+      <div className="flex items-center gap-1.5 mb-2.5">
+        <MapPin className="w-3.5 h-3.5 text-gray-400" />
+        <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+          {label}
+        </span>
+      </div>
+      <div className="space-y-2">
         <input
           placeholder="Full name"
           value={value.name}
           onChange={(e) => set("name", e.target.value)}
-          className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent"
+          className="input input-sm"
         />
         <input
-          placeholder="Address line 1"
+          placeholder="Street address"
           value={value.line1}
           onChange={(e) => set("line1", e.target.value)}
-          className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent"
+          className="input input-sm"
         />
         <input
-          placeholder="Address line 2 (optional)"
+          placeholder="Apt, suite, unit (optional)"
           value={value.line2}
           onChange={(e) => set("line2", e.target.value)}
-          className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent"
+          className="input input-sm"
         />
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-3 gap-2">
           <input
             placeholder="City"
             value={value.city}
             onChange={(e) => set("city", e.target.value)}
-            className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent"
+            className="input input-sm"
           />
           <select
             value={value.province}
             onChange={(e) => set("province", e.target.value)}
-            className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent"
+            className="input input-sm"
           >
-            <option value="">Province</option>
+            <option value="">Prov.</option>
             {PROVINCES.map((p) => (
-              <option key={p} value={p}>
-                {p}
-              </option>
+              <option key={p} value={p}>{p}</option>
             ))}
           </select>
           <input
-            placeholder="Postal code"
+            placeholder="Postal"
             value={value.postalCode}
             onChange={(e) => set("postalCode", e.target.value.toUpperCase())}
             maxLength={7}
-            className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent"
+            className="input input-sm"
           />
         </div>
       </div>
-    </fieldset>
+    </div>
   );
 }
 
-export function AddressForm({
+export function AddressSection({
   from,
   to,
   onFromChange,
@@ -105,15 +96,9 @@ export function AddressForm({
   onToChange: (a: Address) => void;
 }) {
   return (
-    <div>
-      <h2 className="text-lg font-semibold mb-1">Mailing Addresses</h2>
-      <p className="text-sm text-gray-500 mb-6">
-        Enter the sender and recipient addresses. Both must be in Canada.
-      </p>
-      <div className="grid md:grid-cols-2 gap-6">
-        <AddressFields label="From (sender)" value={from} onChange={onFromChange} />
-        <AddressFields label="To (recipient)" value={to} onChange={onToChange} />
-      </div>
+    <div className="grid grid-cols-2 gap-6">
+      <AddressBlock label="From" value={from} onChange={onFromChange} />
+      <AddressBlock label="To" value={to} onChange={onToChange} />
     </div>
   );
 }

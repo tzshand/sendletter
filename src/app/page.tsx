@@ -1,193 +1,327 @@
 "use client";
 
 import { useState } from "react";
-import { FileUpload } from "@/components/FileUpload";
+import { SimpleLetterForm, type SimpleLetterData } from "@/components/SimpleLetterForm";
 import { LetterEditor } from "@/components/LetterEditor";
-import { Preview } from "@/components/Preview";
-import { AddressForm, type Address } from "@/components/AddressForm";
-import { Checkout } from "@/components/Checkout";
-import { Stepper } from "@/components/Stepper";
-import { Mail } from "lucide-react";
+import { FileUpload } from "@/components/FileUpload";
+import { AddressSection, type Address } from "@/components/AddressForm";
+import { LivePreview } from "@/components/LivePreview";
+import { Mail, Eye, Loader2, ArrowRight, Upload } from "lucide-react";
 
-const STEPS = ["Create", "Preview", "Addresses", "Send"];
+const emptyAddress: Address = {
+  name: "",
+  line1: "",
+  line2: "",
+  city: "",
+  province: "",
+  postalCode: "",
+};
 
 export default function Home() {
-  const [step, setStep] = useState(0);
-  const [mode, setMode] = useState<"upload" | "write" | null>(null);
-  const [htmlContent, setHtmlContent] = useState("");
-  const [fileName, setFileName] = useState("");
-  const [fromAddress, setFromAddress] = useState<Address>({
-    name: "",
-    line1: "",
-    line2: "",
-    city: "",
-    province: "",
-    postalCode: "",
-  });
-  const [toAddress, setToAddress] = useState<Address>({
-    name: "",
-    line1: "",
-    line2: "",
-    city: "",
-    province: "",
-    postalCode: "",
+  const [mode, setMode] = useState<"simple" | "custom">("simple");
+  const [mobilePreview, setMobilePreview] = useState(false);
+  const [sending, setSending] = useState(false);
+
+  // Simple mode state
+  const [letterData, setLetterData] = useState<SimpleLetterData>({
+    date: new Date().toISOString().split("T")[0],
+    subject: "",
+    body: "",
+    closing: "Sincerely",
+    senderName: "",
   });
 
-  const canAdvance = () => {
-    if (step === 0) return htmlContent.length > 0;
-    if (step === 1) return true;
-    if (step === 2) {
-      const valid = (a: Address) =>
-        a.name && a.line1 && a.city && a.province && a.postalCode;
-      return valid(fromAddress) && valid(toAddress);
+  // Custom mode state
+  const [htmlContent, setHtmlContent] = useState("");
+  const [fileName, setFileName] = useState("");
+  const [customSource, setCustomSource] = useState<"write" | "upload" | null>(null);
+
+  // Address state
+  const [from, setFrom] = useState<Address>(emptyAddress);
+  const [to, setTo] = useState<Address>(emptyAddress);
+
+  const isAddressValid = (a: Address) =>
+    !!(a.name && a.line1 && a.city && a.province && a.postalCode);
+
+  const canSend =
+    isAddressValid(from) &&
+    isAddressValid(to) &&
+    (mode === "simple" ? !!letterData.body.trim() : !!htmlContent);
+
+  const handleCheckout = async () => {
+    setSending(true);
+    try {
+      const res = await fetch("/api/create-checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ htmlContent, from, to, mode, letterData }),
+      });
+
+      const data = await res.json();
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        alert(data.error || "Could not create checkout. Are Stripe keys configured?");
+        setSending(false);
+      }
+    } catch {
+      alert("Failed to connect. Please try again.");
+      setSending(false);
     }
-    return false;
+  };
+
+  const switchMode = (newMode: "simple" | "custom") => {
+    if (newMode === mode) return;
+    setMode(newMode);
+    if (newMode === "custom") {
+      setCustomSource(null);
+      setHtmlContent("");
+      setFileName("");
+    }
   };
 
   return (
-    <div className="flex-1 flex flex-col">
+    <div className="h-full flex flex-col">
       {/* Header */}
-      <header className="bg-white border-b border-gray-200 px-6 py-4">
-        <div className="max-w-4xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Mail className="w-6 h-6 text-brand" />
-            <span className="text-xl font-semibold">sendletter</span>
-          </div>
-          <span className="text-sm text-gray-500">
-            Flat rate — <strong>$4.99</strong> anywhere in Canada
+      <header className="border-b border-gray-200 px-4 sm:px-6 h-14 flex items-center justify-between shrink-0">
+        <div className="flex items-center gap-2">
+          <Mail className="w-5 h-5" />
+          <span className="text-base font-semibold tracking-tight">sendletter</span>
+        </div>
+        <div className="flex items-center gap-3">
+          {/* Mobile preview toggle */}
+          <button
+            onClick={() => setMobilePreview(true)}
+            className="lg:hidden flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-900"
+          >
+            <Eye className="w-4 h-4" />
+            Preview
+          </button>
+          <span className="text-sm text-gray-400">
+            $4.99 flat rate
           </span>
         </div>
       </header>
 
-      {/* Stepper */}
-      <div className="bg-white border-b border-gray-100 px-6 py-3">
-        <div className="max-w-4xl mx-auto">
-          <Stepper steps={STEPS} current={step} />
+      {/* Main split layout */}
+      <div className="flex-1 flex overflow-hidden">
+        {/* Left: Form */}
+        <div className="flex-1 overflow-y-auto">
+          <div className="max-w-xl mx-auto px-4 sm:px-6 py-6 space-y-6">
+            {/* Mode toggle */}
+            <div className="flex gap-1 p-1 bg-gray-100 rounded-lg w-fit">
+              <button
+                onClick={() => switchMode("simple")}
+                className={`px-3 py-1.5 text-sm rounded-md transition-colors ${
+                  mode === "simple"
+                    ? "bg-white text-gray-900 shadow-sm font-medium"
+                    : "text-gray-500 hover:text-gray-700"
+                }`}
+              >
+                Simple
+              </button>
+              <button
+                onClick={() => switchMode("custom")}
+                className={`px-3 py-1.5 text-sm rounded-md transition-colors ${
+                  mode === "custom"
+                    ? "bg-white text-gray-900 shadow-sm font-medium"
+                    : "text-gray-500 hover:text-gray-700"
+                }`}
+              >
+                Custom
+              </button>
+            </div>
+
+            {/* Letter content area */}
+            {mode === "simple" ? (
+              <SimpleLetterForm data={letterData} onChange={setLetterData} />
+            ) : (
+              <div>
+                {!customSource && (
+                  <div className="grid grid-cols-2 gap-3">
+                    <button
+                      onClick={() => setCustomSource("write")}
+                      className="border border-gray-200 rounded-lg p-6 text-center hover:border-gray-400 transition-colors"
+                    >
+                      <span className="text-2xl block mb-1">✏️</span>
+                      <span className="text-sm font-medium">Write</span>
+                    </button>
+                    <button
+                      onClick={() => setCustomSource("upload")}
+                      className="border border-gray-200 rounded-lg p-6 text-center hover:border-gray-400 transition-colors"
+                    >
+                      <Upload className="w-5 h-5 mx-auto mb-1 text-gray-500" />
+                      <span className="text-sm font-medium">Upload</span>
+                    </button>
+                  </div>
+                )}
+
+                {customSource === "write" && (
+                  <div>
+                    <button
+                      onClick={() => {
+                        setCustomSource(null);
+                        setHtmlContent("");
+                      }}
+                      className="text-xs text-gray-400 hover:text-gray-600 mb-3"
+                    >
+                      ← back
+                    </button>
+                    <LetterEditor content={htmlContent} onChange={setHtmlContent} />
+                  </div>
+                )}
+
+                {customSource === "upload" && (
+                  <div>
+                    <button
+                      onClick={() => {
+                        setCustomSource(null);
+                        setHtmlContent("");
+                        setFileName("");
+                      }}
+                      className="text-xs text-gray-400 hover:text-gray-600 mb-3"
+                    >
+                      ← back
+                    </button>
+                    <FileUpload
+                      onContent={(html, name) => {
+                        setHtmlContent(html);
+                        setFileName(name);
+                      }}
+                      fileName={fileName}
+                    />
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Divider */}
+            <div className="border-t border-gray-100" />
+
+            {/* Addresses */}
+            <AddressSection
+              from={from}
+              to={to}
+              onFromChange={setFrom}
+              onToChange={setTo}
+            />
+          </div>
+        </div>
+
+        {/* Right: Preview panel (desktop) */}
+        <div className="hidden lg:flex w-[440px] border-l border-gray-200 bg-gray-50 flex-col">
+          <div className="flex-1 overflow-y-auto p-6 flex flex-col items-center">
+            <div className="w-full max-w-[340px]">
+              <p className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-3">
+                Preview
+              </p>
+              <div className="rounded-sm shadow-lg ring-1 ring-gray-200">
+                <LivePreview
+                  mode={mode}
+                  letterData={letterData}
+                  htmlContent={htmlContent}
+                  from={from}
+                  to={to}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Checkout bar */}
+          <div className="border-t border-gray-200 bg-white px-5 py-4">
+            <button
+              onClick={handleCheckout}
+              disabled={!canSend || sending}
+              className="w-full flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-semibold bg-gray-900 text-white hover:bg-gray-800 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+            >
+              {sending ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <>
+                  Send for $4.99
+                  <ArrowRight className="w-4 h-4" />
+                </>
+              )}
+            </button>
+            {!canSend && (
+              <p className="text-xs text-gray-400 text-center mt-2">
+                Fill in your letter and both addresses to continue
+              </p>
+            )}
+          </div>
         </div>
       </div>
 
-      {/* Content */}
-      <main className="flex-1 px-6 py-8">
-        <div className="max-w-4xl mx-auto">
-          {/* Step 0: Create */}
-          {step === 0 && (
-            <div>
-              {!mode && (
-                <div className="grid md:grid-cols-2 gap-6">
-                  <button
-                    onClick={() => setMode("upload")}
-                    className="border-2 border-dashed border-gray-300 rounded-xl p-12 text-center hover:border-brand hover:bg-blue-50/50 transition-colors"
-                  >
-                    <div className="text-4xl mb-3">📄</div>
-                    <h2 className="text-lg font-semibold mb-1">
-                      Upload a file
-                    </h2>
-                    <p className="text-sm text-gray-500">
-                      PDF or Word document, up to 10 pages
-                    </p>
-                  </button>
-                  <button
-                    onClick={() => setMode("write")}
-                    className="border-2 border-dashed border-gray-300 rounded-xl p-12 text-center hover:border-brand hover:bg-blue-50/50 transition-colors"
-                  >
-                    <div className="text-4xl mb-3">✏️</div>
-                    <h2 className="text-lg font-semibold mb-1">
-                      Write a letter
-                    </h2>
-                    <p className="text-sm text-gray-500">
-                      Use our editor — up to 10 pages
-                    </p>
-                  </button>
-                </div>
-              )}
-
-              {mode === "upload" && (
-                <div>
-                  <button
-                    onClick={() => {
-                      setMode(null);
-                      setHtmlContent("");
-                      setFileName("");
-                    }}
-                    className="text-sm text-gray-500 hover:text-gray-800 mb-4 inline-block"
-                  >
-                    ← Back to options
-                  </button>
-                  <FileUpload
-                    onContent={(html, name) => {
-                      setHtmlContent(html);
-                      setFileName(name);
-                    }}
-                    fileName={fileName}
-                  />
-                </div>
-              )}
-
-              {mode === "write" && (
-                <div>
-                  <button
-                    onClick={() => {
-                      setMode(null);
-                      setHtmlContent("");
-                    }}
-                    className="text-sm text-gray-500 hover:text-gray-800 mb-4 inline-block"
-                  >
-                    ← Back to options
-                  </button>
-                  <LetterEditor
-                    content={htmlContent}
-                    onChange={setHtmlContent}
-                  />
-                </div>
-              )}
-            </div>
+      {/* Mobile: sticky checkout bar */}
+      <div className="lg:hidden border-t border-gray-200 bg-white px-4 py-3 flex items-center gap-3 shrink-0">
+        <button
+          onClick={() => setMobilePreview(true)}
+          className="p-2 rounded-lg border border-gray-200 text-gray-500 hover:text-gray-900"
+        >
+          <Eye className="w-5 h-5" />
+        </button>
+        <button
+          onClick={handleCheckout}
+          disabled={!canSend || sending}
+          className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-semibold bg-gray-900 text-white hover:bg-gray-800 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+        >
+          {sending ? (
+            <Loader2 className="w-4 h-4 animate-spin" />
+          ) : (
+            <>
+              Send for $4.99
+              <ArrowRight className="w-4 h-4" />
+            </>
           )}
+        </button>
+      </div>
 
-          {/* Step 1: Preview */}
-          {step === 1 && <Preview htmlContent={htmlContent} />}
-
-          {/* Step 2: Addresses */}
-          {step === 2 && (
-            <AddressForm
-              from={fromAddress}
-              to={toAddress}
-              onFromChange={setFromAddress}
-              onToChange={setToAddress}
-            />
-          )}
-
-          {/* Step 3: Send */}
-          {step === 3 && (
-            <Checkout
-              htmlContent={htmlContent}
-              from={fromAddress}
-              to={toAddress}
-            />
-          )}
-        </div>
-      </main>
-
-      {/* Navigation */}
-      <footer className="bg-white border-t border-gray-200 px-6 py-4">
-        <div className="max-w-4xl mx-auto flex justify-between">
-          <button
-            onClick={() => setStep((s) => Math.max(0, s - 1))}
-            disabled={step === 0}
-            className="px-5 py-2.5 rounded-lg text-sm font-medium text-gray-600 hover:text-gray-900 disabled:opacity-30 disabled:cursor-not-allowed"
-          >
-            Back
-          </button>
-          {step < 3 && (
+      {/* Mobile: preview overlay */}
+      {mobilePreview && (
+        <div className="lg:hidden fixed inset-0 z-50 bg-white flex flex-col">
+          <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200">
+            <span className="text-sm font-semibold">Letter Preview</span>
             <button
-              onClick={() => setStep((s) => Math.min(3, s + 1))}
-              disabled={!canAdvance()}
-              className="px-5 py-2.5 rounded-lg text-sm font-medium bg-brand text-white hover:bg-brand-dark disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              onClick={() => setMobilePreview(false)}
+              className="text-sm text-gray-500 hover:text-gray-900"
             >
-              {step === 2 ? "Review & Pay" : "Continue"}
+              Close
             </button>
-          )}
+          </div>
+          <div className="flex-1 overflow-y-auto p-4 bg-gray-50 flex justify-center">
+            <div className="w-full max-w-[340px]">
+              <div className="rounded-sm shadow-lg ring-1 ring-gray-200">
+                <LivePreview
+                  mode={mode}
+                  letterData={letterData}
+                  htmlContent={htmlContent}
+                  from={from}
+                  to={to}
+                />
+              </div>
+            </div>
+          </div>
+          <div className="border-t border-gray-200 bg-white px-4 py-3">
+            <button
+              onClick={() => {
+                setMobilePreview(false);
+                handleCheckout();
+              }}
+              disabled={!canSend || sending}
+              className="w-full flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-semibold bg-gray-900 text-white hover:bg-gray-800 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+            >
+              {sending ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <>
+                  Send for $4.99
+                  <ArrowRight className="w-4 h-4" />
+                </>
+              )}
+            </button>
+          </div>
         </div>
-      </footer>
+      )}
     </div>
   );
 }
