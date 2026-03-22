@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import {
   SimpleLetterForm,
   type SimpleLetterData,
@@ -95,6 +95,15 @@ export default function Home() {
   const [from, setFrom] = useState<Address>(emptyAddress);
   const [to, setTo] = useState<Address>(emptyAddress);
 
+  const [validationErrors, setValidationErrors] = useState<{
+    content?: boolean;
+    from?: boolean;
+    to?: boolean;
+  }>({});
+
+  const contentRef = useRef<HTMLDivElement>(null);
+  const addressRef = useRef<HTMLDivElement>(null);
+
   const isAddressValid = (a: Address) =>
     !!(a.name && a.line1 && a.city && a.province && a.postalCode);
 
@@ -103,11 +112,40 @@ export default function Home() {
 
   const canSend = isAddressValid(from) && isAddressValid(to) && hasContent;
 
+  // Clear validation errors reactively as fields are corrected
+  useEffect(() => {
+    setValidationErrors((prev) => {
+      const next = { ...prev };
+      if (prev.content && hasContent) next.content = false;
+      if (prev.from && isAddressValid(from)) next.from = false;
+      if (prev.to && isAddressValid(to)) next.to = false;
+      if (next.content === prev.content && next.from === prev.from && next.to === prev.to) return prev;
+      return next;
+    });
+  }, [hasContent, from, to]);
+
   const isFr = settings.language === "fr";
   const colors = MODE_COLORS[mode];
   const price = formatPrice(letterSize);
 
   const handleCheckout = async () => {
+    // Validate and highlight errors
+    if (!canSend) {
+      const errors: typeof validationErrors = {};
+      if (!hasContent) errors.content = true;
+      if (!isAddressValid(from)) errors.from = true;
+      if (!isAddressValid(to)) errors.to = true;
+      setValidationErrors(errors);
+
+      // Scroll to first error
+      if (errors.content && contentRef.current) {
+        contentRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
+      } else if ((errors.from || errors.to) && addressRef.current) {
+        addressRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+      return;
+    }
+
     setSending(true);
     try {
       const res = await fetch("/api/create-checkout", {
@@ -193,8 +231,8 @@ export default function Home() {
   const mailButton = (opts?: { className?: string }) => (
     <button
       onClick={handleCheckout}
-      disabled={!canSend || sending}
-      className={`flex items-center justify-center gap-2 h-12 rounded-xl text-sm font-bold transition-all active:scale-[0.98] disabled:opacity-25 disabled:cursor-not-allowed disabled:active:scale-100 ${colors.bg} text-white ${colors.hover} ${opts?.className || "w-full"}`}
+      disabled={sending}
+      className={`flex items-center justify-center gap-2 h-12 rounded-xl text-sm font-bold transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100 ${colors.bg} text-white ${colors.hover} ${opts?.className || "w-full"}`}
     >
       {sending ? (
         <Loader2 className="w-4 h-4 animate-spin" />
@@ -290,31 +328,42 @@ export default function Home() {
         <div className="flex-1 overflow-y-auto">
           <div className="max-w-2xl mx-auto px-5 sm:px-8 py-6 space-y-5">
             {/* Content area */}
-            {mode === "upload" && (
-              <FileUpload
-                onContent={(html, name) => {
-                  setHtmlContent(html);
-                  setFileName(name);
-                }}
-                fileName={fileName}
-              />
-            )}
+            <div ref={contentRef} className={`rounded-xl transition-all ${validationErrors.content ? "ring-2 ring-red-400 bg-red-50/40 p-3 -mx-3" : ""}`}>
+              {mode === "upload" && (
+                <FileUpload
+                  onContent={(html, name) => {
+                    setHtmlContent(html);
+                    setFileName(name);
+                  }}
+                  fileName={fileName}
+                />
+              )}
 
-            {mode === "custom" && (
-              <LetterEditor
-                content={htmlContent}
-                onChange={setHtmlContent}
-                settings={settings}
-              />
-            )}
+              {mode === "custom" && (
+                <LetterEditor
+                  content={htmlContent}
+                  onChange={setHtmlContent}
+                  settings={settings}
+                />
+              )}
 
-            {mode === "simple" && (
-              <SimpleLetterForm
-                data={letterData}
-                onChange={setLetterData}
-                language={settings.language}
-              />
-            )}
+              {mode === "simple" && (
+                <SimpleLetterForm
+                  data={letterData}
+                  onChange={setLetterData}
+                  language={settings.language}
+                />
+              )}
+            </div>
+
+            {/* Inline preview button */}
+            <button
+              onClick={() => setMobilePreview(true)}
+              className={`lg:hidden w-full flex items-center justify-center gap-2 h-11 rounded-xl border-2 border-gray-200 text-gray-600 hover:text-gray-900 hover:border-gray-300 transition-colors text-sm font-semibold`}
+            >
+              <Eye className="w-4 h-4" />
+              {isFr ? "Aperçu" : "Preview letter"}
+            </button>
 
             {/* Letter size */}
             <div className="relative">
@@ -346,12 +395,15 @@ export default function Home() {
               </div>
             </div>
 
-            <AddressSection
-              from={from}
-              to={to}
-              onFromChange={setFrom}
-              onToChange={setTo}
-            />
+            <div ref={addressRef}>
+              <AddressSection
+                from={from}
+                to={to}
+                onFromChange={setFrom}
+                onToChange={setTo}
+                errors={validationErrors.from || validationErrors.to ? { from: validationErrors.from, to: validationErrors.to } : undefined}
+              />
+            </div>
 
             <div className="h-4 lg:hidden" />
           </div>
@@ -365,13 +417,6 @@ export default function Home() {
 
           <div className="border-t border-gray-200/80 px-5 py-4 bg-white">
             {mailButton()}
-            {!canSend && (
-              <p className="text-[11px] text-gray-400 text-center mt-2">
-                {isFr
-                  ? "Remplissez le contenu et les adresses pour poster"
-                  : "Add your content and both addresses to mail"}
-              </p>
-            )}
           </div>
         </div>
       </div>

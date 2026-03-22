@@ -47,11 +47,13 @@ function AddressBlock({
   prefix,
   value,
   onChange,
+  hasError,
 }: {
   label: string;
   prefix: string;
   value: Address;
   onChange: (a: Address) => void;
+  hasError?: boolean;
 }) {
   const [postalError, setPostalError] = useState(false);
 
@@ -92,7 +94,7 @@ function AddressBlock({
       <span className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-2.5 block">
         {label}
       </span>
-      <div className="space-y-2">
+      <div className={`space-y-2 rounded-xl p-3 -m-3 transition-all ${hasError ? "ring-2 ring-red-400 bg-red-50/40" : ""}`}>
         <input
           name={`${prefix}-name`}
           autoComplete="name"
@@ -185,11 +187,13 @@ export function AddressSection({
   to,
   onFromChange,
   onToChange,
+  errors,
 }: {
   from: Address;
   to: Address;
   onFromChange: (a: Address) => void;
   onToChange: (a: Address) => void;
+  errors?: { from?: boolean; to?: boolean };
 }) {
   return (
     <div className="grid sm:grid-cols-2 gap-6">
@@ -198,12 +202,14 @@ export function AddressSection({
         prefix="from"
         value={from}
         onChange={onFromChange}
+        hasError={errors?.from}
       />
       <AddressBlock
         label="Mailing to"
         prefix="to"
         value={to}
         onChange={onToChange}
+        hasError={errors?.to}
       />
     </div>
   );
