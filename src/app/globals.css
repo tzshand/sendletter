@@ -1,18 +1,15 @@
 @import "tailwindcss";
 
 @theme inline {
-  --color-brand: #000000;
-  --color-brand-hover: #171717;
-  --color-accent: #2563eb;
-}
-
-/* Scaled letter preview container */
-.preview-frame {
-  width: 612px; /* 8.5in at 72dpi */
-  height: 792px; /* 11in at 72dpi */
-  background: white;
-  overflow: hidden;
-  transform-origin: top left;
+  --color-teal: #14B8A6;
+  --color-teal-dark: #0D9488;
+  --color-violet: #8B5CF6;
+  --color-violet-dark: #7C3AED;
+  --color-amber: #F59E0B;
+  --color-amber-dark: #D97706;
+  --color-zinc-950: #09090B;
+  --color-zinc-900: #18181B;
+  --color-zinc-800: #27272A;
 }
 
 /* TipTap editor */

@@ -1,9 +1,10 @@
 "use client";
 
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState, type ReactNode } from "react";
 import type { Address } from "./AddressForm";
 import type { SimpleLetterData } from "./SimpleLetterForm";
 import type { Settings } from "./LetterSettings";
+import type { LetterSize } from "./LetterSizeSelector";
 
 function formatDate(dateStr: string, language: string): string {
   if (!dateStr) return "";
@@ -27,58 +28,63 @@ function formatAddressLines(a: Address): string[] {
   return lines;
 }
 
-// Closing is now free-text input, rendered as-is
+/* ─── Scaled container (fixes stretching) ────────────── */
 
-/* ─── Scaled container ─────────────────────────────────── */
-
-function ScaledPage({
+function ScaledFrame({
   children,
-  width,
-  height,
+  nativeWidth,
+  nativeHeight,
 }: {
-  children: React.ReactNode;
-  width: number;
-  height: number;
+  children: ReactNode;
+  nativeWidth: number;
+  nativeHeight: number;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [scale, setScale] = useState(0.5);
+  const [scale, setScale] = useState(1);
 
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
-    const obs = new ResizeObserver((entries) => {
-      for (const e of entries) setScale(e.contentRect.width / width);
-    });
+    const update = () => {
+      const w = el.getBoundingClientRect().width;
+      if (w > 0) setScale(w / nativeWidth);
+    };
+    update();
+    const obs = new ResizeObserver(() => update());
     obs.observe(el);
     return () => obs.disconnect();
-  }, [width]);
+  }, [nativeWidth]);
+
+  const scaledHeight = nativeHeight * scale;
 
   return (
-    <div ref={containerRef} className="w-full">
+    <div ref={containerRef} className="w-full" style={{ height: scaledHeight }}>
       <div
         style={{
+          width: nativeWidth,
+          height: nativeHeight,
           transform: `scale(${scale})`,
           transformOrigin: "top left",
-          width,
         }}
       >
         {children}
       </div>
-      <div style={{ height: height * scale }} />
     </div>
   );
 }
 
 /* ─── Envelope Preview ─────────────────────────────────── */
 
-function EnvelopePreview({
+function EnvelopeContent({
   from,
   to,
   settings,
+  letterSize,
 }: {
   from: Address;
   to: Address;
   settings: Settings;
+  letterSize: LetterSize;
 }) {
   const fromLines = formatAddressLines(from);
   const toLines = formatAddressLines(to);
@@ -86,20 +92,26 @@ function EnvelopePreview({
   const hasTo = toLines.length > 0;
   const isFr = settings.language === "fr";
 
+  // Envelope dimensions at 72dpi
+  const isLargeEnvelope = letterSize === "large";
+  const envW = isLargeEnvelope ? 648 : 684; // 9x12" or #10 (9.5x4.125")
+  const envH = isLargeEnvelope ? 864 : 297;
+
   if (!hasFrom && !hasTo) {
     return (
       <div
         style={{
-          width: 684,
-          height: 306,
-          background: "#fff",
+          width: envW,
+          height: envH,
+          background: isLargeEnvelope ? "#D2B48C" : "#fff",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
           fontFamily: `"${settings.fontFamily}", serif`,
+          borderRadius: 2,
         }}
       >
-        <p style={{ color: "#d4d4d4", fontStyle: "italic", fontSize: 11 }}>
+        <p style={{ color: isLargeEnvelope ? "#8B7355" : "#d4d4d4", fontStyle: "italic", fontSize: 11 }}>
           {isFr
             ? "Ajoutez des adresses pour voir l'enveloppe"
             : "Add addresses to see the envelope"}
@@ -111,42 +123,40 @@ function EnvelopePreview({
   return (
     <div
       style={{
-        width: 684, // #10 envelope at 72dpi (9.5in)
-        height: 306, // 4.25in
-        background: "#fff",
+        width: envW,
+        height: envH,
+        background: isLargeEnvelope ? "#D2B48C" : "#fff",
         position: "relative",
         fontFamily: `"${settings.fontFamily}", serif`,
         fontSize: "10pt",
         lineHeight: 1.5,
         color: "#000",
-        padding: 36,
+        borderRadius: 2,
       }}
     >
       {/* From: top-left */}
       {hasFrom && (
-        <div style={{ position: "absolute", top: 28, left: 32 }}>
+        <div style={{ position: "absolute", top: isLargeEnvelope ? 36 : 20, left: 28 }}>
           {fromLines.map((l, i) => (
-            <div key={i} style={{ fontSize: "9pt" }}>
-              {l}
-            </div>
+            <div key={i} style={{ fontSize: "9pt" }}>{l}</div>
           ))}
         </div>
       )}
 
-      {/* Stamp placeholder: top-right */}
+      {/* Stamp */}
       <div
         style={{
           position: "absolute",
-          top: 24,
-          right: 28,
-          width: 48,
-          height: 56,
-          border: "1px dashed #ccc",
+          top: isLargeEnvelope ? 28 : 16,
+          right: 24,
+          width: 44,
+          height: 52,
+          border: `1px dashed ${isLargeEnvelope ? "#8B7355" : "#ccc"}`,
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
           fontSize: "7pt",
-          color: "#bbb",
+          color: isLargeEnvelope ? "#8B7355" : "#bbb",
         }}
       >
         STAMP
@@ -172,9 +182,9 @@ function EnvelopePreview({
   );
 }
 
-/* ─── Letter Preview ─────────────────────────────────── */
+/* ─── Letter Page Preview ────────────────────────────── */
 
-function LetterPreview({
+function LetterPageContent({
   mode,
   letterData,
   htmlContent,
@@ -186,7 +196,6 @@ function LetterPreview({
   settings: Settings;
 }) {
   const isFr = settings.language === "fr";
-  const closing = letterData.closing;
 
   const pageStyle: React.CSSProperties = {
     width: 612,
@@ -270,64 +279,43 @@ function LetterPreview({
 
   return (
     <div style={pageStyle}>
-      {/* Date - right aligned */}
       {letterData.date && (
         <div style={{ textAlign: "right", marginBottom: "20pt" }}>
           {formatDate(letterData.date, settings.language)}
         </div>
       )}
-
-      {/* Reference */}
       {letterData.reference && (
         <div style={{ marginBottom: "12pt", fontSize: "0.9em" }}>
           {isFr ? "Réf" : "Ref"}: {letterData.reference}
         </div>
       )}
-
-      {/* Subject */}
       {letterData.subject && (
         <div style={{ marginBottom: "16pt" }}>
-          <strong>
-            {isFr ? "Objet" : "Re"}: {letterData.subject}
-          </strong>
+          <strong>{isFr ? "Objet" : "Re"}: {letterData.subject}</strong>
         </div>
       )}
-
-      {/* Greeting */}
       {letterData.greeting && (
         <div style={{ marginBottom: "12pt" }}>{letterData.greeting}</div>
       )}
-
-      {/* Body */}
       {letterData.body && (
         <div style={{ flex: 1, whiteSpace: "pre-wrap" }}>{letterData.body}</div>
       )}
-
-      {/* Closing & Signature */}
-      {(closing || letterData.senderName) && (
+      {(letterData.closing || letterData.senderName) && (
         <div style={{ marginTop: "20pt" }}>
-          {closing && <div>{closing},</div>}
+          {letterData.closing && <div>{letterData.closing},</div>}
           {letterData.senderName && (
             <div style={{ marginTop: "32pt" }}>{letterData.senderName}</div>
           )}
         </div>
       )}
-
-      {/* CC */}
       {letterData.cc && (
-        <div style={{ marginTop: "16pt", fontSize: "0.9em" }}>
-          CC: {letterData.cc}
-        </div>
+        <div style={{ marginTop: "16pt", fontSize: "0.9em" }}>CC: {letterData.cc}</div>
       )}
-
-      {/* Enclosures */}
       {letterData.enclosures && (
         <div style={{ marginTop: "8pt", fontSize: "0.9em" }}>
           {isFr ? "P.J." : "Encl."}: {letterData.enclosures}
         </div>
       )}
-
-      {/* P.S. */}
       {letterData.ps && (
         <div style={{ marginTop: "12pt", fontStyle: "italic", fontSize: "0.9em" }}>
           P.S. {letterData.ps}
@@ -339,27 +327,47 @@ function LetterPreview({
 
 /* ─── Exports ─────────────────────────────────── */
 
-export function LetterPreviewScaled(props: {
+export function EnvelopePreviewScaled({
+  from,
+  to,
+  settings,
+  letterSize,
+}: {
+  from: Address;
+  to: Address;
+  settings: Settings;
+  letterSize: LetterSize;
+}) {
+  const isLarge = letterSize === "large";
+  const w = isLarge ? 648 : 684;
+  const h = isLarge ? 864 : 297;
+
+  return (
+    <ScaledFrame nativeWidth={w} nativeHeight={h}>
+      <EnvelopeContent from={from} to={to} settings={settings} letterSize={letterSize} />
+    </ScaledFrame>
+  );
+}
+
+export function LetterPreviewScaled({
+  mode,
+  letterData,
+  htmlContent,
+  settings,
+}: {
   mode: "simple" | "custom" | "upload";
   letterData: SimpleLetterData;
   htmlContent: string;
   settings: Settings;
 }) {
   return (
-    <ScaledPage width={612} height={792}>
-      <LetterPreview {...props} />
-    </ScaledPage>
-  );
-}
-
-export function EnvelopePreviewScaled(props: {
-  from: Address;
-  to: Address;
-  settings: Settings;
-}) {
-  return (
-    <ScaledPage width={684} height={306}>
-      <EnvelopePreview {...props} />
-    </ScaledPage>
+    <ScaledFrame nativeWidth={612} nativeHeight={792}>
+      <LetterPageContent
+        mode={mode}
+        letterData={letterData}
+        htmlContent={htmlContent}
+        settings={settings}
+      />
+    </ScaledFrame>
   );
 }
