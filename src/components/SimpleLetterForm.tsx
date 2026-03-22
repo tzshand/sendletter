@@ -1,17 +1,71 @@
 "use client";
 
+import { useState } from "react";
+import { ChevronDown, ChevronUp } from "lucide-react";
 import type { Language } from "./LetterSettings";
 
 export type SimpleLetterData = {
   date: string;
+  greeting: string;
   subject: string;
   body: string;
   closing: string;
   senderName: string;
+  reference: string;
+  cc: string;
+  enclosures: string;
+  ps: string;
 };
 
-const CLOSINGS_EN = ["Sincerely", "Best regards", "Kind regards", "Yours truly", "Respectfully", "Thank you"];
-const CLOSINGS_FR = ["Cordialement", "Bien à vous", "Sincères salutations", "Respectueusement", "Veuillez agréer"];
+const GREETINGS_EN = [
+  "",
+  "Dear Sir or Madam,",
+  "To Whom It May Concern,",
+  "Dear Hiring Manager,",
+  "Hello,",
+  "Good day,",
+];
+const GREETINGS_FR = [
+  "",
+  "Madame, Monsieur,",
+  "À qui de droit,",
+  "Bonjour,",
+  "Cher Monsieur,",
+  "Chère Madame,",
+];
+
+// Removed dropdown closings - now a free text input
+
+function Toggle({
+  label,
+  enabled,
+  onChange,
+}: {
+  label: string;
+  enabled: boolean;
+  onChange: (v: boolean) => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={() => onChange(!enabled)}
+      className="flex items-center gap-2 group"
+    >
+      <div
+        className={`w-8 h-[18px] rounded-full transition-colors relative ${
+          enabled ? "bg-gray-900" : "bg-gray-200 group-hover:bg-gray-300"
+        }`}
+      >
+        <div
+          className={`absolute top-[2px] w-[14px] h-[14px] rounded-full bg-white shadow-sm transition-transform ${
+            enabled ? "translate-x-[16px]" : "translate-x-[2px]"
+          }`}
+        />
+      </div>
+      <span className="text-xs text-gray-500">{label}</span>
+    </button>
+  );
+}
 
 export function SimpleLetterForm({
   data,
@@ -22,10 +76,25 @@ export function SimpleLetterForm({
   onChange: (d: SimpleLetterData) => void;
   language: Language;
 }) {
+  const [showExtras, setShowExtras] = useState(false);
+  const [extrasEnabled, setExtrasEnabled] = useState({
+    reference: false,
+    cc: false,
+    enclosures: false,
+    ps: false,
+  });
+
   const set = (field: keyof SimpleLetterData, value: string) =>
     onChange({ ...data, [field]: value });
 
-  const closings = language === "fr" ? CLOSINGS_FR : CLOSINGS_EN;
+  const isFr = language === "fr";
+  const greetings = isFr ? GREETINGS_FR : GREETINGS_EN;
+
+  const toggleExtra = (key: keyof typeof extrasEnabled) => {
+    const newVal = !extrasEnabled[key];
+    setExtrasEnabled((e) => ({ ...e, [key]: newVal }));
+    if (!newVal) set(key, "");
+  };
 
   return (
     <div className="space-y-3">
@@ -37,9 +106,27 @@ export function SimpleLetterForm({
         className="input"
       />
 
+      {/* Greeting */}
+      <select
+        value={data.greeting}
+        onChange={(e) => set("greeting", e.target.value)}
+        className="input"
+      >
+        <option value="">
+          {isFr ? "Salutation (facultatif)" : "Greeting (optional)"}
+        </option>
+        {greetings
+          .filter((g) => g !== "")
+          .map((g) => (
+            <option key={g} value={g}>
+              {g}
+            </option>
+          ))}
+      </select>
+
       {/* Subject */}
       <input
-        placeholder={language === "fr" ? "Objet (facultatif)" : "Subject (optional)"}
+        placeholder={isFr ? "Objet (facultatif)" : "Subject (optional)"}
         value={data.subject}
         onChange={(e) => set("subject", e.target.value)}
         className="input"
@@ -48,37 +135,109 @@ export function SimpleLetterForm({
       {/* Body */}
       <textarea
         placeholder={
-          language === "fr"
-            ? "Rédigez votre lettre ici..."
-            : "Write your letter here..."
+          isFr ? "Rédigez votre lettre ici..." : "Write your letter here..."
         }
         value={data.body}
         onChange={(e) => set("body", e.target.value)}
-        rows={12}
+        rows={10}
         className="input resize-none"
         style={{ fontFamily: "serif", lineHeight: 1.7 }}
       />
 
       {/* Closing & Name */}
       <div className="grid grid-cols-2 gap-3">
-        <select
+        <input
+          placeholder={isFr ? "Formule de politesse" : "Closing (e.g. Sincerely)"}
           value={data.closing}
           onChange={(e) => set("closing", e.target.value)}
           className="input"
-        >
-          {closings.map((c) => (
-            <option key={c} value={c}>
-              {c}
-            </option>
-          ))}
-        </select>
+        />
         <input
-          placeholder={language === "fr" ? "Votre nom" : "Your name"}
+          placeholder={isFr ? "Votre nom" : "Your name"}
           value={data.senderName}
           onChange={(e) => set("senderName", e.target.value)}
           className="input"
         />
       </div>
+
+      {/* More options toggle */}
+      <button
+        type="button"
+        onClick={() => setShowExtras(!showExtras)}
+        className="flex items-center gap-1 text-xs text-gray-400 hover:text-gray-600 transition-colors pt-1"
+      >
+        {showExtras ? (
+          <ChevronUp className="w-3.5 h-3.5" />
+        ) : (
+          <ChevronDown className="w-3.5 h-3.5" />
+        )}
+        {isFr ? "Plus d'options" : "More options"}
+      </button>
+
+      {showExtras && (
+        <div className="space-y-3 pl-1">
+          <div className="flex flex-wrap gap-x-5 gap-y-2">
+            <Toggle
+              label={isFr ? "Référence" : "Reference #"}
+              enabled={extrasEnabled.reference}
+              onChange={() => toggleExtra("reference")}
+            />
+            <Toggle
+              label="CC"
+              enabled={extrasEnabled.cc}
+              onChange={() => toggleExtra("cc")}
+            />
+            <Toggle
+              label={isFr ? "Pièces jointes" : "Enclosures"}
+              enabled={extrasEnabled.enclosures}
+              onChange={() => toggleExtra("enclosures")}
+            />
+            <Toggle
+              label="P.S."
+              enabled={extrasEnabled.ps}
+              onChange={() => toggleExtra("ps")}
+            />
+          </div>
+
+          {extrasEnabled.reference && (
+            <input
+              placeholder={isFr ? "Numéro de référence" : "Reference number"}
+              value={data.reference}
+              onChange={(e) => set("reference", e.target.value)}
+              className="input input-sm"
+            />
+          )}
+          {extrasEnabled.cc && (
+            <input
+              placeholder={isFr ? "Copie conforme (noms)" : "CC (names)"}
+              value={data.cc}
+              onChange={(e) => set("cc", e.target.value)}
+              className="input input-sm"
+            />
+          )}
+          {extrasEnabled.enclosures && (
+            <input
+              placeholder={
+                isFr
+                  ? "Pièces jointes (ex: CV, documents)"
+                  : "Enclosures (e.g. Resume, Documents)"
+              }
+              value={data.enclosures}
+              onChange={(e) => set("enclosures", e.target.value)}
+              className="input input-sm"
+            />
+          )}
+          {extrasEnabled.ps && (
+            <textarea
+              placeholder="P.S."
+              value={data.ps}
+              onChange={(e) => set("ps", e.target.value)}
+              rows={2}
+              className="input input-sm resize-none"
+            />
+          )}
+        </div>
+      )}
     </div>
   );
 }

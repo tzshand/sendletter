@@ -15,7 +15,7 @@ function formatDate(dateStr: string, language: string): string {
   });
 }
 
-function formatAddressBlock(a: Address): string[] {
+function formatAddressLines(a: Address): string[] {
   const lines: string[] = [];
   if (a.name) lines.push(a.name);
   if (a.line1) lines.push(a.line1);
@@ -27,45 +27,18 @@ function formatAddressBlock(a: Address): string[] {
   return lines;
 }
 
-function LetterPage({
+// Closing is now free-text input, rendered as-is
+
+/* ─── Scaled container ─────────────────────────────────── */
+
+function ScaledPage({
   children,
-  settings,
+  width,
+  height,
 }: {
   children: React.ReactNode;
-  settings: Settings;
-}) {
-  return (
-    <div
-      className="preview-frame"
-      style={{
-        fontFamily: `"${settings.fontFamily}", serif`,
-        fontSize: `${settings.fontSize}pt`,
-        lineHeight: 1.5,
-        padding: "72px", // 1 inch margin
-        display: "flex",
-        flexDirection: "column",
-        color: "#000",
-      }}
-    >
-      {children}
-    </div>
-  );
-}
-
-export function LivePreview({
-  mode,
-  letterData,
-  htmlContent,
-  from,
-  to,
-  settings,
-}: {
-  mode: "simple" | "custom" | "upload";
-  letterData: SimpleLetterData;
-  htmlContent: string;
-  from: Address;
-  to: Address;
-  settings: Settings;
+  width: number;
+  height: number;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(0.5);
@@ -73,162 +46,12 @@ export function LivePreview({
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
-
-    const observer = new ResizeObserver((entries) => {
-      for (const entry of entries) {
-        const width = entry.contentRect.width;
-        setScale(width / 612); // 612 = 8.5in * 72dpi
-      }
+    const obs = new ResizeObserver((entries) => {
+      for (const e of entries) setScale(e.contentRect.width / width);
     });
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
-
-  const fromLines = formatAddressBlock(from);
-  const toLines = formatAddressBlock(to);
-  const hasFrom = fromLines.length > 0;
-  const hasTo = toLines.length > 0;
-  const isFr = settings.language === "fr";
-
-  const renderSimple = () => {
-    const isEmpty =
-      !letterData.date &&
-      !letterData.subject &&
-      !letterData.body &&
-      !letterData.closing &&
-      !letterData.senderName &&
-      !hasFrom &&
-      !hasTo;
-
-    if (isEmpty) {
-      return (
-        <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <p style={{ color: "#d4d4d4", fontStyle: "italic", fontSize: "11pt" }}>
-            {isFr ? "Commencez à écrire..." : "Start writing to see your letter..."}
-          </p>
-        </div>
-      );
-    }
-
-    return (
-      <>
-        {/* Date - right aligned */}
-        {letterData.date && (
-          <div style={{ textAlign: "right", marginBottom: "24pt" }}>
-            {formatDate(letterData.date, settings.language)}
-          </div>
-        )}
-
-        {/* From address */}
-        {hasFrom && (
-          <div style={{ marginBottom: "18pt" }}>
-            {fromLines.map((l, i) => (
-              <div key={i}>{l}</div>
-            ))}
-          </div>
-        )}
-
-        {/* To address */}
-        {hasTo && (
-          <div style={{ marginBottom: "24pt" }}>
-            {toLines.map((l, i) => (
-              <div key={i}>{l}</div>
-            ))}
-          </div>
-        )}
-
-        {/* Subject */}
-        {letterData.subject && (
-          <div style={{ marginBottom: "18pt" }}>
-            <strong>{isFr ? "Objet" : "Re"}: {letterData.subject}</strong>
-          </div>
-        )}
-
-        {/* Salutation */}
-        <div style={{ marginBottom: "12pt" }}>
-          {isFr ? "Madame, Monsieur," : "Dear Sir or Madam,"}
-        </div>
-
-        {/* Body */}
-        {letterData.body && (
-          <div style={{ flex: 1, whiteSpace: "pre-wrap", marginBottom: "24pt" }}>
-            {letterData.body}
-          </div>
-        )}
-
-        {/* Closing & Signature */}
-        {(letterData.closing || letterData.senderName) && (
-          <div>
-            {letterData.closing && <div>{letterData.closing},</div>}
-            {letterData.senderName && (
-              <div style={{ marginTop: "36pt" }}>{letterData.senderName}</div>
-            )}
-          </div>
-        )}
-      </>
-    );
-  };
-
-  const renderCustom = () => {
-    if (!htmlContent) {
-      return (
-        <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <p style={{ color: "#d4d4d4", fontStyle: "italic", fontSize: "11pt" }}>
-            {isFr ? "Commencez à écrire..." : "Start writing to see your letter..."}
-          </p>
-        </div>
-      );
-    }
-
-    return (
-      <>
-        {(hasFrom || hasTo) && (
-          <div style={{ marginBottom: "24pt", fontSize: "0.92em" }}>
-            {hasFrom && (
-              <div style={{ marginBottom: "12pt" }}>
-                {fromLines.map((l, i) => (
-                  <div key={i}>{l}</div>
-                ))}
-              </div>
-            )}
-            {hasTo && (
-              <div>
-                {toLines.map((l, i) => (
-                  <div key={i}>{l}</div>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
-        <div dangerouslySetInnerHTML={{ __html: htmlContent }} />
-      </>
-    );
-  };
-
-  const renderUpload = () => {
-    if (!htmlContent) {
-      return (
-        <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <p style={{ color: "#d4d4d4", fontStyle: "italic", fontSize: "11pt" }}>
-            {isFr ? "Téléchargez un fichier..." : "Upload a file to preview..."}
-          </p>
-        </div>
-      );
-    }
-
-    const pdfMatch = htmlContent.match(/data-pdf="([^"]+)"/);
-    if (pdfMatch) {
-      return (
-        <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <p style={{ color: "#888", fontStyle: "italic", fontSize: "11pt" }}>
-            PDF — {isFr ? "aperçu non disponible" : "preview not available in thumbnail"}
-          </p>
-        </div>
-      );
-    }
-
-    return <div dangerouslySetInnerHTML={{ __html: htmlContent }} />;
-  };
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, [width]);
 
   return (
     <div ref={containerRef} className="w-full">
@@ -236,21 +59,307 @@ export function LivePreview({
         style={{
           transform: `scale(${scale})`,
           transformOrigin: "top left",
-          width: "612px",
-          height: `${792 * scale}px`,
+          width,
         }}
       >
-        {/* Outer wrapper at original height for parent container */}
-        <div style={{ width: "612px", height: "0px" }}>
-          <LetterPage settings={settings}>
-            {mode === "simple" && renderSimple()}
-            {mode === "custom" && renderCustom()}
-            {mode === "upload" && renderUpload()}
-          </LetterPage>
-        </div>
+        {children}
       </div>
-      {/* Spacer to account for scaled height */}
-      <div style={{ height: `${792 * scale}px` }} />
+      <div style={{ height: height * scale }} />
     </div>
+  );
+}
+
+/* ─── Envelope Preview ─────────────────────────────────── */
+
+function EnvelopePreview({
+  from,
+  to,
+  settings,
+}: {
+  from: Address;
+  to: Address;
+  settings: Settings;
+}) {
+  const fromLines = formatAddressLines(from);
+  const toLines = formatAddressLines(to);
+  const hasFrom = fromLines.length > 0;
+  const hasTo = toLines.length > 0;
+  const isFr = settings.language === "fr";
+
+  if (!hasFrom && !hasTo) {
+    return (
+      <div
+        style={{
+          width: 684,
+          height: 306,
+          background: "#fff",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          fontFamily: `"${settings.fontFamily}", serif`,
+        }}
+      >
+        <p style={{ color: "#d4d4d4", fontStyle: "italic", fontSize: 11 }}>
+          {isFr
+            ? "Ajoutez des adresses pour voir l'enveloppe"
+            : "Add addresses to see the envelope"}
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div
+      style={{
+        width: 684, // #10 envelope at 72dpi (9.5in)
+        height: 306, // 4.25in
+        background: "#fff",
+        position: "relative",
+        fontFamily: `"${settings.fontFamily}", serif`,
+        fontSize: "10pt",
+        lineHeight: 1.5,
+        color: "#000",
+        padding: 36,
+      }}
+    >
+      {/* From: top-left */}
+      {hasFrom && (
+        <div style={{ position: "absolute", top: 28, left: 32 }}>
+          {fromLines.map((l, i) => (
+            <div key={i} style={{ fontSize: "9pt" }}>
+              {l}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Stamp placeholder: top-right */}
+      <div
+        style={{
+          position: "absolute",
+          top: 24,
+          right: 28,
+          width: 48,
+          height: 56,
+          border: "1px dashed #ccc",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          fontSize: "7pt",
+          color: "#bbb",
+        }}
+      >
+        STAMP
+      </div>
+
+      {/* To: center */}
+      {hasTo && (
+        <div
+          style={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-30%, -40%)",
+            fontSize: "11pt",
+          }}
+        >
+          {toLines.map((l, i) => (
+            <div key={i}>{l}</div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ─── Letter Preview ─────────────────────────────────── */
+
+function LetterPreview({
+  mode,
+  letterData,
+  htmlContent,
+  settings,
+}: {
+  mode: "simple" | "custom" | "upload";
+  letterData: SimpleLetterData;
+  htmlContent: string;
+  settings: Settings;
+}) {
+  const isFr = settings.language === "fr";
+  const closing = letterData.closing;
+
+  const pageStyle: React.CSSProperties = {
+    width: 612,
+    height: 792,
+    padding: 72,
+    fontFamily: `"${settings.fontFamily}", serif`,
+    fontSize: `${settings.fontSize}pt`,
+    lineHeight: 1.5,
+    color: "#000",
+    background: "#fff",
+    display: "flex",
+    flexDirection: "column",
+    overflow: "hidden",
+  };
+
+  if (mode === "custom") {
+    if (!htmlContent) {
+      return (
+        <div style={{ ...pageStyle, alignItems: "center", justifyContent: "center" }}>
+          <p style={{ color: "#d4d4d4", fontStyle: "italic", fontSize: "11pt" }}>
+            {isFr ? "Commencez à écrire..." : "Start writing to see your letter..."}
+          </p>
+        </div>
+      );
+    }
+    return (
+      <div style={pageStyle}>
+        <div dangerouslySetInnerHTML={{ __html: htmlContent }} />
+      </div>
+    );
+  }
+
+  if (mode === "upload") {
+    if (!htmlContent) {
+      return (
+        <div style={{ ...pageStyle, alignItems: "center", justifyContent: "center" }}>
+          <p style={{ color: "#d4d4d4", fontStyle: "italic", fontSize: "11pt" }}>
+            {isFr ? "Téléchargez un fichier..." : "Upload a file to preview..."}
+          </p>
+        </div>
+      );
+    }
+    const pdfMatch = htmlContent.match(/data-pdf="([^"]+)"/);
+    if (pdfMatch) {
+      const base64 = pdfMatch[1];
+      return (
+        <div style={{ width: 612, height: 792, background: "#fff" }}>
+          <iframe
+            src={`data:application/pdf;base64,${base64}#toolbar=0&navpanes=0`}
+            style={{ width: "100%", height: "100%", border: "none" }}
+            title="PDF Preview"
+          />
+        </div>
+      );
+    }
+    return (
+      <div style={pageStyle}>
+        <div dangerouslySetInnerHTML={{ __html: htmlContent }} />
+      </div>
+    );
+  }
+
+  // Simple mode
+  const isEmpty =
+    !letterData.date &&
+    !letterData.greeting &&
+    !letterData.subject &&
+    !letterData.body &&
+    !letterData.closing &&
+    !letterData.senderName;
+
+  if (isEmpty) {
+    return (
+      <div style={{ ...pageStyle, alignItems: "center", justifyContent: "center" }}>
+        <p style={{ color: "#d4d4d4", fontStyle: "italic", fontSize: "11pt" }}>
+          {isFr ? "Commencez à écrire..." : "Start writing to see your letter..."}
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div style={pageStyle}>
+      {/* Date - right aligned */}
+      {letterData.date && (
+        <div style={{ textAlign: "right", marginBottom: "20pt" }}>
+          {formatDate(letterData.date, settings.language)}
+        </div>
+      )}
+
+      {/* Reference */}
+      {letterData.reference && (
+        <div style={{ marginBottom: "12pt", fontSize: "0.9em" }}>
+          {isFr ? "Réf" : "Ref"}: {letterData.reference}
+        </div>
+      )}
+
+      {/* Subject */}
+      {letterData.subject && (
+        <div style={{ marginBottom: "16pt" }}>
+          <strong>
+            {isFr ? "Objet" : "Re"}: {letterData.subject}
+          </strong>
+        </div>
+      )}
+
+      {/* Greeting */}
+      {letterData.greeting && (
+        <div style={{ marginBottom: "12pt" }}>{letterData.greeting}</div>
+      )}
+
+      {/* Body */}
+      {letterData.body && (
+        <div style={{ flex: 1, whiteSpace: "pre-wrap" }}>{letterData.body}</div>
+      )}
+
+      {/* Closing & Signature */}
+      {(closing || letterData.senderName) && (
+        <div style={{ marginTop: "20pt" }}>
+          {closing && <div>{closing},</div>}
+          {letterData.senderName && (
+            <div style={{ marginTop: "32pt" }}>{letterData.senderName}</div>
+          )}
+        </div>
+      )}
+
+      {/* CC */}
+      {letterData.cc && (
+        <div style={{ marginTop: "16pt", fontSize: "0.9em" }}>
+          CC: {letterData.cc}
+        </div>
+      )}
+
+      {/* Enclosures */}
+      {letterData.enclosures && (
+        <div style={{ marginTop: "8pt", fontSize: "0.9em" }}>
+          {isFr ? "P.J." : "Encl."}: {letterData.enclosures}
+        </div>
+      )}
+
+      {/* P.S. */}
+      {letterData.ps && (
+        <div style={{ marginTop: "12pt", fontStyle: "italic", fontSize: "0.9em" }}>
+          P.S. {letterData.ps}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ─── Exports ─────────────────────────────────── */
+
+export function LetterPreviewScaled(props: {
+  mode: "simple" | "custom" | "upload";
+  letterData: SimpleLetterData;
+  htmlContent: string;
+  settings: Settings;
+}) {
+  return (
+    <ScaledPage width={612} height={792}>
+      <LetterPreview {...props} />
+    </ScaledPage>
+  );
+}
+
+export function EnvelopePreviewScaled(props: {
+  from: Address;
+  to: Address;
+  settings: Settings;
+}) {
+  return (
+    <ScaledPage width={684} height={306}>
+      <EnvelopePreview {...props} />
+    </ScaledPage>
   );
 }

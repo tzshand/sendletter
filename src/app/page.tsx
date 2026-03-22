@@ -8,7 +8,10 @@ import {
 import { LetterEditor } from "@/components/LetterEditor";
 import { FileUpload } from "@/components/FileUpload";
 import { AddressSection, type Address } from "@/components/AddressForm";
-import { LivePreview } from "@/components/LivePreview";
+import {
+  LetterPreviewScaled,
+  EnvelopePreviewScaled,
+} from "@/components/LivePreview";
 import {
   LetterSettingsBar,
   type Settings,
@@ -48,10 +51,15 @@ export default function Home() {
 
   const [letterData, setLetterData] = useState<SimpleLetterData>({
     date: new Date().toISOString().split("T")[0],
+    greeting: "",
     subject: "",
     body: "",
-    closing: "Sincerely",
+    closing: "",
     senderName: "",
+    reference: "",
+    cc: "",
+    enclosures: "",
+    ps: "",
   });
 
   const [htmlContent, setHtmlContent] = useState("");
@@ -64,11 +72,11 @@ export default function Home() {
     !!(a.name && a.line1 && a.city && a.province && a.postalCode);
 
   const hasContent =
-    mode === "simple"
-      ? !!letterData.body.trim()
-      : !!htmlContent;
+    mode === "simple" ? !!letterData.body.trim() : !!htmlContent;
 
   const canSend = isAddressValid(from) && isAddressValid(to) && hasContent;
+
+  const isFr = settings.language === "fr";
 
   const handleCheckout = async () => {
     setSending(true);
@@ -83,7 +91,8 @@ export default function Home() {
         window.location.href = data.url;
       } else {
         alert(
-          data.error || "Could not create checkout. Are Stripe keys configured?"
+          data.error ||
+            "Could not create checkout. Are Stripe keys configured?"
         );
         setSending(false);
       }
@@ -101,10 +110,68 @@ export default function Home() {
   };
 
   const tabs: { id: Mode; label: string; icon: React.ReactNode }[] = [
-    { id: "simple", label: "Letter", icon: <PenLine className="w-3.5 h-3.5" /> },
-    { id: "custom", label: "Custom", icon: <FileText className="w-3.5 h-3.5" /> },
-    { id: "upload", label: "Upload", icon: <Upload className="w-3.5 h-3.5" /> },
+    {
+      id: "simple",
+      label: isFr ? "Lettre" : "Letter",
+      icon: <PenLine className="w-3.5 h-3.5" />,
+    },
+    {
+      id: "custom",
+      label: isFr ? "Personnalisé" : "Custom",
+      icon: <FileText className="w-3.5 h-3.5" />,
+    },
+    {
+      id: "upload",
+      label: isFr ? "Télécharger" : "Upload",
+      icon: <Upload className="w-3.5 h-3.5" />,
+    },
   ];
+
+  const previewContent = (
+    <div className="space-y-6">
+      {/* Letter */}
+      <div>
+        <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-2">
+          {isFr ? "Lettre" : "Letter"}
+        </p>
+        <div className="rounded-lg shadow-[0_1px_3px_rgba(0,0,0,0.08),0_1px_2px_rgba(0,0,0,0.04)] ring-1 ring-gray-200/60 overflow-hidden bg-white">
+          <LetterPreviewScaled
+            mode={mode}
+            letterData={letterData}
+            htmlContent={htmlContent}
+            settings={settings}
+          />
+        </div>
+      </div>
+      {/* Envelope */}
+      <div>
+        <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-2">
+          {isFr ? "Enveloppe" : "Envelope"}
+        </p>
+        <div className="rounded-lg shadow-[0_1px_3px_rgba(0,0,0,0.08),0_1px_2px_rgba(0,0,0,0.04)] ring-1 ring-gray-200/60 overflow-hidden bg-white">
+          <EnvelopePreviewScaled from={from} to={to} settings={settings} />
+        </div>
+      </div>
+    </div>
+  );
+
+  const mailButton = (opts?: { className?: string }) => (
+    <button
+      onClick={handleCheckout}
+      disabled={!canSend || sending}
+      className={`flex items-center justify-center gap-2 h-11 rounded-xl text-sm font-semibold bg-gray-900 text-white hover:bg-gray-800 active:scale-[0.98] disabled:opacity-25 disabled:cursor-not-allowed disabled:active:scale-100 transition-all ${opts?.className || "w-full"}`}
+    >
+      {sending ? (
+        <Loader2 className="w-4 h-4 animate-spin" />
+      ) : (
+        <>
+          <Mail className="w-4 h-4" />
+          {isFr ? "Poster pour 4,99 $" : "Mail for $4.99"}
+          <ArrowRight className="w-3.5 h-3.5" />
+        </>
+      )}
+    </button>
+  );
 
   return (
     <div className="h-full flex flex-col bg-[#fafafa]">
@@ -142,23 +209,21 @@ export default function Home() {
         <div className="flex items-center gap-3">
           <button
             onClick={() => setMobilePreview(true)}
-            className="lg:hidden flex items-center gap-1.5 text-xs text-gray-500 hover:text-gray-900 transition-colors"
+            className="lg:hidden flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-600 hover:text-gray-900 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
           >
-            <Eye className="w-4 h-4" />
-            <span className="hidden sm:inline">Preview</span>
+            <Eye className="w-3.5 h-3.5" />
+            Preview
           </button>
           <div className="hidden sm:block h-4 w-px bg-gray-200" />
-          <span className="text-xs text-gray-400 font-medium">
-            $4.99 <span className="hidden sm:inline">flat rate</span>
+          <span className="text-xs text-gray-400 font-medium hidden sm:block">
+            {isFr ? "Tarif fixe 4,99 $" : "$4.99 flat rate"}
           </span>
         </div>
       </header>
 
       {/* Settings bar */}
       <div className="bg-white border-b border-gray-100 px-5 py-2 shrink-0">
-        <div className="max-w-xl">
-          <LetterSettingsBar settings={settings} onChange={setSettings} />
-        </div>
+        <LetterSettingsBar settings={settings} onChange={setSettings} />
       </div>
 
       {/* Mobile tabs */}
@@ -185,7 +250,7 @@ export default function Home() {
       <div className="flex-1 flex overflow-hidden">
         {/* Left: Form */}
         <div className="flex-1 overflow-y-auto">
-          <div className="max-w-xl mx-auto px-5 py-6 space-y-5">
+          <div className="max-w-2xl mx-auto px-5 sm:px-8 py-6 space-y-5">
             {/* Content area */}
             {mode === "simple" && (
               <SimpleLetterForm
@@ -220,7 +285,7 @@ export default function Home() {
               </div>
               <div className="relative flex justify-center">
                 <span className="bg-[#fafafa] px-3 text-[11px] font-medium text-gray-400 uppercase tracking-wider">
-                  {settings.language === "fr" ? "Adresses" : "Addresses"}
+                  {isFr ? "Adresses postales" : "Mailing addresses"}
                 </span>
               </div>
             </div>
@@ -233,90 +298,49 @@ export default function Home() {
               onToChange={setTo}
             />
 
-            {/* Bottom spacer for mobile */}
+            {/* Bottom spacer */}
             <div className="h-4 lg:hidden" />
           </div>
         </div>
 
         {/* Right: Preview (desktop) */}
-        <div className="hidden lg:flex w-[420px] xl:w-[460px] border-l border-gray-200/80 bg-white flex-col">
-          <div className="flex-1 overflow-y-auto p-5">
-            <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-3">
-              {settings.language === "fr" ? "Aperçu" : "Preview"}
-            </p>
-            <div className="rounded-lg shadow-[0_1px_3px_rgba(0,0,0,0.08),0_1px_2px_rgba(0,0,0,0.04)] ring-1 ring-gray-200/60 overflow-hidden">
-              <LivePreview
-                mode={mode}
-                letterData={letterData}
-                htmlContent={htmlContent}
-                from={from}
-                to={to}
-                settings={settings}
-              />
-            </div>
+        <div className="hidden lg:flex w-[480px] xl:w-[520px] 2xl:w-[560px] border-l border-gray-200/80 bg-[#f5f5f4] flex-col">
+          <div className="flex-1 overflow-y-auto p-6">
+            {previewContent}
           </div>
 
           {/* Checkout */}
-          <div className="border-t border-gray-200/80 px-5 py-4 bg-[#fafafa]">
-            <button
-              onClick={handleCheckout}
-              disabled={!canSend || sending}
-              className="w-full flex items-center justify-center gap-2 h-10 rounded-xl text-sm font-semibold bg-gray-900 text-white hover:bg-gray-800 active:scale-[0.98] disabled:opacity-25 disabled:cursor-not-allowed disabled:active:scale-100 transition-all"
-            >
-              {sending ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : (
-                <>
-                  {settings.language === "fr"
-                    ? "Envoyer pour 4,99 $"
-                    : "Send for $4.99"}
-                  <ArrowRight className="w-4 h-4" />
-                </>
-              )}
-            </button>
+          <div className="border-t border-gray-200/80 px-5 py-4 bg-white">
+            {mailButton()}
             {!canSend && (
               <p className="text-[11px] text-gray-400 text-center mt-2">
-                {settings.language === "fr"
-                  ? "Remplissez la lettre et les deux adresses"
-                  : "Fill in your letter and both addresses to continue"}
+                {isFr
+                  ? "Remplissez la lettre et les deux adresses pour poster"
+                  : "Fill in your letter and both addresses to mail"}
               </p>
             )}
           </div>
         </div>
       </div>
 
-      {/* Mobile: sticky checkout */}
+      {/* Mobile: sticky bar */}
       <div className="lg:hidden border-t border-gray-200/80 bg-white px-4 py-3 flex items-center gap-2.5 shrink-0">
         <button
           onClick={() => setMobilePreview(true)}
-          className="h-10 w-10 rounded-xl border border-gray-200 flex items-center justify-center text-gray-500 hover:text-gray-900 hover:border-gray-300 transition-colors shrink-0"
+          className="h-11 px-4 rounded-xl border border-gray-200 flex items-center gap-2 text-gray-600 hover:text-gray-900 hover:border-gray-300 transition-colors shrink-0 text-sm font-medium"
         >
           <Eye className="w-4 h-4" />
+          Preview
         </button>
-        <button
-          onClick={handleCheckout}
-          disabled={!canSend || sending}
-          className="flex-1 flex items-center justify-center gap-2 h-10 rounded-xl text-sm font-semibold bg-gray-900 text-white hover:bg-gray-800 active:scale-[0.98] disabled:opacity-25 disabled:cursor-not-allowed disabled:active:scale-100 transition-all"
-        >
-          {sending ? (
-            <Loader2 className="w-4 h-4 animate-spin" />
-          ) : (
-            <>
-              {settings.language === "fr"
-                ? "Envoyer pour 4,99 $"
-                : "Send for $4.99"}
-              <ArrowRight className="w-4 h-4" />
-            </>
-          )}
-        </button>
+        {mailButton({ className: "flex-1" })}
       </div>
 
       {/* Mobile: preview overlay */}
       {mobilePreview && (
-        <div className="lg:hidden fixed inset-0 z-50 bg-white flex flex-col">
-          <div className="flex items-center justify-between px-4 h-[52px] border-b border-gray-200/80 shrink-0">
+        <div className="lg:hidden fixed inset-0 z-50 bg-[#f5f5f4] flex flex-col">
+          <div className="flex items-center justify-between px-4 h-[52px] border-b border-gray-200/80 bg-white shrink-0">
             <span className="text-sm font-semibold">
-              {settings.language === "fr" ? "Aperçu" : "Preview"}
+              {isFr ? "Aperçu de votre courrier" : "Mail preview"}
             </span>
             <button
               onClick={() => setMobilePreview(false)}
@@ -325,40 +349,11 @@ export default function Home() {
               <X className="w-5 h-5" />
             </button>
           </div>
-          <div className="flex-1 overflow-y-auto p-4 bg-[#fafafa]">
-            <div className="max-w-sm mx-auto">
-              <div className="rounded-lg shadow-[0_1px_3px_rgba(0,0,0,0.08),0_1px_2px_rgba(0,0,0,0.04)] ring-1 ring-gray-200/60 overflow-hidden">
-                <LivePreview
-                  mode={mode}
-                  letterData={letterData}
-                  htmlContent={htmlContent}
-                  from={from}
-                  to={to}
-                  settings={settings}
-                />
-              </div>
-            </div>
+          <div className="flex-1 overflow-y-auto p-4">
+            <div className="max-w-md mx-auto">{previewContent}</div>
           </div>
           <div className="border-t border-gray-200/80 bg-white px-4 py-3 shrink-0">
-            <button
-              onClick={() => {
-                setMobilePreview(false);
-                handleCheckout();
-              }}
-              disabled={!canSend || sending}
-              className="w-full flex items-center justify-center gap-2 h-10 rounded-xl text-sm font-semibold bg-gray-900 text-white hover:bg-gray-800 active:scale-[0.98] disabled:opacity-25 disabled:cursor-not-allowed disabled:active:scale-100 transition-all"
-            >
-              {sending ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : (
-                <>
-                  {settings.language === "fr"
-                    ? "Envoyer pour 4,99 $"
-                    : "Send for $4.99"}
-                  <ArrowRight className="w-4 h-4" />
-                </>
-              )}
-            </button>
+            {mailButton()}
           </div>
         </div>
       )}
