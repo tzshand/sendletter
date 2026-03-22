@@ -5,6 +5,7 @@ import type { Address } from "./AddressForm";
 import type { SimpleLetterData } from "./SimpleLetterForm";
 import type { Settings } from "./LetterSettings";
 import type { LetterSize } from "./LetterSizeSelector";
+import { PdfCanvasPreview } from "./PdfPreview";
 
 function formatDate(dateStr: string, language: string): string {
   if (!dateStr) return "";
@@ -240,16 +241,7 @@ function LetterPageContent({
     }
     const pdfMatch = htmlContent.match(/data-pdf="([^"]+)"/);
     if (pdfMatch) {
-      const base64 = pdfMatch[1];
-      return (
-        <div style={{ width: 612, height: 792, background: "#fff" }}>
-          <iframe
-            src={`data:application/pdf;base64,${base64}#toolbar=0&navpanes=0`}
-            style={{ width: "100%", height: "100%", border: "none" }}
-            title="PDF Preview"
-          />
-        </div>
-      );
+      return <PdfCanvasPreview base64={pdfMatch[1]} width={612} height={792} />;
     }
     return (
       <div style={pageStyle}>
