@@ -72,12 +72,17 @@ export function FileUpload({
 
   if (fileName) {
     return (
-      <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
-        <FileText className="w-5 h-5 text-gray-500 shrink-0" />
-        <span className="text-sm font-medium truncate flex-1">{fileName}</span>
+      <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-xl border border-gray-200">
+        <div className="w-10 h-10 rounded-lg bg-white border border-gray-200 flex items-center justify-center shrink-0">
+          <FileText className="w-5 h-5 text-gray-500" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-medium truncate">{fileName}</p>
+          <p className="text-xs text-gray-400">Ready to send</p>
+        </div>
         <button
           onClick={() => onContent("", "")}
-          className="text-gray-400 hover:text-gray-600 shrink-0"
+          className="text-gray-400 hover:text-gray-600 p-1 rounded-lg hover:bg-gray-100 transition-colors shrink-0"
         >
           <X className="w-4 h-4" />
         </button>
@@ -89,26 +94,31 @@ export function FileUpload({
     <div>
       <div
         {...getRootProps()}
-        className={`border border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors ${
+        className={`border-2 border-dashed rounded-xl p-12 text-center cursor-pointer transition-all ${
           isDragActive
-            ? "border-gray-900 bg-gray-50"
-            : "border-gray-300 hover:border-gray-400"
+            ? "border-gray-400 bg-gray-50"
+            : "border-gray-200 hover:border-gray-300 hover:bg-gray-50/50"
         }`}
       >
         <input {...getInputProps()} />
         {loading ? (
-          <Loader2 className="w-5 h-5 text-gray-400 mx-auto animate-spin" />
+          <Loader2 className="w-6 h-6 text-gray-400 mx-auto animate-spin" />
         ) : (
           <>
-            <Upload className="w-5 h-5 text-gray-400 mx-auto mb-2" />
-            <p className="text-sm text-gray-600">
-              Drop a PDF or .docx, or <span className="underline">browse</span>
+            <div className="w-12 h-12 rounded-xl bg-gray-100 flex items-center justify-center mx-auto mb-3">
+              <Upload className="w-5 h-5 text-gray-500" />
+            </div>
+            <p className="text-sm font-medium text-gray-700 mb-1">
+              {isDragActive ? "Drop your file here" : "Drop a file or click to browse"}
+            </p>
+            <p className="text-xs text-gray-400">
+              PDF or Word (.docx) — up to 10 pages
             </p>
           </>
         )}
       </div>
       {error && (
-        <p className="mt-2 text-xs text-red-600">{error}</p>
+        <p className="mt-2 text-xs text-red-500">{error}</p>
       )}
     </div>
   );

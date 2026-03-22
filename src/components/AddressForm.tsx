@@ -1,7 +1,5 @@
 "use client";
 
-import { MapPin } from "lucide-react";
-
 export type Address = {
   name: string;
   line1: string;
@@ -29,12 +27,9 @@ function AddressBlock({
 
   return (
     <div>
-      <div className="flex items-center gap-1.5 mb-2.5">
-        <MapPin className="w-3.5 h-3.5 text-gray-400" />
-        <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">
-          {label}
-        </span>
-      </div>
+      <span className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-2 block">
+        {label}
+      </span>
       <div className="space-y-2">
         <input
           placeholder="Full name"
@@ -49,7 +44,7 @@ function AddressBlock({
           className="input input-sm"
         />
         <input
-          placeholder="Apt, suite, unit (optional)"
+          placeholder="Apt, suite (optional)"
           value={value.line2}
           onChange={(e) => set("line2", e.target.value)}
           className="input input-sm"
@@ -96,7 +91,7 @@ export function AddressSection({
   onToChange: (a: Address) => void;
 }) {
   return (
-    <div className="grid grid-cols-2 gap-6">
+    <div className="grid grid-cols-2 gap-5">
       <AddressBlock label="From" value={from} onChange={onFromChange} />
       <AddressBlock label="To" value={to} onChange={onToChange} />
     </div>

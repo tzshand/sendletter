@@ -1,12 +1,14 @@
 "use client";
 
+import { useRef, useEffect, useState } from "react";
 import type { Address } from "./AddressForm";
 import type { SimpleLetterData } from "./SimpleLetterForm";
+import type { Settings } from "./LetterSettings";
 
-function formatDate(dateStr: string): string {
+function formatDate(dateStr: string, language: string): string {
   if (!dateStr) return "";
   const d = new Date(dateStr + "T00:00:00");
-  return d.toLocaleDateString("en-CA", {
+  return d.toLocaleDateString(language === "fr" ? "fr-CA" : "en-CA", {
     year: "numeric",
     month: "long",
     day: "numeric",
@@ -25,44 +27,165 @@ function formatAddressBlock(a: Address): string[] {
   return lines;
 }
 
+function LetterPage({
+  children,
+  settings,
+}: {
+  children: React.ReactNode;
+  settings: Settings;
+}) {
+  return (
+    <div
+      className="preview-frame"
+      style={{
+        fontFamily: `"${settings.fontFamily}", serif`,
+        fontSize: `${settings.fontSize}pt`,
+        lineHeight: 1.5,
+        padding: "72px", // 1 inch margin
+        display: "flex",
+        flexDirection: "column",
+        color: "#000",
+      }}
+    >
+      {children}
+    </div>
+  );
+}
+
 export function LivePreview({
   mode,
   letterData,
   htmlContent,
   from,
   to,
-  className,
+  settings,
 }: {
-  mode: "simple" | "custom";
+  mode: "simple" | "custom" | "upload";
   letterData: SimpleLetterData;
   htmlContent: string;
   from: Address;
   to: Address;
-  className?: string;
+  settings: Settings;
 }) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [scale, setScale] = useState(0.5);
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+
+    const observer = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        const width = entry.contentRect.width;
+        setScale(width / 612); // 612 = 8.5in * 72dpi
+      }
+    });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
   const fromLines = formatAddressBlock(from);
   const toLines = formatAddressBlock(to);
   const hasFrom = fromLines.length > 0;
   const hasTo = toLines.length > 0;
+  const isFr = settings.language === "fr";
 
-  if (mode === "custom") {
-    const pdfMatch = htmlContent.match(/data-pdf="([^"]+)"/);
-    if (pdfMatch) {
+  const renderSimple = () => {
+    const isEmpty =
+      !letterData.date &&
+      !letterData.subject &&
+      !letterData.body &&
+      !letterData.closing &&
+      !letterData.senderName &&
+      !hasFrom &&
+      !hasTo;
+
+    if (isEmpty) {
       return (
-        <div className={`letter-page ${className || ""}`}>
-          <p style={{ color: "#666", fontStyle: "italic", fontSize: "0.85em" }}>
-            PDF document uploaded
+        <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <p style={{ color: "#d4d4d4", fontStyle: "italic", fontSize: "11pt" }}>
+            {isFr ? "Commencez à écrire..." : "Start writing to see your letter..."}
           </p>
         </div>
       );
     }
 
     return (
-      <div className={`letter-page ${className || ""}`}>
+      <>
+        {/* Date - right aligned */}
+        {letterData.date && (
+          <div style={{ textAlign: "right", marginBottom: "24pt" }}>
+            {formatDate(letterData.date, settings.language)}
+          </div>
+        )}
+
+        {/* From address */}
+        {hasFrom && (
+          <div style={{ marginBottom: "18pt" }}>
+            {fromLines.map((l, i) => (
+              <div key={i}>{l}</div>
+            ))}
+          </div>
+        )}
+
+        {/* To address */}
+        {hasTo && (
+          <div style={{ marginBottom: "24pt" }}>
+            {toLines.map((l, i) => (
+              <div key={i}>{l}</div>
+            ))}
+          </div>
+        )}
+
+        {/* Subject */}
+        {letterData.subject && (
+          <div style={{ marginBottom: "18pt" }}>
+            <strong>{isFr ? "Objet" : "Re"}: {letterData.subject}</strong>
+          </div>
+        )}
+
+        {/* Salutation */}
+        <div style={{ marginBottom: "12pt" }}>
+          {isFr ? "Madame, Monsieur," : "Dear Sir or Madam,"}
+        </div>
+
+        {/* Body */}
+        {letterData.body && (
+          <div style={{ flex: 1, whiteSpace: "pre-wrap", marginBottom: "24pt" }}>
+            {letterData.body}
+          </div>
+        )}
+
+        {/* Closing & Signature */}
+        {(letterData.closing || letterData.senderName) && (
+          <div>
+            {letterData.closing && <div>{letterData.closing},</div>}
+            {letterData.senderName && (
+              <div style={{ marginTop: "36pt" }}>{letterData.senderName}</div>
+            )}
+          </div>
+        )}
+      </>
+    );
+  };
+
+  const renderCustom = () => {
+    if (!htmlContent) {
+      return (
+        <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <p style={{ color: "#d4d4d4", fontStyle: "italic", fontSize: "11pt" }}>
+            {isFr ? "Commencez à écrire..." : "Start writing to see your letter..."}
+          </p>
+        </div>
+      );
+    }
+
+    return (
+      <>
         {(hasFrom || hasTo) && (
-          <div style={{ marginBottom: "2em", fontSize: "0.9em" }}>
+          <div style={{ marginBottom: "24pt", fontSize: "0.92em" }}>
             {hasFrom && (
-              <div style={{ marginBottom: "1em" }}>
+              <div style={{ marginBottom: "12pt" }}>
                 {fromLines.map((l, i) => (
                   <div key={i}>{l}</div>
                 ))}
@@ -77,85 +200,57 @@ export function LivePreview({
             )}
           </div>
         )}
-        {htmlContent ? (
-          <div dangerouslySetInnerHTML={{ __html: htmlContent }} />
-        ) : (
-          <p style={{ color: "#ccc", fontStyle: "italic" }}>
-            Start writing to see your letter here...
-          </p>
-        )}
-      </div>
+        <div dangerouslySetInnerHTML={{ __html: htmlContent }} />
+      </>
     );
-  }
+  };
 
-  // Simple mode preview
-  const isEmpty =
-    !letterData.date &&
-    !letterData.subject &&
-    !letterData.body &&
-    !letterData.closing &&
-    !letterData.senderName &&
-    !hasFrom &&
-    !hasTo;
+  const renderUpload = () => {
+    if (!htmlContent) {
+      return (
+        <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <p style={{ color: "#d4d4d4", fontStyle: "italic", fontSize: "11pt" }}>
+            {isFr ? "Téléchargez un fichier..." : "Upload a file to preview..."}
+          </p>
+        </div>
+      );
+    }
+
+    const pdfMatch = htmlContent.match(/data-pdf="([^"]+)"/);
+    if (pdfMatch) {
+      return (
+        <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <p style={{ color: "#888", fontStyle: "italic", fontSize: "11pt" }}>
+            PDF — {isFr ? "aperçu non disponible" : "preview not available in thumbnail"}
+          </p>
+        </div>
+      );
+    }
+
+    return <div dangerouslySetInnerHTML={{ __html: htmlContent }} />;
+  };
 
   return (
-    <div className={`letter-page ${className || ""}`}>
-      {isEmpty ? (
-        <p style={{ color: "#ccc", fontStyle: "italic" }}>
-          Start writing to see your letter here...
-        </p>
-      ) : (
-        <>
-          {/* From address block */}
-          {hasFrom && (
-            <div style={{ marginBottom: "1.5em" }}>
-              {fromLines.map((l, i) => (
-                <div key={i}>{l}</div>
-              ))}
-            </div>
-          )}
-
-          {/* Date */}
-          {letterData.date && (
-            <div style={{ marginBottom: "1.5em" }}>
-              {formatDate(letterData.date)}
-            </div>
-          )}
-
-          {/* To address block */}
-          {hasTo && (
-            <div style={{ marginBottom: "1.5em" }}>
-              {toLines.map((l, i) => (
-                <div key={i}>{l}</div>
-              ))}
-            </div>
-          )}
-
-          {/* Subject */}
-          {letterData.subject && (
-            <div style={{ marginBottom: "1.5em" }}>
-              <strong>Re: {letterData.subject}</strong>
-            </div>
-          )}
-
-          {/* Body */}
-          {letterData.body && (
-            <div style={{ marginBottom: "1.5em", whiteSpace: "pre-wrap" }}>
-              {letterData.body}
-            </div>
-          )}
-
-          {/* Closing & Name */}
-          {(letterData.closing || letterData.senderName) && (
-            <div style={{ marginTop: "2em" }}>
-              {letterData.closing && <div>{letterData.closing},</div>}
-              {letterData.senderName && (
-                <div style={{ marginTop: "2em" }}>{letterData.senderName}</div>
-              )}
-            </div>
-          )}
-        </>
-      )}
+    <div ref={containerRef} className="w-full">
+      <div
+        style={{
+          transform: `scale(${scale})`,
+          transformOrigin: "top left",
+          width: "612px",
+          height: `${792 * scale}px`,
+        }}
+      >
+        {/* Outer wrapper at original height for parent container */}
+        <div style={{ width: "612px", height: "0px" }}>
+          <LetterPage settings={settings}>
+            {mode === "simple" && renderSimple()}
+            {mode === "custom" && renderCustom()}
+            {mode === "upload" && renderUpload()}
+          </LetterPage>
+        </div>
+      </div>
+      {/* Spacer to account for scaled height */}
+      <div style={{ height: `${792 * scale}px` }} />
     </div>
   );
 }

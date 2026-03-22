@@ -6,74 +6,61 @@
   --color-accent: #2563eb;
 }
 
-/* Letter page for preview */
-.letter-page {
-  aspect-ratio: 8.5 / 11;
-  padding: 8%;
+/* Scaled letter preview container */
+.preview-frame {
+  width: 612px; /* 8.5in at 72dpi */
+  height: 792px; /* 11in at 72dpi */
   background: white;
-  font-family: "Times New Roman", Times, serif;
-  font-size: 11px;
-  line-height: 1.6;
-  color: #000;
   overflow: hidden;
-}
-
-.letter-page.full-size {
-  width: 8.5in;
-  min-height: 11in;
-  font-size: 12pt;
-  padding: 1in;
-}
-
-.letter-page p {
-  margin-bottom: 0.4em;
+  transform-origin: top left;
 }
 
 /* TipTap editor */
 .tiptap {
   outline: none;
   min-height: 300px;
-  font-family: "Times New Roman", Times, serif;
-  font-size: 12pt;
   line-height: 1.6;
 }
 
 .tiptap p.is-editor-empty:first-child::before {
   content: attr(data-placeholder);
   float: left;
-  color: #adb5bd;
+  color: #c4c4c4;
   pointer-events: none;
   height: 0;
 }
 
 .tiptap p {
-  margin-bottom: 0.4em;
+  margin-bottom: 0.3em;
 }
 
 /* Clean input style */
 .input {
   width: 100%;
   border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  padding: 8px 12px;
+  border-radius: 10px;
+  padding: 9px 13px;
   font-size: 14px;
+  line-height: 1.5;
   transition: border-color 0.15s, box-shadow 0.15s;
   background: white;
+  color: #111;
 }
 
 .input:focus {
   outline: none;
-  border-color: #000;
-  box-shadow: 0 0 0 1px #000;
+  border-color: #a0a0a0;
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.04);
 }
 
 .input::placeholder {
-  color: #9ca3af;
+  color: #b0b0b0;
 }
 
 .input-sm {
-  padding: 6px 10px;
+  padding: 7px 11px;
   font-size: 13px;
+  border-radius: 8px;
 }
 
 select.input {
@@ -83,4 +70,23 @@ select.input {
   background-repeat: no-repeat;
   background-size: 16px;
   padding-right: 32px;
+}
+
+textarea.input {
+  border-radius: 10px;
+}
+
+/* Smooth scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
 }

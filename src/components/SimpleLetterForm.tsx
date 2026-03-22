@@ -1,6 +1,6 @@
 "use client";
 
-import { CalendarDays } from "lucide-react";
+import type { Language } from "./LetterSettings";
 
 export type SimpleLetterData = {
   date: string;
@@ -10,61 +10,70 @@ export type SimpleLetterData = {
   senderName: string;
 };
 
+const CLOSINGS_EN = ["Sincerely", "Best regards", "Kind regards", "Yours truly", "Respectfully", "Thank you"];
+const CLOSINGS_FR = ["Cordialement", "Bien à vous", "Sincères salutations", "Respectueusement", "Veuillez agréer"];
+
 export function SimpleLetterForm({
   data,
   onChange,
+  language,
 }: {
   data: SimpleLetterData;
   onChange: (d: SimpleLetterData) => void;
+  language: Language;
 }) {
   const set = (field: keyof SimpleLetterData, value: string) =>
     onChange({ ...data, [field]: value });
 
+  const closings = language === "fr" ? CLOSINGS_FR : CLOSINGS_EN;
+
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       {/* Date */}
-      <div className="relative">
-        <CalendarDays className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-        <input
-          type="date"
-          value={data.date}
-          onChange={(e) => set("date", e.target.value)}
-          className="input pl-9"
-        />
-      </div>
+      <input
+        type="date"
+        value={data.date}
+        onChange={(e) => set("date", e.target.value)}
+        className="input"
+      />
 
       {/* Subject */}
-      <div>
-        <input
-          placeholder="Subject (optional)"
-          value={data.subject}
-          onChange={(e) => set("subject", e.target.value)}
-          className="input"
-        />
-      </div>
+      <input
+        placeholder={language === "fr" ? "Objet (facultatif)" : "Subject (optional)"}
+        value={data.subject}
+        onChange={(e) => set("subject", e.target.value)}
+        className="input"
+      />
 
       {/* Body */}
-      <div>
-        <textarea
-          placeholder="Write your letter here..."
-          value={data.body}
-          onChange={(e) => set("body", e.target.value)}
-          rows={10}
-          className="input resize-none font-serif"
-          style={{ lineHeight: 1.7, fontSize: "15px" }}
-        />
-      </div>
+      <textarea
+        placeholder={
+          language === "fr"
+            ? "Rédigez votre lettre ici..."
+            : "Write your letter here..."
+        }
+        value={data.body}
+        onChange={(e) => set("body", e.target.value)}
+        rows={12}
+        className="input resize-none"
+        style={{ fontFamily: "serif", lineHeight: 1.7 }}
+      />
 
-      {/* Closing & Signature */}
+      {/* Closing & Name */}
       <div className="grid grid-cols-2 gap-3">
-        <input
-          placeholder="Closing (e.g. Sincerely)"
+        <select
           value={data.closing}
           onChange={(e) => set("closing", e.target.value)}
           className="input"
-        />
+        >
+          {closings.map((c) => (
+            <option key={c} value={c}>
+              {c}
+            </option>
+          ))}
+        </select>
         <input
-          placeholder="Your name"
+          placeholder={language === "fr" ? "Votre nom" : "Your name"}
           value={data.senderName}
           onChange={(e) => set("senderName", e.target.value)}
           className="input"

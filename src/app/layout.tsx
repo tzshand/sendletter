@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Geist } from "next/font/google";
 import "./globals.css";
 
-const inter = Inter({ subsets: ["latin"] });
+const geist = Geist({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "sendletter — Mail a letter online for $4.99",
@@ -16,10 +16,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${inter.className} h-full`}>
-      <body className="h-full bg-white text-gray-900 antialiased">
-        {children}
-      </body>
+    <html lang="en" className={`${geist.className} h-full`}>
+      <body className="h-full text-gray-900 antialiased">{children}</body>
     </html>
   );
 }
