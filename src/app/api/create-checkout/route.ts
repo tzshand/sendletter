@@ -80,8 +80,10 @@ export async function POST(req: Request) {
     return NextResponse.json({ url: session.url });
   } catch (error) {
     console.error("Stripe checkout error:", error);
+    const message =
+      error instanceof Error ? error.message : "Unknown error";
     return NextResponse.json(
-      { error: "Failed to create checkout session. Check Stripe API keys." },
+      { error: `Checkout failed: ${message}` },
       { status: 500 }
     );
   }
