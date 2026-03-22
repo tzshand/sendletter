@@ -104,62 +104,89 @@ export default function Home() {
   const contentRef = useRef<HTMLDivElement>(null);
   const addressRef = useRef<HTMLDivElement>(null);
 
-  // Persist form state to sessionStorage so back-from-checkout restores it
-  const STORAGE_KEY = "sendletter-draft";
+  // ── Persist form state via IndexedDB (handles large PDFs) ──
+  const DB_NAME = "sendletter";
+  const STORE = "draft";
+  const DB_KEY = "current";
 
-  const saveToSession = useCallback(() => {
+  const openDB = useCallback((): Promise<IDBDatabase> => {
+    return new Promise((resolve, reject) => {
+      const req = indexedDB.open(DB_NAME, 1);
+      req.onupgradeneeded = () => req.result.createObjectStore(STORE);
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error);
+    });
+  }, []);
+
+  const saveDraft = useCallback(async () => {
     try {
-      sessionStorage.setItem(
-        STORAGE_KEY,
-        JSON.stringify({ mode, letterSize, settings, letterData, htmlContent, fileName, from, to })
+      const db = await openDB();
+      const tx = db.transaction(STORE, "readwrite");
+      tx.objectStore(STORE).put(
+        { mode, letterSize, settings, letterData, htmlContent, fileName, from, to },
+        DB_KEY
       );
-    } catch { /* quota exceeded — ignore */ }
-  }, [mode, letterSize, settings, letterData, htmlContent, fileName, from, to]);
+      db.close();
+    } catch { /* storage error — ignore */ }
+  }, [mode, letterSize, settings, letterData, htmlContent, fileName, from, to, openDB]);
 
-  // Save on every meaningful change
-  useEffect(() => {
-    saveToSession();
-  }, [saveToSession]);
+  useEffect(() => { saveDraft(); }, [saveDraft]);
 
-  // Restore from sessionStorage on mount (back from Stripe, page reload, etc.)
+  // Restore on mount (back from Stripe, refresh, etc.)
   useEffect(() => {
-    try {
-      const saved = sessionStorage.getItem(STORAGE_KEY);
-      if (!saved) return;
-      const d = JSON.parse(saved);
-      if (d.mode) setMode(d.mode);
-      if (d.letterSize) setLetterSize(d.letterSize);
-      if (d.settings) setSettings(d.settings);
-      if (d.letterData) setLetterData(d.letterData);
-      if (d.htmlContent) setHtmlContent(d.htmlContent);
-      if (d.fileName) setFileName(d.fileName);
-      if (d.from) setFrom(d.from);
-      if (d.to) setTo(d.to);
-    } catch { /* corrupt data — ignore */ }
-    // Reset sending state in case user came back from checkout
-    setSending(false);
+    (async () => {
+      try {
+        const db = await openDB();
+        const tx = db.transaction(STORE, "readonly");
+        const req = tx.objectStore(STORE).get(DB_KEY);
+        req.onsuccess = () => {
+          const d = req.result;
+          if (!d) return;
+          if (d.mode) setMode(d.mode);
+          if (d.letterSize) setLetterSize(d.letterSize);
+          if (d.settings) setSettings(d.settings);
+          if (d.letterData) setLetterData(d.letterData);
+          if (d.htmlContent != null) setHtmlContent(d.htmlContent);
+          if (d.fileName != null) setFileName(d.fileName);
+          if (d.from) setFrom(d.from);
+          if (d.to) setTo(d.to);
+        };
+        db.close();
+      } catch { /* no data — ignore */ }
+      setSending(false);
+    })();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Preview overlay: use history so back button closes it instead of navigating away
+  // ── Preview overlay: history-managed so back closes it ──
+  const previewOpenRef = useRef(false);
+
   const openPreview = useCallback(() => {
+    if (!previewOpenRef.current) {
+      history.pushState({ preview: true }, "");
+      previewOpenRef.current = true;
+    }
     setMobilePreview(true);
-    history.pushState({ preview: true }, "");
   }, []);
 
   const closePreview = useCallback(() => {
-    setMobilePreview(false);
+    if (previewOpenRef.current) {
+      previewOpenRef.current = false;
+      history.back(); // pops the entry we pushed — popstate will set state
+    } else {
+      setMobilePreview(false);
+    }
   }, []);
 
   useEffect(() => {
     const onPopState = () => {
-      if (mobilePreview) {
-        // Back pressed while preview open — close it
+      if (previewOpenRef.current) {
+        previewOpenRef.current = false;
         setMobilePreview(false);
       }
     };
     window.addEventListener("popstate", onPopState);
     return () => window.removeEventListener("popstate", onPopState);
-  }, [mobilePreview]);
+  }, []);
 
   const isAddressValid = (a: Address) =>
     !!(a.name && a.line1 && a.city && a.province && a.postalCode);
