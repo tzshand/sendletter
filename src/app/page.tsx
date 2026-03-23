@@ -379,18 +379,9 @@ export default function Home() {
           </nav>
         </div>
 
-        <div className="flex items-center gap-3">
-          <button
-            onClick={openPreview}
-            className="lg:hidden flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-white/10 hover:bg-white/20 rounded-lg transition-colors"
-          >
-            <Eye className="w-3.5 h-3.5" />
-            {isFr ? "Aperçu" : "Preview"}
-          </button>
-          <span className="text-xs text-white/50 font-medium hidden sm:block">
-            {isFr ? "Sans timbres. Sans file. Sans stress." : "No stamps. No line. No hassle."}
-          </span>
-        </div>
+        <span className="text-xs text-white/50 font-medium">
+          {isFr ? "Sans timbres. Sans file. Sans stress." : "No stamps. No line. No hassle."}
+        </span>
       </header>
 
       {/* Settings bar */}
