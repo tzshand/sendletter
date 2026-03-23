@@ -5,6 +5,76 @@ import { useDropzone } from "react-dropzone";
 import { Upload, FileText, Loader2, X } from "lucide-react";
 import mammoth from "mammoth";
 
+/** Convert HTML from mammoth into a multi-page PDF, return base64 */
+async function htmlToPdf(html: string): Promise<{ base64: string; pages: number }> {
+  const [{ default: html2canvas }, { jsPDF }] = await Promise.all([
+    import("html2canvas"),
+    import("jspdf"),
+  ]);
+
+  const pageW = 612; // 8.5in at 72dpi
+  const pageH = 792; // 11in at 72dpi
+  const padding = 72; // 1in margins
+
+  // Render into a hidden container with no height constraint to measure total content
+  const measure = document.createElement("div");
+  measure.style.cssText = `
+    position: fixed; left: -9999px; top: 0;
+    width: ${pageW}px; background: #fff;
+    font-family: "Times New Roman", serif; font-size: 12pt;
+    line-height: 1.6; color: #000;
+    padding: ${padding}px;
+    box-sizing: border-box;
+  `;
+  measure.innerHTML = html;
+  document.body.appendChild(measure);
+
+  const totalH = measure.scrollHeight;
+  const contentH = pageH - padding * 2;
+  const pages = Math.max(1, Math.ceil(totalH / pageH));
+
+  document.body.removeChild(measure);
+
+  const doc = new jsPDF({ orientation: "portrait", unit: "in", format: [8.5, 11] });
+
+  for (let i = 0; i < pages; i++) {
+    if (i > 0) doc.addPage();
+
+    const container = document.createElement("div");
+    container.style.cssText = `
+      position: fixed; left: -9999px; top: 0;
+      width: ${pageW}px; height: ${pageH}px;
+      background: #fff; overflow: hidden;
+      font-family: "Times New Roman", serif; font-size: 12pt;
+      line-height: 1.6; color: #000;
+      padding: ${padding}px;
+      box-sizing: border-box;
+    `;
+    // Shift content up by page offset
+    const inner = document.createElement("div");
+    inner.style.cssText = `margin-top: -${i * contentH}px;`;
+    inner.innerHTML = html;
+    container.appendChild(inner);
+    document.body.appendChild(container);
+
+    const canvas = await html2canvas(container, {
+      width: pageW,
+      height: pageH,
+      scale: 3,
+      useCORS: true,
+      backgroundColor: "#ffffff",
+    });
+
+    document.body.removeChild(container);
+
+    const imgData = canvas.toDataURL("image/png");
+    doc.addImage(imgData, "PNG", 0, 0, 8.5, 11);
+  }
+
+  const output = doc.output("datauristring");
+  return { base64: output.split(",")[1], pages };
+}
+
 export function FileUpload({
   onContent,
   fileName,
@@ -52,27 +122,25 @@ export function FileUpload({
           file.name.endsWith(".docx")
         ) {
           const arrayBuffer = await file.arrayBuffer();
-          const result = await mammoth.convertToHtml(
-            { arrayBuffer },
-            {
-              styleMap: [
-                "p[style-name='heading 1'] => h1:fresh",
-                "p[style-name='heading 2'] => h2:fresh",
-                "br[type='page'] => hr",
-              ],
-            }
-          );
+          const result = await mammoth.convertToHtml({ arrayBuffer });
           if (result.value.length === 0) {
             setError("The document appears to be empty.");
+            setLoading(false);
           } else {
-            onContent(result.value, file.name);
-            // Count pages from page break markers
-            if (onPageCount) {
-              const breaks = (result.value.match(/<hr\s*\/?>/gi) || []).length;
-              onPageCount(breaks + 1);
+            // Convert HTML to PDF for accurate page breaks and preview
+            try {
+              const { base64, pages } = await htmlToPdf(result.value);
+              onContent(
+                `<div data-pdf="${base64}" data-filename="${file.name}"></div>`,
+                file.name
+              );
+              if (onPageCount) onPageCount(pages);
+            } catch {
+              // Fallback: use raw HTML if PDF conversion fails
+              onContent(result.value, file.name);
             }
+            setLoading(false);
           }
-          setLoading(false);
         } else {
           setError("Please upload a PDF or Word (.docx) file.");
           setLoading(false);

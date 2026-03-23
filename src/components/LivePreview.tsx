@@ -248,30 +248,10 @@ function LetterPageContent({
     if (pdfMatch) {
       return <PdfCanvasPreview base64={pdfMatch[1]} width={612} />;
     }
-    // Split docx HTML on page break markers (<hr>) into separate pages
-    const pages = htmlContent.split(/<hr\s*\/?>/i).filter((p) => p.trim());
-    if (pages.length <= 1) {
-      return (
-        <div style={pageStyle}>
-          <div dangerouslySetInnerHTML={{ __html: htmlContent }} />
-        </div>
-      );
-    }
     return (
-      <>
-        {pages.map((pageHtml, i) => (
-          <div key={i}>
-            {i > 0 && (
-              <div style={{ textAlign: "center", fontSize: "11px", color: "#999", fontWeight: 600, letterSpacing: "0.05em", textTransform: "uppercase" as const, padding: "16px 0 12px", fontFamily: "system-ui, sans-serif" }}>
-                Page {i + 1}
-              </div>
-            )}
-            <div style={pageStyle}>
-              <div dangerouslySetInnerHTML={{ __html: pageHtml }} />
-            </div>
-          </div>
-        ))}
-      </>
+      <div style={pageStyle}>
+        <div dangerouslySetInnerHTML={{ __html: htmlContent }} />
+      </div>
     );
   }
 
@@ -379,39 +359,11 @@ export function LetterPreviewScaled({
   settings: Settings;
   letterSize?: LetterSize;
 }) {
-  // PDF uploads: render with PdfCanvasPreview directly (no ScaledFrame to avoid flicker)
+  // PDF uploads (including docx converted to PDF): render with PdfCanvasPreview
   if (mode === "upload" && htmlContent) {
     const pdfMatch = htmlContent.match(/data-pdf="([^"]+)"/);
     if (pdfMatch) {
       return <PdfPagesScaled base64={pdfMatch[1]} />;
-    }
-
-    // Multi-page docx: split on <hr> and render each page in its own ScaledFrame
-    const pages = htmlContent.split(/<hr\s*\/?>/i).filter((p) => p.trim());
-    if (pages.length > 1) {
-      const pageH = letterSize === "legal" ? 1008 : 792;
-      return (
-        <>
-          {pages.map((pageHtml, i) => (
-            <div key={i}>
-              {i > 0 && (
-                <div className="text-center text-[11px] text-gray-400 font-semibold tracking-wider uppercase py-3">
-                  Page {i + 1}
-                </div>
-              )}
-              <ScaledFrame nativeWidth={612} nativeHeight={pageH}>
-                <LetterPageContent
-                  mode={mode}
-                  letterData={letterData}
-                  htmlContent={pageHtml}
-                  settings={settings}
-                  letterSize={letterSize}
-                />
-              </ScaledFrame>
-            </div>
-          ))}
-        </>
-      );
     }
   }
 
