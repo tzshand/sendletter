@@ -10,7 +10,7 @@ export const metadata: Metadata = {
     "Write or upload your letter, add addresses, and we'll print and mail it anywhere in Canada from $4.29.",
   metadataBase: new URL("https://sendletter.app"),
   icons: {
-    icon: "/favicon.png",
+    icon: "/favicon.svg",
   },
 };
 
