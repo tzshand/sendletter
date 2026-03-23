@@ -5,20 +5,14 @@ import { useDropzone } from "react-dropzone";
 import { Upload, FileText, Loader2, X } from "lucide-react";
 import mammoth from "mammoth";
 
-/** Convert HTML from mammoth into a multi-page PDF, return base64 */
-async function htmlToPdf(html: string): Promise<{ base64: string; pages: number }> {
-  const [{ default: html2canvas }, { jsPDF }] = await Promise.all([
-    import("html2canvas"),
-    import("jspdf"),
-  ]);
+/** Measure how many 8.5×11 pages the HTML content fills */
+function measurePages(html: string): number {
+  const pageW = 612;
+  const pageH = 792;
+  const padding = 72;
 
-  const pageW = 612; // 8.5in at 72dpi
-  const pageH = 792; // 11in at 72dpi
-  const padding = 72; // 1in margins
-
-  // Render into a hidden container with no height constraint to measure total content
-  const measure = document.createElement("div");
-  measure.style.cssText = `
+  const el = document.createElement("div");
+  el.style.cssText = `
     position: fixed; left: -9999px; top: 0;
     width: ${pageW}px; background: #fff;
     font-family: "Times New Roman", serif; font-size: 12pt;
@@ -26,64 +20,24 @@ async function htmlToPdf(html: string): Promise<{ base64: string; pages: number 
     padding: ${padding}px;
     box-sizing: border-box;
   `;
-  measure.innerHTML = html;
-  document.body.appendChild(measure);
-
-  const totalH = measure.scrollHeight;
-  const contentH = pageH - padding * 2;
-  const pages = Math.max(1, Math.ceil(totalH / pageH));
-
-  document.body.removeChild(measure);
-
-  const doc = new jsPDF({ orientation: "portrait", unit: "in", format: [8.5, 11] });
-
-  for (let i = 0; i < pages; i++) {
-    if (i > 0) doc.addPage();
-
-    const container = document.createElement("div");
-    container.style.cssText = `
-      position: fixed; left: -9999px; top: 0;
-      width: ${pageW}px; height: ${pageH}px;
-      background: #fff; overflow: hidden;
-      font-family: "Times New Roman", serif; font-size: 12pt;
-      line-height: 1.6; color: #000;
-      padding: ${padding}px;
-      box-sizing: border-box;
-    `;
-    // Shift content up by page offset
-    const inner = document.createElement("div");
-    inner.style.cssText = `margin-top: -${i * contentH}px;`;
-    inner.innerHTML = html;
-    container.appendChild(inner);
-    document.body.appendChild(container);
-
-    const canvas = await html2canvas(container, {
-      width: pageW,
-      height: pageH,
-      scale: 3,
-      useCORS: true,
-      backgroundColor: "#ffffff",
-    });
-
-    document.body.removeChild(container);
-
-    const imgData = canvas.toDataURL("image/png");
-    doc.addImage(imgData, "PNG", 0, 0, 8.5, 11);
-  }
-
-  const output = doc.output("datauristring");
-  return { base64: output.split(",")[1], pages };
+  el.innerHTML = html;
+  document.body.appendChild(el);
+  const pages = Math.max(1, Math.ceil(el.scrollHeight / pageH));
+  document.body.removeChild(el);
+  return pages;
 }
 
 export function FileUpload({
   onContent,
   fileName,
   onPageCount,
+  onOriginalFile,
   language = "en",
 }: {
   onContent: (html: string, name: string) => void;
   fileName: string;
   onPageCount?: (count: number) => void;
+  onOriginalFile?: (file: { base64: string; name: string; type: string } | null) => void;
   language?: "en" | "fr";
 }) {
   const [loading, setLoading] = useState(false);
@@ -127,18 +81,17 @@ export function FileUpload({
             setError("The document appears to be empty.");
             setLoading(false);
           } else {
-            // Convert HTML to PDF for accurate page breaks and preview
-            try {
-              const { base64, pages } = await htmlToPdf(result.value);
-              onContent(
-                `<div data-pdf="${base64}" data-filename="${file.name}"></div>`,
-                file.name
-              );
-              if (onPageCount) onPageCount(pages);
-            } catch {
-              // Fallback: use raw HTML if PDF conversion fails
-              onContent(result.value, file.name);
+            // Store original docx as base64 for sending at checkout
+            if (onOriginalFile) {
+              const bytes = new Uint8Array(arrayBuffer);
+              let binary = "";
+              for (let i = 0; i < bytes.length; i++) {
+                binary += String.fromCharCode(bytes[i]);
+              }
+              onOriginalFile({ base64: btoa(binary), name: file.name, type: file.type });
             }
+            onContent(result.value, file.name);
+            if (onPageCount) onPageCount(measurePages(result.value));
             setLoading(false);
           }
         } else {

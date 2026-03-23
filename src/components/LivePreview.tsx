@@ -359,12 +359,14 @@ export function LetterPreviewScaled({
   settings: Settings;
   letterSize?: LetterSize;
 }) {
-  // PDF uploads (including docx converted to PDF): render with PdfCanvasPreview
+  // PDF uploads: render with PdfCanvasPreview
   if (mode === "upload" && htmlContent) {
     const pdfMatch = htmlContent.match(/data-pdf="([^"]+)"/);
     if (pdfMatch) {
       return <PdfPagesScaled base64={pdfMatch[1]} />;
     }
+    // Docx HTML: multi-page CSS-clipped preview
+    return <HtmlPagesScaled html={htmlContent} settings={settings} />;
   }
 
   const pageH = letterSize === "legal" ? 1008 : 792;
@@ -378,6 +380,63 @@ export function LetterPreviewScaled({
         letterSize={letterSize}
       />
     </ScaledFrame>
+  );
+}
+
+/** Renders docx HTML as multiple CSS-clipped pages scaled to container width */
+function HtmlPagesScaled({ html, settings }: { html: string; settings: Settings }) {
+  const [pageCount, setPageCount] = useState(1);
+  const pageH = 792;
+
+  useEffect(() => {
+    const el = document.createElement("div");
+    el.style.cssText = `
+      position: fixed; left: -9999px; top: 0;
+      width: 612px; padding: 72px;
+      font-family: "${settings.fontFamily}", serif;
+      font-size: ${settings.fontSize}pt;
+      line-height: 1.5; color: #000;
+      box-sizing: border-box;
+    `;
+    el.innerHTML = html;
+    document.body.appendChild(el);
+    setPageCount(Math.max(1, Math.ceil(el.scrollHeight / pageH)));
+    document.body.removeChild(el);
+  }, [html, settings.fontFamily, settings.fontSize]);
+
+  return (
+    <div className="flex flex-col gap-4">
+      {Array.from({ length: pageCount }, (_, i) => (
+        <ScaledFrame key={i} nativeWidth={612} nativeHeight={pageH}>
+          <div
+            style={{
+              width: 612,
+              height: pageH,
+              overflow: "hidden",
+              background: "#fff",
+              position: "relative",
+            }}
+          >
+            <div
+              style={{
+                position: "absolute",
+                top: -i * pageH,
+                left: 0,
+                width: 612,
+                padding: 72,
+                fontFamily: `"${settings.fontFamily}", serif`,
+                fontSize: `${settings.fontSize}pt`,
+                lineHeight: 1.5,
+                color: "#000",
+                boxSizing: "border-box" as const,
+              }}
+            >
+              <div dangerouslySetInnerHTML={{ __html: html }} />
+            </div>
+          </div>
+        </ScaledFrame>
+      ))}
+    </div>
   );
 }
 

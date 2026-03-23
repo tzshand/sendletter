@@ -30,6 +30,7 @@ export default function SuccessPage() {
         let htmlContent: string | undefined;
         let letterData: Record<string, unknown> | undefined;
         let letterMode: string | undefined;
+        let originalFile: { base64: string; name: string; type: string } | undefined;
         try {
           const db = await new Promise<IDBDatabase>((resolve, reject) => {
             const req = indexedDB.open("sendletter", 1);
@@ -48,14 +49,18 @@ export default function SuccessPage() {
           if (draft) {
             letterMode = draft.mode as string | undefined;
             if (draft.letterData) letterData = draft.letterData as Record<string, unknown>;
-            // Prefer the generated print-quality PDF
+            // Upload mode: prefer original file (docx/pdf as uploaded)
+            if (draft.originalFile) {
+              originalFile = draft.originalFile as { base64: string; name: string; type: string };
+            }
+            // Prefer the generated print-quality PDF (simple/custom modes)
             if (draft.generatedPdf && typeof draft.generatedPdf === "string") {
               pdfBase64 = draft.generatedPdf;
             } else if (draft.htmlContent && typeof draft.htmlContent === "string") {
               const match = draft.htmlContent.match(/data-pdf="([^"]+)"/);
               if (match) {
                 pdfBase64 = match[1];
-              } else {
+              } else if (!originalFile) {
                 htmlContent = draft.htmlContent;
               }
             }
@@ -69,9 +74,10 @@ export default function SuccessPage() {
           body: JSON.stringify({
             sessionId,
             pdfBase64,
-            htmlContent: letterMode !== "simple" && !pdfBase64 ? htmlContent : undefined,
+            htmlContent: letterMode !== "simple" && !pdfBase64 && !originalFile ? htmlContent : undefined,
             letterData: letterMode === "simple" && !pdfBase64 ? letterData : undefined,
             letterMode,
+            originalFile,
           }),
         });
 

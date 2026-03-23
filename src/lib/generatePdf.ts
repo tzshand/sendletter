@@ -22,10 +22,12 @@ export async function generateLetterPdf({
   settings: Settings;
   letterSize?: LetterSize;
 }): Promise<string | null> {
-  // Upload mode: PDF already exists
+  // Upload mode: return existing PDF, or generate from docx HTML
   if (mode === "upload") {
     const match = htmlContent.match(/data-pdf="([^"]+)"/);
-    return match ? match[1] : null;
+    if (match) return match[1];
+    if (htmlContent) return await generateDocxHtmlPdf(htmlContent, settings, letterSize);
+    return null;
   }
 
   try {
@@ -224,6 +226,89 @@ async function generateCustomLetterPdf(
   // Use PNG for better quality (no JPEG artifacts on text)
   const imgData = canvas.toDataURL("image/png");
   doc.addImage(imgData, "PNG", 0, 0, pdfW, pdfH);
+
+  const output = doc.output("datauristring");
+  return output.split(",")[1];
+}
+
+// ── Docx HTML: Multi-page rasterized capture ──
+
+async function generateDocxHtmlPdf(
+  htmlContent: string,
+  settings: Settings,
+  letterSize: LetterSize,
+): Promise<string> {
+  const [{ default: html2canvas }, { jsPDF }] = await Promise.all([
+    import("html2canvas"),
+    import("jspdf"),
+  ]);
+
+  const pageW = 612;
+  const pageH = letterSize === "legal" ? 1008 : 792;
+  const padding = 72;
+
+  // Measure total content height
+  const measureDiv = document.createElement("div");
+  measureDiv.style.cssText = `
+    position: fixed; left: -9999px; top: 0;
+    width: ${pageW}px; padding: ${padding}px;
+    font-family: "${settings.fontFamily}", serif;
+    font-size: ${settings.fontSize}pt;
+    line-height: 1.5; color: #000;
+    background: #fff; box-sizing: border-box;
+  `;
+  measureDiv.innerHTML = htmlContent;
+  document.body.appendChild(measureDiv);
+  const totalHeight = measureDiv.scrollHeight;
+  document.body.removeChild(measureDiv);
+
+  const numPages = Math.max(1, Math.ceil(totalHeight / pageH));
+  const isLegal = letterSize === "legal";
+  const pdfW = 8.5;
+  const pdfH = isLegal ? 14 : 11;
+
+  const doc = new jsPDF({
+    orientation: "portrait",
+    unit: "in",
+    format: [pdfW, pdfH],
+  });
+
+  for (let i = 0; i < numPages; i++) {
+    if (i > 0) doc.addPage([pdfW, pdfH]);
+
+    // Create a clipped window for this page
+    const wrapper = document.createElement("div");
+    wrapper.style.cssText = `
+      position: fixed; left: -9999px; top: 0;
+      width: ${pageW}px; height: ${pageH}px;
+      overflow: hidden; background: #fff;
+    `;
+    const inner = document.createElement("div");
+    inner.style.cssText = `
+      position: absolute;
+      top: ${-i * pageH}px; left: 0;
+      width: ${pageW}px; padding: ${padding}px;
+      font-family: "${settings.fontFamily}", serif;
+      font-size: ${settings.fontSize}pt;
+      line-height: 1.5; color: #000;
+      box-sizing: border-box;
+    `;
+    inner.innerHTML = htmlContent;
+    wrapper.appendChild(inner);
+    document.body.appendChild(wrapper);
+
+    const canvas = await html2canvas(wrapper, {
+      width: pageW,
+      height: pageH,
+      scale: 3,
+      useCORS: true,
+      backgroundColor: "#ffffff",
+    });
+
+    document.body.removeChild(wrapper);
+    const imgData = canvas.toDataURL("image/png");
+    doc.addImage(imgData, "PNG", 0, 0, pdfW, pdfH);
+  }
 
   const output = doc.output("datauristring");
   return output.split(",")[1];

@@ -77,6 +77,7 @@ export default function Home() {
 
   const [htmlContent, setHtmlContent] = useState("");
   const [fileName, setFileName] = useState("");
+  const [originalFile, setOriginalFile] = useState<{ base64: string; name: string; type: string } | null>(null);
 
   const [from, setFrom] = useState<Address>(emptyAddress);
   const [to, setTo] = useState<Address>(emptyAddress);
@@ -110,12 +111,12 @@ export default function Home() {
       const db = await openDB();
       const tx = db.transaction(STORE, "readwrite");
       tx.objectStore(STORE).put(
-        { mode, letterSize, settings, letterData, htmlContent, fileName, from, to },
+        { mode, letterSize, settings, letterData, htmlContent, fileName, from, to, originalFile },
         DB_KEY
       );
       db.close();
     } catch { /* storage error — ignore */ }
-  }, [mode, letterSize, settings, letterData, htmlContent, fileName, from, to, openDB]);
+  }, [mode, letterSize, settings, letterData, htmlContent, fileName, from, to, originalFile, openDB]);
 
   useEffect(() => { saveDraft(); }, [saveDraft]);
 
@@ -137,6 +138,7 @@ export default function Home() {
           if (d.fileName != null) setFileName(d.fileName);
           if (d.from) setFrom(d.from);
           if (d.to) setTo(d.to);
+          if (d.originalFile) setOriginalFile(d.originalFile);
         };
         db.close();
       } catch { /* no data — ignore */ }
@@ -220,7 +222,7 @@ export default function Home() {
 
     setSending(true);
     try {
-      // Generate print-quality PDF before checkout
+      // Generate print-quality PDF for all modes
       let generatedPdf: string | null = null;
       try {
         const { generateLetterPdf } = await import("@/lib/generatePdf");
@@ -231,7 +233,6 @@ export default function Home() {
           settings,
           letterSize,
         });
-        // Store PDF in IndexedDB so success page can send it
         if (generatedPdf) {
           try {
             const db = await openDB();
@@ -381,8 +382,7 @@ export default function Home() {
         </div>
 
         <span className="text-xs text-white/50 font-medium">
-          {isFr ? "Propulsé par " : "Powered by "}
-          <a href="https://iaminter.net" target="_blank" rel="noopener noreferrer" className="underline hover:text-white/70 transition-colors">iaminternet</a>
+          {isFr ? "Basé à Montréal" : "Based in Montreal"}
         </span>
       </header>
 
@@ -432,6 +432,7 @@ export default function Home() {
                     setFileName(name);
                     if (!html) {
                       setPageCount(1);
+                      setOriginalFile(null);
                     }
                   }}
                   fileName={fileName}
@@ -441,6 +442,7 @@ export default function Home() {
                       setLetterSize("large");
                     }
                   }}
+                  onOriginalFile={setOriginalFile}
                   language={settings.language}
                 />
               )}

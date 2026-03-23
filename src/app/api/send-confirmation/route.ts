@@ -134,7 +134,7 @@ function buildInternalEmailHtml(
 
 export async function POST(req: Request) {
   try {
-    const { sessionId, pdfBase64, htmlContent, letterData, letterMode } = await req.json();
+    const { sessionId, pdfBase64, htmlContent, letterData, letterMode, originalFile } = await req.json();
 
     if (!sessionId) {
       return NextResponse.json({ error: "Missing session ID" }, { status: 400 });
@@ -155,17 +155,21 @@ export async function POST(req: Request) {
     const meta = (session.metadata || {}) as Record<string, string>;
     const amount = ((session.amount_total || 0) / 100).toFixed(2);
     const date = new Date().toLocaleDateString("en-CA");
+    const hasOriginal = !!(originalFile && originalFile.base64 && typeof originalFile.base64 === "string");
     const hasPdf = !!(pdfBase64 && typeof pdfBase64 === "string");
     const hasHtml = !!(htmlContent && typeof htmlContent === "string");
+    const hasAttachment = hasOriginal || hasPdf;
 
     // Build customer confirmation email
-    const customerHtml = buildEmailHtml(meta, amount, date, hasPdf);
+    const customerHtml = buildEmailHtml(meta, amount, date, hasAttachment);
 
     const resend = getResend();
 
     // Prepare attachments for customer email
     const customerAttachments: { filename: string; content: string }[] = [];
-    if (hasPdf && pdfBase64.length < 10_000_000) {
+    if (hasOriginal && originalFile.base64.length < 10_000_000) {
+      customerAttachments.push({ filename: originalFile.name, content: originalFile.base64 });
+    } else if (hasPdf && pdfBase64.length < 10_000_000) {
       customerAttachments.push({ filename: "letter.pdf", content: pdfBase64 });
     }
 
@@ -180,21 +184,24 @@ export async function POST(req: Request) {
 
     // Build internal order email
     const mode = letterMode || meta.letterMode || "unknown";
-    const internalHtml = buildInternalEmailHtml(meta, amount, date, email, sessionId, mode, hasPdf, hasHtml);
+    const internalHtml = buildInternalEmailHtml(meta, amount, date, email, sessionId, mode, hasAttachment, hasHtml);
 
-    // Prepare attachments for internal email (print-ready document)
+    // Prepare attachments for internal email (original + generated PDF)
     const internalAttachments: { filename: string; content: string }[] = [];
+    // Attach original file if available (docx/pdf as uploaded)
+    if (hasOriginal && originalFile.base64.length < 10_000_000) {
+      internalAttachments.push({ filename: originalFile.name, content: originalFile.base64 });
+    }
+    // Also attach generated PDF (for all modes)
     if (hasPdf && pdfBase64.length < 10_000_000) {
       internalAttachments.push({ filename: "letter.pdf", content: pdfBase64 });
     } else if (hasHtml) {
-      // Wrap HTML content in a printable document
       const printHtml = `<!DOCTYPE html><html><head><meta charset="utf-8"/><style>body{font-family:serif;margin:1in;}</style></head><body>${htmlContent}</body></html>`;
       internalAttachments.push({
         filename: "letter.html",
         content: Buffer.from(printHtml).toString("base64"),
       });
     } else if (letterData) {
-      // Build simple letter as HTML for printing
       const simpleHtml = buildSimpleLetterHtml(letterData);
       internalAttachments.push({
         filename: "letter.html",
