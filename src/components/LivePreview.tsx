@@ -358,6 +358,14 @@ export function LetterPreviewScaled({
   settings: Settings;
   letterSize?: LetterSize;
 }) {
+  // PDF uploads: render with PdfCanvasPreview directly (no ScaledFrame to avoid flicker)
+  if (mode === "upload" && htmlContent) {
+    const pdfMatch = htmlContent.match(/data-pdf="([^"]+)"/);
+    if (pdfMatch) {
+      return <PdfPagesScaled base64={pdfMatch[1]} />;
+    }
+  }
+
   const pageH = letterSize === "legal" ? 1008 : 792;
   return (
     <ScaledFrame nativeWidth={612} nativeHeight={pageH}>
@@ -369,5 +377,35 @@ export function LetterPreviewScaled({
         letterSize={letterSize}
       />
     </ScaledFrame>
+  );
+}
+
+/** Renders all PDF pages scaled to fill the container width */
+function PdfPagesScaled({ base64 }: { base64: string }) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [width, setWidth] = useState(0);
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const update = () => {
+      const w = el.getBoundingClientRect().width;
+      if (w > 0) setWidth(w);
+    };
+    update();
+    const obs = new ResizeObserver(update);
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+
+  // Assuming letter-size aspect ratio for height calc
+  const pageH = width > 0 ? width * (792 / 612) : 0;
+
+  return (
+    <div ref={containerRef} className="w-full">
+      {width > 0 && (
+        <PdfCanvasPreview base64={base64} width={width} height={pageH} />
+      )}
+    </div>
   );
 }

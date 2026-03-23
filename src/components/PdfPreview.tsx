@@ -2,6 +2,11 @@
 
 import { useEffect, useRef, useState } from "react";
 
+/**
+ * Renders all pages of a PDF to stacked canvases.
+ * Each canvas renders at 2x the target display width for sharpness.
+ * Width/height props define the CSS display size of each page.
+ */
 export function PdfCanvasPreview({
   base64,
   width,
@@ -11,16 +16,19 @@ export function PdfCanvasPreview({
   width: number;
   height: number;
 }) {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(true);
+  const renderedRef = useRef(false);
 
   useEffect(() => {
+    // Only render once per base64 to prevent flicker loops
+    if (renderedRef.current) return;
     let cancelled = false;
 
     async function render() {
-      const canvas = canvasRef.current;
-      if (!canvas) return;
+      const container = containerRef.current;
+      if (!container) return;
 
       try {
         const pdfjsLib = await import("pdfjs-dist");
@@ -30,23 +38,40 @@ export function PdfCanvasPreview({
         const pdf = await pdfjsLib.getDocument({ data }).promise;
         if (cancelled) return;
 
-        const page = await pdf.getPage(1);
-        if (cancelled) return;
+        // Clear previous canvases
+        container.innerHTML = "";
 
-        // Render at 2x for sharpness
-        const scale = 2;
-        const viewport = page.getViewport({ scale });
+        for (let i = 1; i <= pdf.numPages; i++) {
+          const page = await pdf.getPage(i);
+          if (cancelled) return;
 
-        canvas.width = viewport.width;
-        canvas.height = viewport.height;
-        canvas.style.width = `${width}px`;
-        canvas.style.height = `${height}px`;
+          const scale = 2;
+          const viewport = page.getViewport({ scale });
 
-        const ctx = canvas.getContext("2d");
-        if (!ctx) return;
+          const canvas = document.createElement("canvas");
+          canvas.width = viewport.width;
+          canvas.height = viewport.height;
+          canvas.style.width = `${width}px`;
+          canvas.style.height = `${height}px`;
+          canvas.style.display = "block";
+          canvas.style.background = "#fff";
 
-        await page.render({ canvasContext: ctx, viewport, canvas }).promise;
-        if (!cancelled) setLoading(false);
+          if (i > 1) {
+            canvas.style.marginTop = "12px";
+          }
+
+          container.appendChild(canvas);
+
+          const ctx = canvas.getContext("2d");
+          if (!ctx) continue;
+
+          await page.render({ canvasContext: ctx, viewport, canvas }).promise;
+        }
+
+        if (!cancelled) {
+          renderedRef.current = true;
+          setLoading(false);
+        }
       } catch {
         if (!cancelled) {
           setError(true);
@@ -79,12 +104,12 @@ export function PdfCanvasPreview({
   }
 
   return (
-    <div style={{ width, height, background: "#fff", position: "relative" }}>
+    <div style={{ width, background: "#fff", position: "relative" }}>
       {loading && (
         <div
           style={{
-            position: "absolute",
-            inset: 0,
+            width,
+            height,
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -93,10 +118,7 @@ export function PdfCanvasPreview({
           <p style={{ color: "#bbb", fontSize: 11 }}>Rendering PDF...</p>
         </div>
       )}
-      <canvas
-        ref={canvasRef}
-        style={{ width, height, background: "#fff", display: "block" }}
-      />
+      <div ref={containerRef} />
     </div>
   );
 }
