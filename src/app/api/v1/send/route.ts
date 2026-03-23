@@ -11,22 +11,29 @@ type Address = {
   line1: string;
   line2?: string;
   city: string;
-  province: string;
-  postal_code: string;
+  province?: string;
+  postal_code?: string;
+  country?: string;
 };
 
 function validateAddress(addr: unknown, label: string): Address {
   const a = addr as Record<string, unknown>;
-  if (!a?.name || !a?.line1 || !a?.city || !a?.province || !a?.postal_code) {
-    throw new ApiInputError(`Missing required fields in ${label} address`);
+  if (!a?.name || !a?.line1 || !a?.city) {
+    throw new ApiInputError(`Missing required fields in ${label} address (name, line1, city are required)`);
+  }
+  const country = a.country ? String(a.country) : "CA";
+  // Require province and postal_code for CA and US
+  if ((country === "CA" || country === "US") && (!a.province || !a.postal_code)) {
+    throw new ApiInputError(`province and postal_code are required for ${country} addresses in ${label}`);
   }
   return {
     name: String(a.name),
     line1: String(a.line1),
     line2: a.line2 ? String(a.line2) : undefined,
     city: String(a.city),
-    province: String(a.province),
-    postal_code: String(a.postal_code),
+    province: a.province ? String(a.province) : undefined,
+    postal_code: a.postal_code ? String(a.postal_code) : undefined,
+    country,
   };
 }
 
@@ -204,14 +211,16 @@ export async function POST(req: Request) {
         from_line1: fromAddr.line1,
         from_line2: fromAddr.line2 || null,
         from_city: fromAddr.city,
-        from_province: fromAddr.province,
-        from_postal: fromAddr.postal_code,
+        from_province: fromAddr.province || "",
+        from_postal: fromAddr.postal_code || "",
+        from_country: fromAddr.country || "CA",
         to_name: toAddr.name,
         to_line1: toAddr.line1,
         to_line2: toAddr.line2 || null,
         to_city: toAddr.city,
-        to_province: toAddr.province,
-        to_postal: toAddr.postal_code,
+        to_province: toAddr.province || "",
+        to_postal: toAddr.postal_code || "",
+        to_country: toAddr.country || "CA",
         has_pdf_attachment: hasPdf,
         letter_html: letterHtml || null,
         api_account_id: accountId,
@@ -265,8 +274,8 @@ export async function POST(req: Request) {
 <p><strong>Mode:</strong> ${mode}</p>
 <p><strong>Size:</strong> ${letter_size}</p>
 <p><strong>Amount:</strong> $${(amountCents / 100).toFixed(2)} CAD</p>
-<p><strong>From:</strong> ${fromAddr.name}, ${fromAddr.line1}, ${fromAddr.city} ${fromAddr.province} ${fromAddr.postal_code}</p>
-<p><strong>To:</strong> ${toAddr.name}, ${toAddr.line1}, ${toAddr.city} ${toAddr.province} ${toAddr.postal_code}</p>`,
+<p><strong>From:</strong> ${fromAddr.name}, ${fromAddr.line1}, ${fromAddr.city} ${fromAddr.province || ""} ${fromAddr.postal_code || ""} ${fromAddr.country || "CA"}</p>
+<p><strong>To:</strong> ${toAddr.name}, ${toAddr.line1}, ${toAddr.city} ${toAddr.province || ""} ${toAddr.postal_code || ""} ${toAddr.country || "CA"}</p>`,
           attachments: attachments.length > 0 ? attachments : undefined,
         });
       }

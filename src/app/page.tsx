@@ -47,6 +47,7 @@ const emptyAddress: Address = {
   city: "",
   province: "",
   postalCode: "",
+  country: "CA",
 };
 
 export default function Home() {
@@ -188,8 +189,13 @@ export default function Home() {
     return () => window.removeEventListener("popstate", onPopState);
   }, []);
 
-  const isAddressValid = (a: Address) =>
-    !!(a.name && a.line1 && a.city && a.province && a.postalCode);
+  const isAddressValid = (a: Address) => {
+    const base = !!(a.name && a.line1 && a.city);
+    if (a.country === "CA" || a.country === "US") {
+      return base && !!a.province && !!a.postalCode;
+    }
+    return base;
+  };
 
   const hasContent =
     mode === "simple" ? !!letterData.body.trim() : !!htmlContent;

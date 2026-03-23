@@ -14,18 +14,23 @@ const INTERNAL_EMAIL = "colinh.shand@gmail.com";
 
 const SIZE_LABELS = SIZE_LABELS_BILINGUAL;
 
-function formatAddress(name: string, line1: string, line2: string, city: string, province: string, postal: string): string {
+function formatAddress(name: string, line1: string, line2: string, city: string, province: string, postal: string, country?: string): string {
   const lines = [name, line1];
   if (line2) lines.push(line2);
-  lines.push(`${city}, ${province} ${postal}`);
+  const cityParts = [city, province].filter(Boolean).join(", ");
+  lines.push([cityParts, postal].filter(Boolean).join("  "));
+  if (country && country !== "CA") {
+    const NAMES: Record<string, string> = { US: "United States", GB: "United Kingdom", FR: "France", DE: "Germany", AU: "Australia" };
+    lines.push(NAMES[country] || country);
+  }
   return lines.join("<br/>");
 }
 
 function buildEmailHtml(meta: Record<string, string>, amount: string, date: string, pdfAttached: boolean): string {
   const size = SIZE_LABELS[meta.letterSize] || SIZE_LABELS.standard;
   const pages = meta.pageCount || "1";
-  const fromAddr = formatAddress(meta.fromName, meta.fromLine1, meta.fromLine2 || "", meta.fromCity, meta.fromProvince, meta.fromPostal);
-  const toAddr = formatAddress(meta.toName, meta.toLine1, meta.toLine2 || "", meta.toCity, meta.toProvince, meta.toPostal);
+  const fromAddr = formatAddress(meta.fromName, meta.fromLine1, meta.fromLine2 || "", meta.fromCity, meta.fromProvince, meta.fromPostal, meta.fromCountry);
+  const toAddr = formatAddress(meta.toName, meta.toLine1, meta.toLine2 || "", meta.toCity, meta.toProvince, meta.toPostal, meta.toCountry);
 
   return `<!DOCTYPE html>
 <html><head><meta charset="utf-8"/></head>
@@ -138,14 +143,14 @@ function buildInternalEmailHtml(
 <p style="font-size:13px;margin:0;line-height:1.6;">
   ${meta.fromName}<br/>
   ${meta.fromLine1}<br/>
-  ${meta.fromLine2 ? meta.fromLine2 + "<br/>" : ""}${meta.fromCity}, ${meta.fromProvince} ${meta.fromPostal}
+  ${meta.fromLine2 ? meta.fromLine2 + "<br/>" : ""}${meta.fromCity}, ${meta.fromProvince} ${meta.fromPostal}${meta.fromCountry && meta.fromCountry !== "CA" ? "<br/>" + meta.fromCountry : ""}
 </p>
 
 <h3 style="font-size:14px;margin:16px 0 8px;">To (Mailing Address)</h3>
 <p style="font-size:13px;margin:0;line-height:1.6;">
   ${meta.toName}<br/>
   ${meta.toLine1}<br/>
-  ${meta.toLine2 ? meta.toLine2 + "<br/>" : ""}${meta.toCity}, ${meta.toProvince} ${meta.toPostal}
+  ${meta.toLine2 ? meta.toLine2 + "<br/>" : ""}${meta.toCity}, ${meta.toProvince} ${meta.toPostal}${meta.toCountry && meta.toCountry !== "CA" ? "<br/>" + meta.toCountry : ""}
 </p>
 
 <div style="background:#f0f9f0;border-radius:8px;padding:12px 16px;font-size:12px;color:#666;margin:20px 0;">
@@ -261,11 +266,13 @@ export async function POST(req: Request) {
         from_city: meta.fromCity || "",
         from_province: meta.fromProvince || "",
         from_postal: meta.fromPostal || "",
+        from_country: meta.fromCountry || "CA",
         to_name: meta.toName || "",
         to_line1: meta.toLine1 || "",
         to_city: meta.toCity || "",
         to_province: meta.toProvince || "",
         to_postal: meta.toPostal || "",
+        to_country: meta.toCountry || "CA",
         has_pdf_attachment: hasPdf,
         letter_html: hasHtml ? htmlContent : letterData ? buildSimpleLetterHtml(letterData, meta.letterSize || "standard") : undefined,
       };

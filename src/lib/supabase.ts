@@ -21,12 +21,14 @@ export type OrderInsert = {
   from_city: string;
   from_province: string;
   from_postal: string;
+  from_country?: string | null;
   to_name: string;
   to_line1: string;
   to_line2?: string | null;
   to_city: string;
   to_province: string;
   to_postal: string;
+  to_country?: string | null;
   has_pdf_attachment: boolean;
   letter_html?: string | null;
   api_account_id?: string | null;

@@ -80,12 +80,14 @@ export async function POST(req: Request) {
         fromCity: from.city,
         fromProvince: from.province,
         fromPostal: from.postalCode,
+        fromCountry: from.country || "CA",
         toName: to.name,
         toLine1: to.line1,
         toLine2: to.line2 || "",
         toCity: to.city,
         toProvince: to.province,
         toPostal: to.postalCode,
+        toCountry: to.country || "CA",
       },
     });
 

@@ -17,6 +17,11 @@ function formatDate(dateStr: string, language: string): string {
   });
 }
 
+const COUNTRY_NAMES: Record<string, string> = {
+  CA: "Canada", US: "United States", GB: "United Kingdom", FR: "France",
+  DE: "Germany", AU: "Australia",
+};
+
 function formatAddressLines(a: Address): string[] {
   const lines: string[] = [];
   if (a.name) lines.push(a.name);
@@ -25,6 +30,9 @@ function formatAddressLines(a: Address): string[] {
   const cityLine = [a.city, a.province].filter(Boolean).join(", ");
   if (cityLine || a.postalCode) {
     lines.push([cityLine, a.postalCode].filter(Boolean).join("  "));
+  }
+  if (a.country && a.country !== "CA") {
+    lines.push(COUNTRY_NAMES[a.country] || a.country);
   }
   return lines;
 }
