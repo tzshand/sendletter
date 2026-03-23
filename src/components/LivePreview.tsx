@@ -400,7 +400,7 @@ function HtmlPagesScaled({ html, settings }: { html: string; settings: Settings 
     `;
     el.innerHTML = html;
     document.body.appendChild(el);
-    setPageCount(Math.max(1, Math.ceil(el.scrollHeight / pageH)));
+    setPageCount(Math.min(15, Math.max(1, Math.ceil(el.scrollHeight / pageH))));
     document.body.removeChild(el);
   }, [html, settings.fontFamily, settings.fontSize]);
 

@@ -128,14 +128,14 @@ const jsonLd = [
           name: "Letter (flat)",
           price: "9.28",
           priceCurrency: "CAD",
-          description: "8.5×11 letter, mailed flat in a 9×12 envelope. Up to 10 pages.",
+          description: "8.5×11 letter, mailed flat in a 9×12 envelope. Up to 15 pages.",
         },
         {
           "@type": "Offer",
           name: "Legal (flat)",
           price: "9.28",
           priceCurrency: "CAD",
-          description: "8.5×14 legal, mailed flat in a 10×15 envelope. Up to 10 pages.",
+          description: "8.5×14 legal, mailed flat in a 10×15 envelope. Up to 15 pages.",
         },
       ],
     },
@@ -211,7 +211,7 @@ const jsonLd = [
         name: "What file formats can I upload?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "You can upload PDF files or Word documents (.docx), up to 10 pages and 10 MB.",
+          text: "You can upload PDF files or Word documents (.docx), up to 15 pages and 10 MB.",
         },
       },
       {
@@ -219,7 +219,7 @@ const jsonLd = [
         name: "Quels formats de fichier puis-je télécharger?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "Vous pouvez télécharger des fichiers PDF ou des documents Word (.docx), jusqu'à 10 pages et 10 Mo.",
+          text: "Vous pouvez télécharger des fichiers PDF ou des documents Word (.docx), jusqu'à 15 pages et 10 Mo.",
         },
       },
       {

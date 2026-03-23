@@ -262,7 +262,7 @@ async function generateDocxHtmlPdf(
   const totalHeight = measureDiv.scrollHeight;
   document.body.removeChild(measureDiv);
 
-  const numPages = Math.max(1, Math.ceil(totalHeight / pageH));
+  const numPages = Math.min(15, Math.max(1, Math.ceil(totalHeight / pageH)));
   const isLegal = letterSize === "legal";
   const pdfW = 8.5;
   const pdfH = isLegal ? 14 : 11;

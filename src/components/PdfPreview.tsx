@@ -10,9 +10,11 @@ import { useEffect, useRef, useState } from "react";
 export function PdfCanvasPreview({
   base64,
   width,
+  maxPages = 15,
 }: {
   base64: string;
   width: number;
+  maxPages?: number;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [error, setError] = useState(false);
@@ -37,7 +39,8 @@ export function PdfCanvasPreview({
 
         container.innerHTML = "";
 
-        for (let i = 1; i <= pdf.numPages; i++) {
+        const pageLimit = Math.min(pdf.numPages, maxPages);
+        for (let i = 1; i <= pageLimit; i++) {
           const page = await pdf.getPage(i);
           if (cancelled) return;
 

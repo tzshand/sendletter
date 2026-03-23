@@ -40,13 +40,16 @@ export function FileUpload({
   onOriginalFile?: (file: { base64: string; name: string; type: string } | null) => void;
   language?: "en" | "fr";
 }) {
+  const MAX_PAGES = 15;
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [warning, setWarning] = useState("");
 
   const processFile = useCallback(
     async (file: File) => {
       setLoading(true);
       setError("");
+      setWarning("");
 
       try {
         if (file.type === "application/pdf") {
@@ -57,14 +60,22 @@ export function FileUpload({
               `<div data-pdf="${base64}" data-filename="${file.name}"></div>`,
               file.name
             );
-            // Detect page count
             if (onPageCount) {
               try {
                 const pdfjsLib = await import("pdfjs-dist");
                 pdfjsLib.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`;
                 const data = Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
                 const pdf = await pdfjsLib.getDocument({ data }).promise;
-                onPageCount(pdf.numPages);
+                const raw = pdf.numPages;
+                const capped = Math.min(raw, MAX_PAGES);
+                onPageCount(capped);
+                if (raw > MAX_PAGES) {
+                  setWarning(
+                    language === "fr"
+                      ? `Votre document fait ${raw} pages — seules les ${MAX_PAGES} premières seront imprimées.`
+                      : `Your document has ${raw} pages — only the first ${MAX_PAGES} will be printed.`
+                  );
+                }
               } catch { /* ignore */ }
             }
             setLoading(false);
@@ -81,7 +92,6 @@ export function FileUpload({
             setError("The document appears to be empty.");
             setLoading(false);
           } else {
-            // Store original docx as base64 for sending at checkout
             if (onOriginalFile) {
               const bytes = new Uint8Array(arrayBuffer);
               let binary = "";
@@ -90,8 +100,17 @@ export function FileUpload({
               }
               onOriginalFile({ base64: btoa(binary), name: file.name, type: file.type });
             }
+            const raw = measurePages(result.value);
+            const capped = Math.min(raw, MAX_PAGES);
             onContent(result.value, file.name);
-            if (onPageCount) onPageCount(measurePages(result.value));
+            if (onPageCount) onPageCount(capped);
+            if (raw > MAX_PAGES) {
+              setWarning(
+                language === "fr"
+                  ? `Votre document fait ${raw} pages — seules les ${MAX_PAGES} premières seront imprimées.`
+                  : `Your document has ${raw} pages — only the first ${MAX_PAGES} will be printed.`
+              );
+            }
             setLoading(false);
           }
         } else {
@@ -163,13 +182,16 @@ export function FileUpload({
                 : (language === "fr" ? "Déposez un fichier ou cliquez pour parcourir" : "Drop a file or click to browse")}
             </p>
             <p className="text-xs text-gray-400">
-              {language === "fr" ? "PDF ou Word (.docx) — jusqu'à 10 pages" : "PDF or Word (.docx) — up to 10 pages"}
+              {language === "fr" ? "PDF ou Word (.docx) — jusqu'à 15 pages" : "PDF or Word (.docx) — up to 15 pages"}
             </p>
           </>
         )}
       </div>
       {error && (
         <p className="mt-2 text-xs text-red-500">{error}</p>
+      )}
+      {warning && (
+        <p className="mt-2 text-xs text-amber-600">{warning}</p>
       )}
     </div>
   );
