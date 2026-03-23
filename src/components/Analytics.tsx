@@ -19,6 +19,7 @@ export function Analytics() {
     window.gtag("config", "G-312ZDLVT4J", {
       transport_url: "https://sendletter.app/ga",
       first_party_collection: true,
+      page_title: document.title || "sendletter",
     });
     window.gtag("config", "AW-11542356574", {
       transport_url: "https://sendletter.app/ga",
