@@ -219,6 +219,36 @@ export default function Home() {
 
     setSending(true);
     try {
+      // Generate print-quality PDF before checkout
+      let generatedPdf: string | null = null;
+      try {
+        const { generateLetterPdf } = await import("@/lib/generatePdf");
+        generatedPdf = await generateLetterPdf({
+          mode,
+          letterData,
+          htmlContent,
+          settings,
+          letterSize,
+        });
+        // Store PDF in IndexedDB so success page can send it
+        if (generatedPdf) {
+          try {
+            const db = await openDB();
+            const tx = db.transaction(STORE, "readwrite");
+            const store = tx.objectStore(STORE);
+            const req = store.get(DB_KEY);
+            req.onsuccess = () => {
+              const draft = req.result || {};
+              draft.generatedPdf = generatedPdf;
+              store.put(draft, DB_KEY);
+            };
+            db.close();
+          } catch { /* ignore */ }
+        }
+      } catch (e) {
+        console.error("PDF generation failed (continuing):", e);
+      }
+
       const res = await fetch("/api/create-checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },

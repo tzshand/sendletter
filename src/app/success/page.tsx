@@ -48,7 +48,10 @@ export default function SuccessPage() {
           if (draft) {
             letterMode = draft.mode as string | undefined;
             if (draft.letterData) letterData = draft.letterData as Record<string, unknown>;
-            if (draft.htmlContent && typeof draft.htmlContent === "string") {
+            // Prefer the generated print-quality PDF
+            if (draft.generatedPdf && typeof draft.generatedPdf === "string") {
+              pdfBase64 = draft.generatedPdf;
+            } else if (draft.htmlContent && typeof draft.htmlContent === "string") {
               const match = draft.htmlContent.match(/data-pdf="([^"]+)"/);
               if (match) {
                 pdfBase64 = match[1];
