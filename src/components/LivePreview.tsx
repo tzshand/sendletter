@@ -298,7 +298,7 @@ function LetterPageContent({
       )}
       {(letterData.closing || letterData.senderName) && (
         <div style={{ marginTop: "20pt" }}>
-          {letterData.closing && <div>{letterData.closing},</div>}
+          {letterData.closing && <div>{letterData.closing}</div>}
           {letterData.senderName && (
             <div style={{ marginTop: "32pt" }}>{letterData.senderName}</div>
           )}

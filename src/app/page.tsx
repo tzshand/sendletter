@@ -63,7 +63,7 @@ export default function Home() {
 
   const [letterData, setLetterData] = useState<SimpleLetterData>({
     date: new Date().toISOString().split("T")[0],
-    greeting: "Hello,",
+    greeting: "Dear",
     subject: "",
     body: "",
     closing: "Sincerely,",
