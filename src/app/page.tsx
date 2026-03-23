@@ -378,16 +378,16 @@ export default function Home() {
           </nav>
         </div>
 
-        <span className="text-xs text-white/50 font-medium">
-          {isFr ? "Basé à Montréal" : "Based in Montreal"}
-        </span>
+        <h1 className="text-xs text-white/50 font-semibold tracking-wide">
+          {isFr ? "Envoyez du courrier en ligne" : "Send Mail Online"}
+        </h1>
       </header>
 
       {/* Settings bar */}
       <div className="bg-white border-b border-gray-200/80 px-5 py-2.5 shrink-0 flex items-center justify-between">
-        <h1 className="text-sm font-semibold text-gray-700">
+        <h2 className="text-sm font-semibold text-gray-700">
           {isFr ? "Poster une lettre au Canada" : "Mail a Letter in Canada"}
-        </h1>
+        </h2>
         <LetterSettingsBar settings={settings} onChange={setSettings} />
       </div>
 
