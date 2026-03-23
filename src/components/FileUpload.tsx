@@ -52,11 +52,25 @@ export function FileUpload({
           file.name.endsWith(".docx")
         ) {
           const arrayBuffer = await file.arrayBuffer();
-          const result = await mammoth.convertToHtml({ arrayBuffer });
+          const result = await mammoth.convertToHtml(
+            { arrayBuffer },
+            {
+              styleMap: [
+                "p[style-name='heading 1'] => h1:fresh",
+                "p[style-name='heading 2'] => h2:fresh",
+                "br[type='page'] => hr",
+              ],
+            }
+          );
           if (result.value.length === 0) {
             setError("The document appears to be empty.");
           } else {
             onContent(result.value, file.name);
+            // Count pages from page break markers
+            if (onPageCount) {
+              const breaks = (result.value.match(/<hr\s*\/?>/gi) || []).length;
+              onPageCount(breaks + 1);
+            }
           }
           setLoading(false);
         } else {
