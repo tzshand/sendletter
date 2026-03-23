@@ -471,7 +471,7 @@ export default function Home() {
               </div>
               <div className="relative flex justify-center">
                 <span className="bg-[#fafafa] px-3 text-[11px] font-medium text-gray-400 uppercase tracking-wider">
-                  {isFr ? "Format" : "Letter size"}
+                  {isFr ? "Format d'enveloppe" : "Envelope size"}
                 </span>
               </div>
             </div>

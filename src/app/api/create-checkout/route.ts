@@ -14,9 +14,9 @@ const PRICES: Record<string, number> = {
 };
 
 const SIZE_LABELS: Record<string, string> = {
-  standard: "Standard tri-fold",
-  large: "Letter (8.5×11)",
-  legal: "Legal (8.5×14)",
+  standard: "Standard (8.5×11 tri-fold)",
+  large: "Letter (8.5×11 flat)",
+  legal: "Legal (8.5×14 flat)",
 };
 
 export async function POST(req: Request) {
