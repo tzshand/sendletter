@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { Mail, FileText, ScrollText } from "lucide-react";
 import type { Language } from "./LetterSettings";
 
@@ -56,31 +57,49 @@ export function LetterSizeSelector({
   value,
   onChange,
   language,
+  pageCount = 1,
 }: {
   value: LetterSize;
   onChange: (s: LetterSize) => void;
   language: Language;
+  pageCount?: number;
 }) {
   const isFr = language === "fr";
   const sizes: LetterSize[] = ["standard", "large", "legal"];
+  const [tooltip, setTooltip] = useState<string | null>(null);
 
   return (
     <div className="grid grid-cols-3 gap-2">
       {sizes.map((size) => {
         const cfg = LETTER_SIZE_CONFIG[size];
         const active = value === size;
+        const disabled = pageCount > cfg.maxPages;
         return (
           <button
             key={size}
             type="button"
-            onClick={() => onChange(size)}
+            onClick={() => {
+              if (disabled) {
+                setTooltip(
+                  isFr
+                    ? `${cfg.labelFr} supporte jusqu'à ${cfg.maxPages} pages (votre document : ${pageCount})`
+                    : `${cfg.label} supports up to ${cfg.maxPages} pages (your document: ${pageCount})`
+                );
+                setTimeout(() => setTooltip(null), 3000);
+                return;
+              }
+              setTooltip(null);
+              onChange(size);
+            }}
             className={`relative flex flex-col items-center gap-1 px-3 py-3 rounded-xl border-2 transition-all text-center ${
-              active
-                ? "border-brand bg-brand/5 text-gray-900"
-                : "border-gray-200 hover:border-gray-300 text-gray-500"
+              disabled
+                ? "border-gray-100 bg-gray-50 text-gray-300 cursor-not-allowed"
+                : active
+                  ? "border-brand bg-brand/5 text-gray-900"
+                  : "border-gray-200 hover:border-gray-300 text-gray-500"
             }`}
           >
-            <div className={active ? "text-brand" : "text-gray-400"}>
+            <div className={disabled ? "text-gray-300" : active ? "text-brand" : "text-gray-400"}>
               {ICONS[size]}
             </div>
             <span className="text-xs font-semibold">
@@ -91,9 +110,9 @@ export function LetterSizeSelector({
             </span>
             <span className="text-[10px] font-medium mt-0.5">
               {cfg.priceAdd > 0 ? (
-                <span className="text-amber-600">+${cfg.priceAdd % 1 === 0 ? cfg.priceAdd : cfg.priceAdd.toFixed(2)}</span>
+                <span className={disabled ? "text-gray-300" : "text-amber-600"}>+${cfg.priceAdd % 1 === 0 ? cfg.priceAdd : cfg.priceAdd.toFixed(2)}</span>
               ) : (
-                <span className="text-brand">${BASE_PRICE}</span>
+                <span className={disabled ? "text-gray-300" : "text-brand"}>${BASE_PRICE}</span>
               )}
             </span>
             <span className="text-[9px] text-gray-400">
@@ -102,6 +121,9 @@ export function LetterSizeSelector({
           </button>
         );
       })}
+      {tooltip && (
+        <p className="col-span-3 text-xs text-amber-600 text-center mt-1">{tooltip}</p>
+      )}
     </div>
   );
 }

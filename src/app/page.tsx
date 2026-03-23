@@ -15,6 +15,7 @@ import {
 import { LetterSettingsBar, type Settings } from "@/components/LetterSettings";
 import {
   LetterSizeSelector,
+  LETTER_SIZE_CONFIG,
   type LetterSize,
   formatPrice,
 } from "@/components/LetterSizeSelector";
@@ -428,9 +429,17 @@ export default function Home() {
                   onContent={(html, name) => {
                     setHtmlContent(html);
                     setFileName(name);
+                    if (!html) {
+                      setPageCount(1);
+                    }
                   }}
                   fileName={fileName}
-                  onPageCount={setPageCount}
+                  onPageCount={(count) => {
+                    setPageCount(count);
+                    if (count > LETTER_SIZE_CONFIG.standard.maxPages && letterSize === "standard") {
+                      setLetterSize("large");
+                    }
+                  }}
                   language={settings.language}
                 />
               )}
@@ -480,6 +489,7 @@ export default function Home() {
               value={letterSize}
               onChange={setLetterSize}
               language={settings.language}
+              pageCount={mode === "upload" ? pageCount : undefined}
             />
 
             {/* Divider */}
