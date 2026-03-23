@@ -504,13 +504,13 @@ export default function Home() {
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-semibold text-gray-800">
-                    {isFr ? "Postes Canada — Poste-lettres" : "Canada Post — Lettermail"}
+                    {isFr ? "Poste-lettres" : "Lettermail"}
                   </span>
                 </div>
                 <p className="text-xs text-gray-400 mt-0.5">
                   {isFr
-                    ? "Courrier standard sans suivi. 2–4 jours ouvrables (local), 4–6 jours ouvrables (national)."
-                    : "Standard mail, no tracking. 2–4 business days (local), 4–6 business days (national)."}
+                    ? "Courrier standard sans suivi. 2–5 jours ouvrables pour la plupart des adresses."
+                    : "Standard mail, no tracking. 2–5 business days to most addresses."}
                 </p>
               </div>
             </div>
