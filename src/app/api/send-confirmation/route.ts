@@ -23,16 +23,26 @@ const SIZE_LABELS: Record<string, { en: string; fr: string }> = {
   large: { en: "Letter (8.5×11)", fr: "Lettre (8,5×11)" },
 };
 
+function formatAddress(name: string, line1: string, line2: string, city: string, province: string, postal: string): string {
+  const lines = [name, line1];
+  if (line2) lines.push(line2);
+  lines.push(`${city}, ${province} ${postal}`);
+  return lines.join("<br/>");
+}
+
 function buildEmailHtml(meta: Record<string, string>, amount: string, date: string, pdfAttached: boolean): string {
   const size = SIZE_LABELS[meta.letterSize] || SIZE_LABELS.standard;
   const pages = meta.pageCount || "1";
+  const fromAddr = formatAddress(meta.fromName, meta.fromLine1, meta.fromLine2 || "", meta.fromCity, meta.fromProvince, meta.fromPostal);
+  const toAddr = formatAddress(meta.toName, meta.toLine1, meta.toLine2 || "", meta.toCity, meta.toProvince, meta.toPostal);
 
   return `<!DOCTYPE html>
 <html><head><meta charset="utf-8"/></head>
 <body style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#111;max-width:560px;margin:0 auto;padding:24px;">
 
 <div style="text-align:center;margin-bottom:24px;">
-  <div style="display:inline-block;background:#F0513C;color:#fff;font-weight:700;font-size:14px;padding:8px 16px;border-radius:8px;">sendletter</div>
+  <img src="https://sendletter.app/goose-128-letter.png" alt="sendletter" width="48" height="48" style="display:block;margin:0 auto 8px;"/>
+  <div style="font-weight:700;font-size:16px;color:#111;">sendletter</div>
 </div>
 
 <!-- English -->
@@ -44,8 +54,19 @@ function buildEmailHtml(meta: Record<string, string>, amount: string, date: stri
   <tr><td style="padding:6px 0;color:#888;">Amount</td><td style="padding:6px 0;text-align:right;font-weight:600;">${amount} CAD</td></tr>
   <tr><td style="padding:6px 0;color:#888;">Format</td><td style="padding:6px 0;text-align:right;">${size.en}</td></tr>
   <tr><td style="padding:6px 0;color:#888;">Pages</td><td style="padding:6px 0;text-align:right;">${pages}</td></tr>
-  <tr><td style="padding:6px 0;color:#888;">From</td><td style="padding:6px 0;text-align:right;">${meta.fromName}, ${meta.fromCity} ${meta.fromProvince}</td></tr>
-  <tr><td style="padding:6px 0;color:#888;">To</td><td style="padding:6px 0;text-align:right;">${meta.toName}, ${meta.toCity} ${meta.toProvince}</td></tr>
+</table>
+
+<table style="width:100%;font-size:13px;border-collapse:collapse;margin-bottom:16px;">
+  <tr>
+    <td style="padding:8px 12px;vertical-align:top;width:50%;background:#fafafa;border-radius:6px 0 0 6px;">
+      <div style="color:#888;font-size:11px;margin-bottom:4px;">From</div>
+      ${fromAddr}
+    </td>
+    <td style="padding:8px 12px;vertical-align:top;width:50%;background:#fafafa;border-radius:0 6px 6px 0;border-left:1px solid #eee;">
+      <div style="color:#888;font-size:11px;margin-bottom:4px;">To</div>
+      ${toAddr}
+    </td>
+  </tr>
 </table>
 
 ${pdfAttached ? '<p style="font-size:12px;color:#888;">Your letter is attached to this email as a PDF.</p>' : ''}
@@ -60,15 +81,26 @@ ${pdfAttached ? '<p style="font-size:12px;color:#888;">Your letter is attached t
 
 <!-- Français -->
 <h2 style="font-size:18px;margin:0 0 8px;">Confirmation de commande</h2>
-<p style="font-size:13px;color:#666;margin:0 0 16px;">Merci pour votre commande. Votre lettre a été mise en file d'attente pour impression et sera postée dans un délai de 1 jour ouvrable via Postes Canada.</p>
+<p style="font-size:13px;color:#666;margin:0 0 16px;">Merci pour votre commande. Votre lettre a été mise en file d&#39;attente pour impression et sera postée dans un délai de 1 jour ouvrable via Postes Canada.</p>
 
 <table style="width:100%;font-size:13px;border-collapse:collapse;margin-bottom:16px;">
   <tr><td style="padding:6px 0;color:#888;">Date</td><td style="padding:6px 0;text-align:right;">${date}</td></tr>
   <tr><td style="padding:6px 0;color:#888;">Montant</td><td style="padding:6px 0;text-align:right;font-weight:600;">${amount} CAD</td></tr>
   <tr><td style="padding:6px 0;color:#888;">Format</td><td style="padding:6px 0;text-align:right;">${size.fr}</td></tr>
   <tr><td style="padding:6px 0;color:#888;">Pages</td><td style="padding:6px 0;text-align:right;">${pages}</td></tr>
-  <tr><td style="padding:6px 0;color:#888;">De</td><td style="padding:6px 0;text-align:right;">${meta.fromName}, ${meta.fromCity} ${meta.fromProvince}</td></tr>
-  <tr><td style="padding:6px 0;color:#888;">À</td><td style="padding:6px 0;text-align:right;">${meta.toName}, ${meta.toCity} ${meta.toProvince}</td></tr>
+</table>
+
+<table style="width:100%;font-size:13px;border-collapse:collapse;margin-bottom:16px;">
+  <tr>
+    <td style="padding:8px 12px;vertical-align:top;width:50%;background:#fafafa;border-radius:6px 0 0 6px;">
+      <div style="color:#888;font-size:11px;margin-bottom:4px;">De</div>
+      ${fromAddr}
+    </td>
+    <td style="padding:8px 12px;vertical-align:top;width:50%;background:#fafafa;border-radius:0 6px 6px 0;border-left:1px solid #eee;">
+      <div style="color:#888;font-size:11px;margin-bottom:4px;">&Agrave;</div>
+      ${toAddr}
+    </td>
+  </tr>
 </table>
 
 ${pdfAttached ? '<p style="font-size:12px;color:#888;">Votre lettre est jointe à ce courriel en format PDF.</p>' : ''}
@@ -115,14 +147,14 @@ function buildInternalEmailHtml(
 <p style="font-size:13px;margin:0;line-height:1.6;">
   ${meta.fromName}<br/>
   ${meta.fromLine1}<br/>
-  ${meta.fromCity}, ${meta.fromProvince} ${meta.fromPostal}
+  ${meta.fromLine2 ? meta.fromLine2 + "<br/>" : ""}${meta.fromCity}, ${meta.fromProvince} ${meta.fromPostal}
 </p>
 
 <h3 style="font-size:14px;margin:16px 0 8px;">To (Mailing Address)</h3>
 <p style="font-size:13px;margin:0;line-height:1.6;">
   ${meta.toName}<br/>
   ${meta.toLine1}<br/>
-  ${meta.toCity}, ${meta.toProvince} ${meta.toPostal}
+  ${meta.toLine2 ? meta.toLine2 + "<br/>" : ""}${meta.toCity}, ${meta.toProvince} ${meta.toPostal}
 </p>
 
 <div style="background:#f0f9f0;border-radius:8px;padding:12px 16px;font-size:12px;color:#666;margin:20px 0;">
@@ -175,7 +207,7 @@ export async function POST(req: Request) {
 
     // Send customer confirmation email
     await resend.emails.send({
-      from: "sendletter <onboarding@resend.dev>",
+      from: "sendletter <noreply@sendletter.app>",
       to: email,
       subject: "Order Confirmation / Confirmation de commande — sendletter",
       html: customerHtml,
@@ -212,7 +244,7 @@ export async function POST(req: Request) {
     // Send internal order email
     try {
       await resend.emails.send({
-        from: "sendletter <onboarding@resend.dev>",
+        from: "sendletter <noreply@sendletter.app>",
         to: INTERNAL_EMAIL,
         subject: `New Order: ${meta.toName} in ${meta.toCity}, ${meta.toProvince} — $${amount}`,
         html: internalHtml,

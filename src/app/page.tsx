@@ -260,6 +260,7 @@ export default function Home() {
           letterData: mode === "simple" ? letterData : undefined,
           letterSize,
           pageCount,
+          language: settings.language,
         }),
       });
       const data = await res.json();

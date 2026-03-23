@@ -29,6 +29,7 @@ export async function POST(req: Request) {
     letterData,
     letterSize = "standard",
     pageCount = 1,
+    language = "en",
   } = body;
 
   if (!from || !to) {
@@ -59,6 +60,7 @@ export async function POST(req: Request) {
   try {
     const stripe = getStripe();
     const session = await stripe.checkout.sessions.create({
+      locale: language === "fr" ? "fr" : "auto",
       payment_method_types: ["card"],
       line_items: [
         {
@@ -91,11 +93,13 @@ export async function POST(req: Request) {
         pageCount: String(pages),
         fromName: from.name,
         fromLine1: from.line1,
+        fromLine2: from.line2 || "",
         fromCity: from.city,
         fromProvince: from.province,
         fromPostal: from.postalCode,
         toName: to.name,
         toLine1: to.line1,
+        toLine2: to.line2 || "",
         toCity: to.city,
         toProvince: to.province,
         toPostal: to.postalCode,
