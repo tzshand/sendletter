@@ -1,12 +1,27 @@
-import { GoogleAnalytics } from "@next/third-parties/google";
 import Script from "next/script";
+
+declare global {
+  interface Window {
+    dataLayer: unknown[];
+    gtag: (...args: unknown[]) => void;
+  }
+}
 
 export function Analytics() {
   return (
     <>
-      <GoogleAnalytics gaId="G-39L40L4RTY" />
-      <Script id="gtag-ads" strategy="afterInteractive">
-        {`window.gtag && window.gtag('config', 'AW-11542356574');`}
+      <Script
+        src="https://www.googletagmanager.com/gtag/js?id=G-39L40L4RTY"
+        strategy="afterInteractive"
+      />
+      <Script id="gtag-init" strategy="afterInteractive">
+        {`
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-39L40L4RTY');
+          gtag('config', 'AW-11542356574');
+        `}
       </Script>
     </>
   );
