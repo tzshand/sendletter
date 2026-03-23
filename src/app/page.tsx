@@ -380,7 +380,7 @@ export default function Home() {
         </div>
 
         <span className="text-xs text-white/50 font-medium">
-          {isFr ? "Sans timbres. Sans file. Sans stress." : "No stamps. No line. No hassle."}
+          {isFr ? "Écrivez, payez, on poste." : "Write it. Pay it. We mail it."}
         </span>
       </header>
 
