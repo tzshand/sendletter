@@ -249,15 +249,16 @@ export default function Home() {
         console.error("PDF generation failed (continuing):", e);
       }
 
+      // Only send content relevant to the active mode
       const res = await fetch("/api/create-checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          htmlContent,
+          htmlContent: mode !== "simple" ? htmlContent : undefined,
           from,
           to,
           mode,
-          letterData,
+          letterData: mode === "simple" ? letterData : undefined,
           letterSize,
           pageCount,
         }),

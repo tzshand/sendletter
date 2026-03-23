@@ -62,10 +62,17 @@ export default function SuccessPage() {
           }
         } catch { /* IndexedDB unavailable */ }
 
+        // Only send content relevant to the mode that was used
         const res = await fetch("/api/send-confirmation", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ sessionId, pdfBase64, htmlContent, letterData, letterMode }),
+          body: JSON.stringify({
+            sessionId,
+            pdfBase64,
+            htmlContent: letterMode !== "simple" && !pdfBase64 ? htmlContent : undefined,
+            letterData: letterMode === "simple" && !pdfBase64 ? letterData : undefined,
+            letterMode,
+          }),
         });
 
         if (res.ok) {
