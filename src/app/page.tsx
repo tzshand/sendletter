@@ -393,7 +393,7 @@ export default function Home() {
       {/* Header */}
       <header className="bg-zinc-950 text-white px-5 h-[56px] flex items-center justify-between shrink-0">
         <div className="flex items-center gap-6">
-          <div className="flex items-center gap-1.5 bg-white rounded-lg px-2.5 py-1.5">
+          <div className="flex items-center gap-1.5 bg-gray-100 rounded-lg px-2.5 py-1.5">
             <SnowGoose size={24} />
             <span className="text-[14px] font-bold tracking-tight text-gray-900">
               sendletter
