@@ -19,6 +19,7 @@ import {
   type LetterSize,
   formatPrice,
 } from "@/components/LetterSizeSelector";
+import { SnowGoose } from "@/components/SnowGoose";
 import {
   Mail,
   Eye,
@@ -28,6 +29,7 @@ import {
   FileText,
   PenLine,
   Upload,
+  ChevronDown,
 } from "lucide-react";
 
 type Mode = "upload" | "custom" | "simple";
@@ -55,12 +57,20 @@ export default function Home() {
 
   const [pageCount, setPageCount] = useState(1);
 
-  const [settings, setSettings] = useState<Settings>({
-    language: "en",
-    fontFamily: "Times New Roman",
-    fontSize: 12,
-    verticalCenter: true,
+  const [settings, setSettings] = useState<Settings>(() => {
+    const defaults: Settings = { language: "en", fontFamily: "Times New Roman", fontSize: 12, verticalCenter: true };
+    if (typeof window === "undefined") return defaults;
+    try {
+      const saved = localStorage.getItem("sl-settings");
+      if (saved) return { ...defaults, ...JSON.parse(saved) };
+    } catch { /* ignore */ }
+    return defaults;
   });
+
+  // Persist settings changes
+  useEffect(() => {
+    try { localStorage.setItem("sl-settings", JSON.stringify(settings)); } catch { /* ignore */ }
+  }, [settings]);
 
   const [letterData, setLetterData] = useState<SimpleLetterData>({
     date: new Date().toISOString().split("T")[0],
@@ -87,6 +97,8 @@ export default function Home() {
     from?: boolean;
     to?: boolean;
   }>({});
+
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const contentRef = useRef<HTMLDivElement>(null);
   const addressRef = useRef<HTMLDivElement>(null);
@@ -267,14 +279,17 @@ export default function Home() {
       if (data.url) {
         window.location.href = data.url;
       } else {
-        alert(
-          data.error ||
-            "Could not create checkout. Are Stripe keys configured?"
+        setErrorMsg(
+          isFr ? "Impossible de créer la commande. Veuillez réessayer."
+                : "Could not create checkout. Please try again."
         );
         setSending(false);
       }
     } catch {
-      alert("Failed to connect. Please try again.");
+      setErrorMsg(
+        isFr ? "Erreur de connexion. Veuillez réessayer."
+              : "Connection failed. Please try again."
+      );
       setSending(false);
     }
   };
@@ -342,7 +357,38 @@ export default function Home() {
     </button>
   );
 
+  const faqItems = isFr ? [
+    { q: "Peut-on vraiment envoyer une lettre en ligne?", a: "Oui. Vous écrivez ou téléchargez votre lettre, ajoutez les adresses, payez, et nous l'imprimons et la postons via Postes Canada dans un délai de 1 jour ouvrable." },
+    { q: "Combien ça coûte?", a: "À partir de 4,29 $ CAD pour une lettre standard pliée en trois. Les formats lettre et légal à plat sont à 9,28 $ CAD. Tout est inclus : impression, enveloppe et affranchissement." },
+    { q: "Quel est le délai de livraison?", a: "Les lettres sont imprimées et postées dans un délai de 1 jour ouvrable. La livraison via Postes Canada prend généralement de 2 à 5 jours ouvrables au Canada." },
+    { q: "Ai-je besoin d'un compte?", a: "Non. Aucun compte, aucun abonnement, aucune commande minimale. Écrivez votre lettre, payez et c'est posté." },
+    { q: "Quels formats de fichier puis-je télécharger?", a: "PDF et documents Word (.docx), jusqu'à 15 pages et 10 Mo." },
+    { q: "Où livrez-vous?", a: "À toute adresse postale au Canada via Postes Canada." },
+    { q: "Est-ce que j'envoie une seule lettre?", a: "Absolument. sendletter est conçu pour envoyer une lettre à la fois — pas de minimum, pas d'envoi en vrac." },
+    { q: "Mes données sont-elles en sécurité?", a: "Nous ne conservons pas le contenu de votre lettre après l'envoi. Votre courriel sert uniquement pour la confirmation de commande." },
+  ] : [
+    { q: "Can you actually send a letter online?", a: "Yes. Write or upload your letter, add addresses, pay, and we print and mail it via Canada Post within 1 business day." },
+    { q: "How much does it cost?", a: "Starting from $4.29 CAD for a standard tri-fold letter. Flat letter and legal sizes are $9.28 CAD. Printing, envelope, and postage are all included." },
+    { q: "How long does delivery take?", a: "Letters are printed and mailed within 1 business day. Delivery via Canada Post typically takes 2–5 business days within Canada." },
+    { q: "Do I need an account?", a: "No. No account, no subscription, no minimum order. Write your letter, pay, and it's in the mail." },
+    { q: "What file formats can I upload?", a: "PDF and Word documents (.docx), up to 15 pages and 10 MB." },
+    { q: "Where can you deliver?", a: "Any mailing address in Canada via Canada Post." },
+    { q: "Can I send just one letter?", a: "Absolutely. sendletter is built for sending one letter at a time — no minimums, no bulk mail." },
+    { q: "Is my information safe?", a: "We don't store your letter content after dispatch. Your email is only used for order confirmation." },
+  ];
+
+  const steps = isFr ? [
+    { n: "1", title: "Écrivez ou téléchargez", desc: "Téléchargez un PDF ou Word, utilisez le modèle de lettre classique, ou composez avec l'éditeur de texte." },
+    { n: "2", title: "Ajoutez les adresses", desc: "Entrez l'adresse de l'expéditeur et celle du destinataire, n'importe où au Canada." },
+    { n: "3", title: "Payez et envoyez", desc: "Choisissez votre format d'enveloppe, payez en toute sécurité, et nous imprimons et postons votre lettre." },
+  ] : [
+    { n: "1", title: "Write or upload", desc: "Upload a PDF or Word document, use the classic letter template, or compose with the rich text editor." },
+    { n: "2", title: "Add addresses", desc: "Enter the sender and recipient mailing addresses — anywhere in Canada." },
+    { n: "3", title: "Pay and send", desc: "Choose your envelope size, pay securely, and we print and mail your letter within 1 business day." },
+  ];
+
   return (
+    <>
     <div className="h-full flex flex-col bg-[#fafafa]">
       {/* Header */}
       <header className="bg-zinc-950 text-white px-5 h-[56px] flex items-center justify-between shrink-0">
@@ -380,7 +426,7 @@ export default function Home() {
         </div>
 
         <h1 className="text-xs text-white/50 font-semibold tracking-wide">
-          {isFr ? "Envoyez du courrier en ligne" : "Send Mail Online"}
+          {isFr ? "Envoyez une lettre en ligne au Canada" : "Send a Letter Online in Canada"}
         </h1>
       </header>
 
@@ -421,6 +467,15 @@ export default function Home() {
         {/* Left: Form */}
         <div className="flex-1 overflow-y-auto">
           <div className="max-w-2xl mx-auto px-5 sm:px-8 py-6 space-y-5">
+            {/* Error banner */}
+            {errorMsg && (
+              <div className="flex items-center justify-between gap-3 rounded-xl bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">
+                <span>{errorMsg}</span>
+                <button onClick={() => setErrorMsg(null)} className="shrink-0 text-red-400 hover:text-red-600">
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            )}
             {/* Content area */}
             <div ref={contentRef} className={`rounded-xl transition-all ${validationErrors.content ? "ring-2 ring-red-400 bg-red-50/40 p-3 -mx-3" : ""}`}>
               {mode === "upload" && (
@@ -598,5 +653,76 @@ export default function Home() {
         </div>
       )}
     </div>
+
+    {/* ── Below-the-fold SEO content ── */}
+    <section className="bg-white border-t border-gray-200">
+      {/* Scroll hint */}
+      <div className="flex justify-center py-6">
+        <ChevronDown className="w-5 h-5 text-gray-300 animate-bounce" />
+      </div>
+
+      {/* How it works */}
+      <div className="max-w-3xl mx-auto px-6 pb-16">
+        <h2 className="text-2xl font-bold text-center mb-2">
+          {isFr ? "Comment ça marche" : "How it works"}
+        </h2>
+        <p className="text-sm text-gray-500 text-center mb-10 max-w-lg mx-auto">
+          {isFr
+            ? "Envoyez une vraie lettre par la poste depuis votre ordinateur ou téléphone. Pas de compte requis."
+            : "Send a real letter in the mail from your computer or phone. No account needed."}
+        </p>
+
+        <div className="grid sm:grid-cols-3 gap-6">
+          {steps.map((s) => (
+            <div key={s.n} className="text-center">
+              <div className="w-10 h-10 rounded-full bg-brand/10 text-brand font-bold text-lg flex items-center justify-center mx-auto mb-3">
+                {s.n}
+              </div>
+              <h3 className="font-semibold text-sm mb-1">{s.title}</h3>
+              <p className="text-xs text-gray-500 leading-relaxed">{s.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* FAQ */}
+      <div className="bg-[#fafafa] border-t border-gray-100">
+        <div className="max-w-3xl mx-auto px-6 py-16">
+          <h2 className="text-2xl font-bold text-center mb-10">
+            {isFr ? "Questions fréquentes" : "Frequently asked questions"}
+          </h2>
+
+          <div className="grid sm:grid-cols-2 gap-x-12 gap-y-8">
+            {faqItems.map((item, i) => (
+              <div key={i}>
+                <h3 className="font-semibold text-sm mb-1.5">{item.q}</h3>
+                <p className="text-xs text-gray-500 leading-relaxed">{item.a}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Footer */}
+      <footer className="border-t border-gray-200 bg-white">
+        <div className="max-w-3xl mx-auto px-6 py-10 flex flex-col items-center gap-4">
+          <div className="flex items-center gap-2">
+            <SnowGoose size={28} />
+            <span className="font-bold text-sm">sendletter</span>
+          </div>
+          <p className="text-xs text-gray-400 text-center max-w-md">
+            {isFr
+              ? "Envoyez une lettre par la poste au Canada depuis 4,29 $ CAD. Impression, enveloppe et affranchissement inclus. Aucun compte requis."
+              : "Mail a letter anywhere in Canada from $4.29 CAD. Printing, envelope, and postage included. No account required."}
+          </p>
+          <div className="flex items-center gap-4 text-xs text-gray-400">
+            <a href="/terms" className="hover:text-gray-600 transition-colors">{isFr ? "Conditions" : "Terms"}</a>
+            <span>·</span>
+            <a href="mailto:support@sendletter.app" className="hover:text-gray-600 transition-colors">support@sendletter.app</a>
+          </div>
+        </div>
+      </footer>
+    </section>
+    </>
   );
 }

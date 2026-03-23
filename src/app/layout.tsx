@@ -6,18 +6,23 @@ import "./globals.css";
 const geist = Geist({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "sendletter — Mail a letter online from $4.29",
+  title: "Send a Letter Online in Canada — From $4.29 | sendletter",
   description:
-    "Write or upload your letter, add addresses, and we'll print and mail it anywhere in Canada from $4.29. No account, no subscription, no minimum.",
+    "Send a real letter in the mail from your computer. Write or upload, add addresses, and we print and mail it anywhere in Canada from $4.29. No account, no subscription, no minimum.",
   metadataBase: new URL("https://sendletter.app"),
   icons: {
     icon: "/favicon.png",
   },
   keywords: [
-    "send letter online", "mail a letter", "send real mail", "send physical mail",
-    "envoyer une lettre", "envoyer du courrier", "courrier en ligne",
-    "Canada Post", "Postes Canada", "letter mailing service", "print and mail",
-    "send one letter", "no minimum mail", "mail letter online Canada",
+    "send a letter online", "mail a letter online", "send letter online Canada",
+    "can you send a letter online", "how to send a letter online",
+    "send a letter without going to the post office", "mail a letter from home",
+    "send real mail", "send physical mail", "send one letter",
+    "print and mail a letter", "letter mailing service Canada",
+    "envoyer une lettre en ligne", "envoyer du courrier en ligne",
+    "poster une lettre en ligne Canada", "courrier en ligne",
+    "envoyer une lettre sans aller au bureau de poste",
+    "Canada Post", "Postes Canada", "no account mail letter",
   ],
   alternates: {
     canonical: "https://sendletter.app",
@@ -27,7 +32,7 @@ export const metadata: Metadata = {
     },
   },
   openGraph: {
-    title: "sendletter — Mail a letter online from $4.29",
+    title: "Send a Letter Online in Canada — From $4.29 | sendletter",
     description:
       "Write or upload your letter, add addresses, and we print and mail it anywhere in Canada. No account needed.",
     url: "https://sendletter.app",
@@ -35,11 +40,11 @@ export const metadata: Metadata = {
     locale: "en_CA",
     alternateLocale: "fr_CA",
     type: "website",
-    images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "sendletter — Mail a letter online from $4.29" }],
+    images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "Send a Letter Online in Canada — From $4.29 | sendletter" }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "sendletter — Mail a letter online from $4.29",
+    title: "Send a Letter Online in Canada — From $4.29 | sendletter",
     description:
       "Upload or write your letter, we print and mail it via Canada Post from $4.29 CAD.",
   },
