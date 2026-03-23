@@ -388,7 +388,7 @@ export default function Home() {
             {isFr ? "Aperçu" : "Preview"}
           </button>
           <span className="text-xs text-white/50 font-medium hidden sm:block">
-            {isFr ? `À partir de $4.20` : `From $4.20`}
+            {isFr ? `À partir de $5` : `From $5`}
           </span>
         </div>
       </header>

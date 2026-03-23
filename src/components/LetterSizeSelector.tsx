@@ -19,7 +19,7 @@ export const LETTER_SIZE_CONFIG: Record<
   },
   large: {
     maxPages: 15,
-    priceAdd: 4.49,
+    priceAdd: 4,
     label: "Letter",
     labelFr: "Lettre",
     desc: "8.5×11, flat envelope",
@@ -27,7 +27,7 @@ export const LETTER_SIZE_CONFIG: Record<
   },
   legal: {
     maxPages: 15,
-    priceAdd: 4.49,
+    priceAdd: 4,
     label: "Legal",
     labelFr: "Légal",
     desc: "8.5×14, large envelope",
@@ -35,7 +35,7 @@ export const LETTER_SIZE_CONFIG: Record<
   },
 };
 
-const BASE_PRICE = 4.2;
+const BASE_PRICE = 5;
 
 const ICONS: Record<LetterSize, React.ReactNode> = {
   standard: <Mail className="w-4 h-4" />,
@@ -48,7 +48,8 @@ export function getPrice(size: LetterSize): number {
 }
 
 export function formatPrice(size: LetterSize): string {
-  return `$${getPrice(size).toFixed(2)}`;
+  const p = getPrice(size);
+  return p % 1 === 0 ? `$${p}` : `$${p.toFixed(2)}`;
 }
 
 export function LetterSizeSelector({
@@ -90,9 +91,9 @@ export function LetterSizeSelector({
             </span>
             <span className="text-[10px] font-medium mt-0.5">
               {cfg.priceAdd > 0 ? (
-                <span className="text-amber-600">+${cfg.priceAdd.toFixed(2)}</span>
+                <span className="text-amber-600">+${cfg.priceAdd % 1 === 0 ? cfg.priceAdd : cfg.priceAdd.toFixed(2)}</span>
               ) : (
-                <span className="text-brand">${BASE_PRICE.toFixed(2)}</span>
+                <span className="text-brand">${BASE_PRICE}</span>
               )}
             </span>
             <span className="text-[9px] text-gray-400">
