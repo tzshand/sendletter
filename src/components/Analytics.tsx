@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 
-const GA_ID = "G-312ZDLVT4J";
+const GA_ID = "G-39L40L4RTY";
 const AW_ID = "AW-11542356574";
 
 export function Analytics() {
