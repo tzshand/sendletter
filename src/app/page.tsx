@@ -29,6 +29,7 @@ import {
   PenLine,
   Upload,
 } from "lucide-react";
+import { SnowGoose } from "@/components/SnowGoose";
 
 type Mode = "upload" | "custom" | "simple";
 
@@ -348,10 +349,8 @@ export default function Home() {
       {/* Header */}
       <header className="bg-zinc-950 text-white px-5 h-[56px] flex items-center justify-between shrink-0">
         <div className="flex items-center gap-6">
-          <div className="flex items-center gap-2.5">
-            <div className={`w-8 h-8 bg-brand rounded-lg flex items-center justify-center transition-colors`}>
-              <Mail className="w-4 h-4 text-white" />
-            </div>
+          <div className="flex items-center gap-2">
+            <SnowGoose size={30} />
             <span className="text-[16px] font-bold tracking-tight">
               sendletter
             </span>

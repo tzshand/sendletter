@@ -89,3 +89,20 @@ textarea.input {
 ::-webkit-scrollbar-thumb:hover {
   background: #9ca3af;
 }
+
+/* Snow goose preening animation */
+@keyframes preen {
+  0%   { transform: rotate(0deg); }
+  12%  { transform: rotate(42deg); }
+  20%  { transform: rotate(34deg); }
+  28%  { transform: rotate(44deg); }
+  36%  { transform: rotate(36deg); }
+  44%  { transform: rotate(42deg); }
+  60%  { transform: rotate(30deg); }
+  80%  { transform: rotate(8deg); }
+  100% { transform: rotate(0deg); }
+}
+
+.goose-preen {
+  animation: preen 2.8s ease-in-out;
+}
