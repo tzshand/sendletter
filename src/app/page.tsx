@@ -485,6 +485,36 @@ export default function Home() {
               />
             </div>
 
+            {/* Service level */}
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-gray-200/80" />
+              </div>
+              <div className="relative flex justify-center">
+                <span className="bg-[#fafafa] px-3 text-[11px] font-medium text-gray-400 uppercase tracking-wider">
+                  {isFr ? "Service postal" : "Delivery"}
+                </span>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-3 rounded-xl border border-gray-200 bg-white p-4">
+              <div className="w-9 h-9 rounded-lg bg-gray-100 flex items-center justify-center shrink-0">
+                <Mail className="w-4 h-4 text-gray-500" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-semibold text-gray-800">
+                    {isFr ? "Postes Canada — Poste-lettres" : "Canada Post — Lettermail"}
+                  </span>
+                </div>
+                <p className="text-xs text-gray-400 mt-0.5">
+                  {isFr
+                    ? "Courrier standard sans suivi. 2–4 jours ouvrables (local), 4–6 jours ouvrables (national)."
+                    : "Standard mail, no tracking. 2–4 business days (local), 4–6 business days (national)."}
+                </p>
+              </div>
+            </div>
+
             {/* TOS */}
             <label className={`flex items-start gap-3 cursor-pointer rounded-xl p-3 -mx-3 transition-all ${validationErrors.tos ? "ring-2 ring-red-400 bg-red-50/40" : ""}`}>
               <input
