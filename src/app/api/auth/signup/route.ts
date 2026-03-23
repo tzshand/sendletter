@@ -24,7 +24,7 @@ export async function POST(req: Request) {
       .from("sendletter_accounts")
       .select("id")
       .eq("email", normalizedEmail)
-      .single();
+      .maybeSingle();
 
     if (existing) {
       return NextResponse.json({ error: "An account with this email already exists" }, { status: 409 });
