@@ -1,9 +1,5 @@
 "use client";
 
-declare global {
-  interface Window { gtag?: (...args: unknown[]) => void; }
-}
-
 import { useEffect, useState, useRef } from "react";
 import { Check, Mail, Loader2 } from "lucide-react";
 import Link from "next/link";
