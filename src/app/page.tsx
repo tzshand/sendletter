@@ -282,8 +282,6 @@ export default function Home() {
   const switchMode = (newMode: Mode) => {
     if (newMode === mode) return;
     setMode(newMode);
-    setHtmlContent("");
-    setFileName("");
   };
 
   const tabs: { id: Mode; label: string; labelFr: string; icon: React.ReactNode }[] = [
