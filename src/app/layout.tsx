@@ -290,7 +290,8 @@ export default function RootLayout({
           {`window.dataLayer = window.dataLayer || [];
 function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
-gtag('config', 'G-312ZDLVT4J');`}
+gtag('config', 'G-312ZDLVT4J');
+gtag('config', 'AW-11542356574');`}
         </Script>
         <script
           type="application/ld+json"
