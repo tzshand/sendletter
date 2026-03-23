@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
 import { Resend } from "resend";
+import { getSupabase, type OrderInsert } from "@/lib/supabase";
 
 function getStripe() {
   const key = process.env.STRIPE_SECRET_KEY;
@@ -13,6 +14,8 @@ function getResend() {
   if (!key) throw new Error("RESEND_API_KEY is not set");
   return new Resend(key);
 }
+
+const INTERNAL_EMAIL = "colinh.shand@gmail.com";
 
 const SIZE_LABELS: Record<string, { en: string; fr: string }> = {
   standard: { en: "Standard tri-fold", fr: "Standard pli en trois" },
@@ -79,9 +82,59 @@ ${pdfAttached ? '<p style="font-size:12px;color:#888;">Votre lettre est jointe �
 </body></html>`;
 }
 
+function buildInternalEmailHtml(
+  meta: Record<string, string>,
+  amount: string,
+  date: string,
+  customerEmail: string,
+  sessionId: string,
+  letterMode: string,
+  hasPdf: boolean,
+  hasHtml: boolean,
+): string {
+  const size = SIZE_LABELS[meta.letterSize] || SIZE_LABELS.standard;
+  const pages = meta.pageCount || "1";
+
+  return `<!DOCTYPE html>
+<html><head><meta charset="utf-8"/></head>
+<body style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#111;max-width:600px;margin:0 auto;padding:24px;">
+
+<h2 style="font-size:18px;margin:0 0 16px;color:#F0513C;">New sendletter Order</h2>
+
+<table style="width:100%;font-size:13px;border-collapse:collapse;margin-bottom:16px;">
+  <tr><td style="padding:6px 0;color:#888;width:140px;">Date</td><td style="padding:6px 0;">${date}</td></tr>
+  <tr><td style="padding:6px 0;color:#888;">Stripe Session</td><td style="padding:6px 0;font-family:monospace;font-size:11px;">${sessionId}</td></tr>
+  <tr><td style="padding:6px 0;color:#888;">Customer Email</td><td style="padding:6px 0;">${customerEmail}</td></tr>
+  <tr><td style="padding:6px 0;color:#888;">Amount</td><td style="padding:6px 0;font-weight:600;">${amount} CAD</td></tr>
+  <tr><td style="padding:6px 0;color:#888;">Mode</td><td style="padding:6px 0;">${letterMode}</td></tr>
+  <tr><td style="padding:6px 0;color:#888;">Format</td><td style="padding:6px 0;">${size.en}</td></tr>
+  <tr><td style="padding:6px 0;color:#888;">Pages</td><td style="padding:6px 0;">${pages}</td></tr>
+</table>
+
+<h3 style="font-size:14px;margin:16px 0 8px;">From (Return Address)</h3>
+<p style="font-size:13px;margin:0;line-height:1.6;">
+  ${meta.fromName}<br/>
+  ${meta.fromLine1}<br/>
+  ${meta.fromCity}, ${meta.fromProvince} ${meta.fromPostal}
+</p>
+
+<h3 style="font-size:14px;margin:16px 0 8px;">To (Mailing Address)</h3>
+<p style="font-size:13px;margin:0;line-height:1.6;">
+  ${meta.toName}<br/>
+  ${meta.toLine1}<br/>
+  ${meta.toCity}, ${meta.toProvince} ${meta.toPostal}
+</p>
+
+<div style="background:#f0f9f0;border-radius:8px;padding:12px 16px;font-size:12px;color:#666;margin:20px 0;">
+  <strong>Attachment:</strong> ${hasPdf ? 'PDF attached' : hasHtml ? 'HTML letter content attached' : 'No attachment available'}
+</div>
+
+</body></html>`;
+}
+
 export async function POST(req: Request) {
   try {
-    const { sessionId, pdfBase64 } = await req.json();
+    const { sessionId, pdfBase64, htmlContent, letterData, letterMode } = await req.json();
 
     if (!sessionId) {
       return NextResponse.json({ error: "Missing session ID" }, { status: 400 });
@@ -102,27 +155,101 @@ export async function POST(req: Request) {
     const meta = (session.metadata || {}) as Record<string, string>;
     const amount = ((session.amount_total || 0) / 100).toFixed(2);
     const date = new Date().toLocaleDateString("en-CA");
-    const hasPdf = !!pdfBase64;
+    const hasPdf = !!(pdfBase64 && typeof pdfBase64 === "string");
+    const hasHtml = !!(htmlContent && typeof htmlContent === "string");
 
-    const html = buildEmailHtml(meta, amount, date, hasPdf);
+    // Build customer confirmation email
+    const customerHtml = buildEmailHtml(meta, amount, date, hasPdf);
 
     const resend = getResend();
 
-    const attachments: { filename: string; content: string }[] = [];
-    if (pdfBase64 && typeof pdfBase64 === "string" && pdfBase64.length < 10_000_000) {
-      attachments.push({
-        filename: "letter.pdf",
-        content: pdfBase64,
-      });
+    // Prepare attachments for customer email
+    const customerAttachments: { filename: string; content: string }[] = [];
+    if (hasPdf && pdfBase64.length < 10_000_000) {
+      customerAttachments.push({ filename: "letter.pdf", content: pdfBase64 });
     }
 
+    // Send customer confirmation email
     await resend.emails.send({
       from: "sendletter <onboarding@resend.dev>",
       to: email,
       subject: "Order Confirmation / Confirmation de commande — sendletter",
-      html,
-      attachments: attachments.length > 0 ? attachments : undefined,
+      html: customerHtml,
+      attachments: customerAttachments.length > 0 ? customerAttachments : undefined,
     });
+
+    // Build internal order email
+    const mode = letterMode || meta.letterMode || "unknown";
+    const internalHtml = buildInternalEmailHtml(meta, amount, date, email, sessionId, mode, hasPdf, hasHtml);
+
+    // Prepare attachments for internal email (print-ready document)
+    const internalAttachments: { filename: string; content: string }[] = [];
+    if (hasPdf && pdfBase64.length < 10_000_000) {
+      internalAttachments.push({ filename: "letter.pdf", content: pdfBase64 });
+    } else if (hasHtml) {
+      // Wrap HTML content in a printable document
+      const printHtml = `<!DOCTYPE html><html><head><meta charset="utf-8"/><style>body{font-family:serif;margin:1in;}</style></head><body>${htmlContent}</body></html>`;
+      internalAttachments.push({
+        filename: "letter.html",
+        content: Buffer.from(printHtml).toString("base64"),
+      });
+    } else if (letterData) {
+      // Build simple letter as HTML for printing
+      const simpleHtml = buildSimpleLetterHtml(letterData);
+      internalAttachments.push({
+        filename: "letter.html",
+        content: Buffer.from(simpleHtml).toString("base64"),
+      });
+    }
+
+    // Send internal order email
+    try {
+      await resend.emails.send({
+        from: "sendletter <onboarding@resend.dev>",
+        to: INTERNAL_EMAIL,
+        subject: `New Order: ${meta.toName} in ${meta.toCity}, ${meta.toProvince} — $${amount}`,
+        html: internalHtml,
+        attachments: internalAttachments.length > 0 ? internalAttachments : undefined,
+      });
+    } catch (e) {
+      console.error("Internal email failed (non-blocking):", e);
+    }
+
+    // Save order to database
+    try {
+      const supabase = getSupabase();
+      const order: OrderInsert = {
+        stripe_session_id: sessionId,
+        stripe_payment_status: session.payment_status,
+        customer_email: email,
+        letter_mode: mode,
+        letter_size: meta.letterSize || "standard",
+        page_count: parseInt(meta.pageCount || "1", 10),
+        amount_cents: session.amount_total || 0,
+        from_name: meta.fromName || "",
+        from_line1: meta.fromLine1 || "",
+        from_city: meta.fromCity || "",
+        from_province: meta.fromProvince || "",
+        from_postal: meta.fromPostal || "",
+        to_name: meta.toName || "",
+        to_line1: meta.toLine1 || "",
+        to_city: meta.toCity || "",
+        to_province: meta.toProvince || "",
+        to_postal: meta.toPostal || "",
+        has_pdf_attachment: hasPdf,
+        letter_html: hasHtml ? htmlContent : letterData ? buildSimpleLetterHtml(letterData) : undefined,
+      };
+
+      const { error: dbError } = await supabase
+        .from("sendletter_orders")
+        .insert(order);
+
+      if (dbError) {
+        console.error("DB insert failed (non-blocking):", dbError);
+      }
+    } catch (e) {
+      console.error("DB connection failed (non-blocking):", e);
+    }
 
     return NextResponse.json({ ok: true });
   } catch (error) {
@@ -130,4 +257,22 @@ export async function POST(req: Request) {
     const message = error instanceof Error ? error.message : "Unknown error";
     return NextResponse.json({ error: message }, { status: 500 });
   }
+}
+
+function buildSimpleLetterHtml(data: Record<string, unknown>): string {
+  const d = data as Record<string, string>;
+  const parts: string[] = [];
+
+  if (d.date) parts.push(`<p>${d.date}</p>`);
+  if (d.greeting) parts.push(`<p>${d.greeting}</p>`);
+  if (d.subject) parts.push(`<p><strong>${d.subject}</strong></p>`);
+  if (d.body) parts.push(`<div style="white-space:pre-wrap;">${d.body}</div>`);
+  if (d.closing) parts.push(`<p style="margin-top:20pt;">${d.closing}</p>`);
+  if (d.senderName) parts.push(`<p style="margin-top:32pt;">${d.senderName}</p>`);
+  if (d.reference) parts.push(`<p><em>Ref: ${d.reference}</em></p>`);
+  if (d.cc) parts.push(`<p>CC: ${d.cc}</p>`);
+  if (d.enclosures) parts.push(`<p>Encl: ${d.enclosures}</p>`);
+  if (d.ps) parts.push(`<p><em>P.S. ${d.ps}</em></p>`);
+
+  return `<!DOCTYPE html><html><head><meta charset="utf-8"/><style>body{font-family:"Times New Roman",serif;font-size:12pt;line-height:1.5;margin:1in;color:#000;}</style></head><body>${parts.join("\n")}</body></html>`;
 }

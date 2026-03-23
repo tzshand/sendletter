@@ -25,8 +25,11 @@ export default function SuccessPage() {
     async function sendEmail() {
       setEmailStatus("sending");
       try {
-        // Try to get PDF data from IndexedDB
+        // Get draft data from IndexedDB
         let pdfBase64: string | undefined;
+        let htmlContent: string | undefined;
+        let letterData: Record<string, unknown> | undefined;
+        let letterMode: string | undefined;
         try {
           const db = await new Promise<IDBDatabase>((resolve, reject) => {
             const req = indexedDB.open("sendletter", 1);
@@ -42,16 +45,24 @@ export default function SuccessPage() {
           });
           db.close();
 
-          if (draft?.htmlContent && typeof draft.htmlContent === "string") {
-            const match = draft.htmlContent.match(/data-pdf="([^"]+)"/);
-            if (match) pdfBase64 = match[1];
+          if (draft) {
+            letterMode = draft.mode as string | undefined;
+            if (draft.letterData) letterData = draft.letterData as Record<string, unknown>;
+            if (draft.htmlContent && typeof draft.htmlContent === "string") {
+              const match = draft.htmlContent.match(/data-pdf="([^"]+)"/);
+              if (match) {
+                pdfBase64 = match[1];
+              } else {
+                htmlContent = draft.htmlContent;
+              }
+            }
           }
         } catch { /* IndexedDB unavailable */ }
 
         const res = await fetch("/api/send-confirmation", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ sessionId, pdfBase64 }),
+          body: JSON.stringify({ sessionId, pdfBase64, htmlContent, letterData, letterMode }),
         });
 
         if (res.ok) {

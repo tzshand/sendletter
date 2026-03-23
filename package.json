@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@stripe/stripe-js": "^8.11.0",
+    "@supabase/supabase-js": "^2.99.3",
     "@tiptap/extension-placeholder": "^3.20.4",
     "@tiptap/extension-text-align": "^3.20.4",
     "@tiptap/extension-underline": "^3.20.4",
@@ -33,6 +34,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.2.1",
+    "pg": "^8.20.0",
     "tailwindcss": "^4",
     "typescript": "^5"
   }
