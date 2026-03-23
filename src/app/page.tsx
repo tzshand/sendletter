@@ -381,7 +381,8 @@ export default function Home() {
         </div>
 
         <span className="text-xs text-white/50 font-medium">
-          {isFr ? "100 % sans chatbot IA !" : "100% AI Chatbot Free!"}
+          {isFr ? "Propulsé par " : "Powered by "}
+          <a href="https://iaminter.net" target="_blank" rel="noopener noreferrer" className="underline hover:text-white/70 transition-colors">iaminternet</a>
         </span>
       </header>
 
