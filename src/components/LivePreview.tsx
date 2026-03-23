@@ -94,9 +94,10 @@ function EnvelopeContent({
   const isFr = settings.language === "fr";
 
   // Envelope dimensions at 72dpi
-  const isLargeEnvelope = letterSize === "large";
-  const envW = isLargeEnvelope ? 648 : 684; // 9x12" or #10 (9.5x4.125")
-  const envH = isLargeEnvelope ? 864 : 297;
+  const isLargeEnvelope = letterSize === "large" || letterSize === "legal";
+  // Envelope dimensions at 72dpi: #10 = 9.5x4.125", 9x12" for large, 10x15" for legal
+  const envW = isLargeEnvelope ? (letterSize === "legal" ? 720 : 648) : 684;
+  const envH = isLargeEnvelope ? (letterSize === "legal" ? 1080 : 864) : 297;
 
   if (!hasFrom && !hasTo) {
     return (
@@ -190,17 +191,20 @@ function LetterPageContent({
   letterData,
   htmlContent,
   settings,
+  letterSize = "standard",
 }: {
   mode: "simple" | "custom" | "upload";
   letterData: SimpleLetterData;
   htmlContent: string;
   settings: Settings;
+  letterSize?: LetterSize;
 }) {
   const isFr = settings.language === "fr";
+  const pageH = letterSize === "legal" ? 1008 : 792; // 8.5x14 vs 8.5x11 at 72dpi
 
   const pageStyle: React.CSSProperties = {
     width: 612,
-    height: 792,
+    height: pageH,
     padding: 72,
     fontFamily: `"${settings.fontFamily}", serif`,
     fontSize: `${settings.fontSize}pt`,
@@ -330,9 +334,9 @@ export function EnvelopePreviewScaled({
   settings: Settings;
   letterSize: LetterSize;
 }) {
-  const isLarge = letterSize === "large";
-  const w = isLarge ? 648 : 684;
-  const h = isLarge ? 864 : 297;
+  const isLarge = letterSize === "large" || letterSize === "legal";
+  const w = isLarge ? (letterSize === "legal" ? 720 : 648) : 684;
+  const h = isLarge ? (letterSize === "legal" ? 1080 : 864) : 297;
 
   return (
     <ScaledFrame nativeWidth={w} nativeHeight={h}>
@@ -346,19 +350,23 @@ export function LetterPreviewScaled({
   letterData,
   htmlContent,
   settings,
+  letterSize = "standard",
 }: {
   mode: "simple" | "custom" | "upload";
   letterData: SimpleLetterData;
   htmlContent: string;
   settings: Settings;
+  letterSize?: LetterSize;
 }) {
+  const pageH = letterSize === "legal" ? 1008 : 792;
   return (
-    <ScaledFrame nativeWidth={612} nativeHeight={792}>
+    <ScaledFrame nativeWidth={612} nativeHeight={pageH}>
       <LetterPageContent
         mode={mode}
         letterData={letterData}
         htmlContent={htmlContent}
         settings={settings}
+        letterSize={letterSize}
       />
     </ScaledFrame>
   );

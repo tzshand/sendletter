@@ -61,7 +61,7 @@ export function LetterSizeSelector({
   language: Language;
 }) {
   const isFr = language === "fr";
-  const sizes: LetterSize[] = ["standard", "legal", "large"];
+  const sizes: LetterSize[] = ["standard", "large", "legal"];
 
   return (
     <div className="grid grid-cols-3 gap-2">

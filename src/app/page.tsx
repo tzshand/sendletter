@@ -281,6 +281,7 @@ export default function Home() {
             letterData={letterData}
             htmlContent={htmlContent}
             settings={settings}
+            letterSize={letterSize}
           />
         </div>
       </div>
