@@ -17,11 +17,9 @@ export function Analytics() {
     window.gtag("js", new Date());
     window.gtag("config", "GT-PB63C6VV", {
       transport_url: "https://sendletter.app/ga",
-      first_party_collection: true,
     });
     window.gtag("config", "AW-11542356574", {
       transport_url: "https://sendletter.app/ga",
-      first_party_collection: true,
       send_page_view: false,
     });
   }, []);
