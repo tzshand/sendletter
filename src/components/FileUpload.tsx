@@ -9,10 +9,12 @@ export function FileUpload({
   onContent,
   fileName,
   onPageCount,
+  language = "en",
 }: {
   onContent: (html: string, name: string) => void;
   fileName: string;
   onPageCount?: (count: number) => void;
+  language?: "en" | "fr";
 }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -90,7 +92,7 @@ export function FileUpload({
         </div>
         <div className="flex-1 min-w-0">
           <p className="text-sm font-medium truncate">{fileName}</p>
-          <p className="text-xs text-gray-400">Ready to send</p>
+          <p className="text-xs text-gray-400">{language === "fr" ? "Prêt à envoyer" : "Ready to send"}</p>
         </div>
         <button
           onClick={() => onContent("", "")}
@@ -121,10 +123,12 @@ export function FileUpload({
               <Upload className="w-5 h-5 text-gray-500" />
             </div>
             <p className="text-sm font-medium text-gray-700 mb-1">
-              {isDragActive ? "Drop your file here" : "Drop a file or click to browse"}
+              {isDragActive
+                ? (language === "fr" ? "Déposez votre fichier ici" : "Drop your file here")
+                : (language === "fr" ? "Déposez un fichier ou cliquez pour parcourir" : "Drop a file or click to browse")}
             </p>
             <p className="text-xs text-gray-400">
-              PDF or Word (.docx) — up to 10 pages
+              {language === "fr" ? "PDF ou Word (.docx) — jusqu'à 10 pages" : "PDF or Word (.docx) — up to 10 pages"}
             </p>
           </>
         )}

@@ -356,7 +356,7 @@ export default function Home() {
             className="lg:hidden flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-white/10 hover:bg-white/20 rounded-lg transition-colors"
           >
             <Eye className="w-3.5 h-3.5" />
-            Preview
+            {isFr ? "Aperçu" : "Preview"}
           </button>
           <span className="text-xs text-white/50 font-medium hidden sm:block">
             {isFr ? `À partir de $4.20` : `From $4.20`}
@@ -408,6 +408,7 @@ export default function Home() {
                   }}
                   fileName={fileName}
                   onPageCount={setPageCount}
+                  language={settings.language}
                 />
               )}
 
@@ -521,7 +522,7 @@ export default function Home() {
           className="h-12 px-4 rounded-xl border-2 border-gray-200 flex items-center gap-2 text-gray-600 hover:text-gray-900 hover:border-gray-300 transition-colors shrink-0 text-sm font-semibold"
         >
           <Eye className="w-4 h-4" />
-          Preview
+          {isFr ? "Aperçu" : "Preview"}
         </button>
         {mailButton({ className: "flex-1" })}
       </div>

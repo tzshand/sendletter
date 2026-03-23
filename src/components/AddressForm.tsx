@@ -48,12 +48,14 @@ function AddressBlock({
   value,
   onChange,
   hasError,
+  language = "en",
 }: {
   label: string;
   prefix: string;
   value: Address;
   onChange: (a: Address) => void;
   hasError?: boolean;
+  language?: "en" | "fr";
 }) {
   const [postalError, setPostalError] = useState(false);
 
@@ -98,7 +100,7 @@ function AddressBlock({
         <input
           name={`${prefix}-name`}
           autoComplete="name"
-          placeholder="Full name"
+          placeholder={language === "fr" ? "Nom complet" : "Full name"}
           value={value.name}
           onChange={(e) => set("name", e.target.value)}
           className="input input-sm"
@@ -106,7 +108,7 @@ function AddressBlock({
         <input
           name={`${prefix}-address-line1`}
           autoComplete="address-line1"
-          placeholder="Street address"
+          placeholder={language === "fr" ? "Adresse" : "Street address"}
           value={value.line1}
           onChange={(e) => set("line1", e.target.value)}
           className="input input-sm"
@@ -114,7 +116,7 @@ function AddressBlock({
         <input
           name={`${prefix}-address-line2`}
           autoComplete="address-line2"
-          placeholder="Apt, suite (optional)"
+          placeholder={language === "fr" ? "App., bureau (facultatif)" : "Apt, suite (optional)"}
           value={value.line2}
           onChange={(e) => set("line2", e.target.value)}
           className="input input-sm"
@@ -122,7 +124,7 @@ function AddressBlock({
         <input
           name={`${prefix}-city`}
           autoComplete="address-level2"
-          placeholder="City"
+          placeholder={language === "fr" ? "Ville" : "City"}
           value={value.city}
           onChange={(e) => set("city", e.target.value)}
           className="input input-sm"
@@ -147,7 +149,7 @@ function AddressBlock({
               onChange={(e) => set("province", e.target.value)}
               className="input input-sm w-full"
             >
-              <option value="">Province</option>
+              <option value="">{language === "fr" ? "Province" : "Province"}</option>
               {PROVINCES.map((p) => (
                 <option key={p.code} value={p.code}>
                   {p.code} — {p.name}
@@ -206,6 +208,7 @@ export function AddressSection({
         value={from}
         onChange={onFromChange}
         hasError={errors?.from}
+        language={language}
       />
       <AddressBlock
         label={isFr ? "\u00C0 \u2013 Adresse postale" : "To \u2013 Mailing Address"}
@@ -213,6 +216,7 @@ export function AddressSection({
         value={to}
         onChange={onToChange}
         hasError={errors?.to}
+        language={language}
       />
     </div>
   );
