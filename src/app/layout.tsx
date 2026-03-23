@@ -292,13 +292,13 @@ export default function RootLayout({
               (function(){
                 var s=document.createElement('script');
                 s.async=true;
-                s.src='https://www.googletagmanager.com/gtag/js?id=G-39L40L4RTY';
+                s.src='https://www.googletagmanager.com/gtag/js?id=G-312ZDLVT4J';
                 document.head.appendChild(s);
                 window.dataLayer=window.dataLayer||[];
                 function gtag(){dataLayer.push(arguments);}
                 window.gtag=gtag;
                 gtag('js',new Date());
-                gtag('config','G-39L40L4RTY');
+                gtag('config','G-312ZDLVT4J');
                 gtag('config','AW-11542356574');
               })();
             `,
