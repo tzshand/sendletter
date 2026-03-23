@@ -425,9 +425,17 @@ export default function Home() {
           </nav>
         </div>
 
-        <h1 className="text-xs text-white/50 font-semibold tracking-wide">
-          {isFr ? "Envoyez une lettre en ligne au Canada" : "Send a Letter Online in Canada"}
-        </h1>
+        <div className="flex items-center gap-4">
+          <h1 className="text-xs text-white/50 font-semibold tracking-wide hidden md:block">
+            {isFr ? "Envoyez une lettre en ligne au Canada" : "Send a Letter Online in Canada"}
+          </h1>
+          <a
+            href="/signup"
+            className="text-xs font-semibold text-white/70 hover:text-white transition-colors whitespace-nowrap"
+          >
+            {isFr ? "Accès API" : "API Access"}
+          </a>
+        </div>
       </header>
 
       {/* Settings bar */}

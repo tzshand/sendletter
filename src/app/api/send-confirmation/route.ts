@@ -1,13 +1,8 @@
 import { NextResponse } from "next/server";
-import Stripe from "stripe";
 import { Resend } from "resend";
 import { getSupabase, type OrderInsert } from "@/lib/supabase";
-
-function getStripe() {
-  const key = process.env.STRIPE_SECRET_KEY;
-  if (!key) throw new Error("STRIPE_SECRET_KEY is not set");
-  return new Stripe(key, { apiVersion: "2026-02-25.clover" });
-}
+import { getStripe } from "@/lib/stripe";
+import { SIZE_LABELS_BILINGUAL } from "@/lib/pricing";
 
 function getResend() {
   const key = process.env.RESEND_API_KEY;
@@ -17,11 +12,7 @@ function getResend() {
 
 const INTERNAL_EMAIL = "colinh.shand@gmail.com";
 
-const SIZE_LABELS: Record<string, { en: string; fr: string }> = {
-  standard: { en: "Standard tri-fold", fr: "Standard pli en trois" },
-  legal: { en: "Legal (8.5×14)", fr: "Légal (8,5×14)" },
-  large: { en: "Letter (8.5×11)", fr: "Lettre (8,5×11)" },
-};
+const SIZE_LABELS = SIZE_LABELS_BILINGUAL;
 
 function formatAddress(name: string, line1: string, line2: string, city: string, province: string, postal: string): string {
   const lines = [name, line1];

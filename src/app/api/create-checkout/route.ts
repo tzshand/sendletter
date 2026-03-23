@@ -1,23 +1,6 @@
 import { NextResponse } from "next/server";
-import Stripe from "stripe";
-
-function getStripe() {
-  const key = process.env.STRIPE_SECRET_KEY;
-  if (!key) throw new Error("STRIPE_SECRET_KEY is not set");
-  return new Stripe(key, { apiVersion: "2026-02-25.clover" });
-}
-
-const PRICES: Record<string, number> = {
-  standard: 429, // $4.29
-  legal: 928, // $9.28
-  large: 928, // $9.28
-};
-
-const SIZE_LABELS: Record<string, string> = {
-  standard: "Standard (8.5×11 tri-fold)",
-  large: "Letter (8.5×11 flat)",
-  legal: "Legal (8.5×14 flat)",
-};
+import { getStripe } from "@/lib/stripe";
+import { PRICES, SIZE_LABELS } from "@/lib/pricing";
 
 export async function POST(req: Request) {
   const body = await req.json();

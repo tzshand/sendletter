@@ -8,7 +8,7 @@ export function getSupabase() {
 }
 
 export type OrderInsert = {
-  stripe_session_id: string;
+  stripe_session_id: string | null;
   stripe_payment_status: string;
   customer_email: string;
   letter_mode: string;
@@ -17,16 +17,18 @@ export type OrderInsert = {
   amount_cents: number;
   from_name: string;
   from_line1: string;
-  from_line2?: string;
+  from_line2?: string | null;
   from_city: string;
   from_province: string;
   from_postal: string;
   to_name: string;
   to_line1: string;
-  to_line2?: string;
+  to_line2?: string | null;
   to_city: string;
   to_province: string;
   to_postal: string;
   has_pdf_attachment: boolean;
-  letter_html?: string;
+  letter_html?: string | null;
+  api_account_id?: string | null;
+  api_usage_id?: string | null;
 };
