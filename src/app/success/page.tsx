@@ -18,14 +18,22 @@ export default function SuccessPage() {
   const [emailStatus, setEmailStatus] = useState<"sending" | "sent" | "error" | "idle">("idle");
   const sentRef = useRef(false);
 
-  // Fire Google Ads conversion event
+  // Fire Google Ads conversion event (retry briefly if gtag not ready)
   useEffect(() => {
     if (!sessionId) return;
-    if (typeof window !== "undefined" && typeof window.gtag === "function") {
-      window.gtag("event", "conversion", {
-        send_to: "AW-11542356574/UzL5CMvJko4cEN7E6f8q",
-        transaction_id: sessionId,
-      });
+    function fire() {
+      if (typeof window.gtag === "function") {
+        window.gtag("event", "conversion", {
+          send_to: "AW-11542356574/UzL5CMvJko4cEN7E6f8q",
+          transaction_id: sessionId,
+        });
+        return true;
+      }
+      return false;
+    }
+    if (!fire()) {
+      const id = setInterval(() => { if (fire()) clearInterval(id); }, 200);
+      setTimeout(() => clearInterval(id), 5000);
     }
   }, [sessionId]);
 

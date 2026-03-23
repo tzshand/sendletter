@@ -299,7 +299,7 @@ export default function RootLayout({
                 window.gtag=gtag;
                 gtag('js',new Date());
                 gtag('config','G-312ZDLVT4J',{transport_url:'https://sendletter.app/ga',first_party_collection:true});
-                gtag('config','AW-11542356574');
+                gtag('config','AW-11542356574',{transport_url:'https://sendletter.app/ga',first_party_collection:true});
               })();
             `,
           }}
