@@ -295,7 +295,7 @@ function LetterPageContent({
         <div style={{ marginBottom: "12pt" }}>{letterData.greeting}</div>
       )}
       {letterData.body && (
-        <div style={{ flex: settings.verticalCenter ? undefined : 1, whiteSpace: "pre-wrap" }}>{letterData.body}</div>
+        <div style={{ whiteSpace: "pre-wrap" }}>{letterData.body}</div>
       )}
       {(letterData.closing || letterData.senderName) && (
         <div style={{ marginTop: "20pt" }}>
