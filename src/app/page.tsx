@@ -59,6 +59,7 @@ export default function Home() {
     language: "en",
     fontFamily: "Times New Roman",
     fontSize: 12,
+    verticalCenter: true,
   });
 
   const [letterData, setLetterData] = useState<SimpleLetterData>({
