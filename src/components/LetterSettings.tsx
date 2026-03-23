@@ -30,27 +30,36 @@ export function LetterSettingsBar({
   onChange: (s: Settings) => void;
 }) {
   return (
-    <div className="flex items-center gap-3 flex-wrap">
-      {/* Language */}
-      <div className="flex items-center gap-1.5">
-        <Globe className="w-3.5 h-3.5 text-gray-400" />
-        <div className="flex gap-0.5 p-0.5 bg-gray-100 rounded-md">
-          {(["en", "fr"] as Language[]).map((lang) => (
-            <button
-              key={lang}
-              onClick={() => onChange({ ...settings, language: lang })}
-              className={`px-2 py-0.5 text-xs font-medium rounded transition-all ${
-                settings.language === lang
-                  ? "bg-white text-gray-900 shadow-sm"
-                  : "text-gray-500 hover:text-gray-700"
-              }`}
-            >
-              {lang.toUpperCase()}
-            </button>
-          ))}
-        </div>
+    <div className="flex items-center gap-2">
+      <Globe className="w-4 h-4 text-gray-400" />
+      <div className="flex gap-1 p-1 bg-gray-100 rounded-lg">
+        {(["en", "fr"] as Language[]).map((lang) => (
+          <button
+            key={lang}
+            onClick={() => onChange({ ...settings, language: lang })}
+            className={`px-3 py-1 text-sm font-semibold rounded-md transition-all ${
+              settings.language === lang
+                ? "bg-white text-gray-900 shadow-sm"
+                : "text-gray-400 hover:text-gray-600"
+            }`}
+          >
+            {lang === "en" ? "English" : "Français"}
+          </button>
+        ))}
       </div>
+    </div>
+  );
+}
 
+export function FontSizeBar({
+  settings,
+  onChange,
+}: {
+  settings: Settings;
+  onChange: (s: Settings) => void;
+}) {
+  return (
+    <div className="flex items-center gap-3 flex-wrap">
       {/* Font */}
       <div className="flex items-center gap-1.5">
         <Type className="w-3.5 h-3.5 text-gray-400" />

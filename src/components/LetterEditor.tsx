@@ -16,15 +16,18 @@ import {
   ListOrdered,
 } from "lucide-react";
 import type { Settings } from "./LetterSettings";
+import { FontSizeBar } from "./LetterSettings";
 
 export function LetterEditor({
   content,
   onChange,
   settings,
+  onSettingsChange,
 }: {
   content: string;
   onChange: (html: string) => void;
   settings: Settings;
+  onSettingsChange: (s: Settings) => void;
 }) {
   const editor = useEditor({
     extensions: [
@@ -82,6 +85,9 @@ export function LetterEditor({
 
   return (
     <div>
+      <div className="mb-3">
+        <FontSizeBar settings={settings} onChange={onSettingsChange} />
+      </div>
       <div className="flex items-center gap-0.5 mb-3">
         <Btn
           title="Bold"

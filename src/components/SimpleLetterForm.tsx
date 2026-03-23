@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
-import type { Language } from "./LetterSettings";
+import type { Language, Settings } from "./LetterSettings";
+import { FontSizeBar } from "./LetterSettings";
 
 export type SimpleLetterData = {
   date: string;
@@ -71,10 +72,14 @@ export function SimpleLetterForm({
   data,
   onChange,
   language,
+  settings,
+  onSettingsChange,
 }: {
   data: SimpleLetterData;
   onChange: (d: SimpleLetterData) => void;
   language: Language;
+  settings: Settings;
+  onSettingsChange: (s: Settings) => void;
 }) {
   const [showExtras, setShowExtras] = useState(false);
   const [extrasEnabled, setExtrasEnabled] = useState({
@@ -98,6 +103,9 @@ export function SimpleLetterForm({
 
   return (
     <div className="space-y-3">
+      {/* Font & size */}
+      <FontSizeBar settings={settings} onChange={onSettingsChange} />
+
       {/* Date */}
       <input
         type="date"

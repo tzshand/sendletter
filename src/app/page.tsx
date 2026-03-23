@@ -31,28 +31,10 @@ import {
 
 type Mode = "upload" | "custom" | "simple";
 
-const MODE_COLORS: Record<Mode, { bg: string; text: string; ring: string; bgSoft: string; hover: string }> = {
-  upload: {
-    bg: "bg-teal",
-    text: "text-teal",
-    ring: "ring-teal/20",
-    bgSoft: "bg-teal/10",
-    hover: "hover:bg-teal-dark",
-  },
-  custom: {
-    bg: "bg-violet",
-    text: "text-violet",
-    ring: "ring-violet/20",
-    bgSoft: "bg-violet/10",
-    hover: "hover:bg-violet-dark",
-  },
-  simple: {
-    bg: "bg-amber",
-    text: "text-amber",
-    ring: "ring-amber/20",
-    bgSoft: "bg-amber/10",
-    hover: "hover:bg-amber-dark",
-  },
+const TAB_COLORS: Record<Mode, { border: string; text: string; bg: string }> = {
+  upload: { border: "border-teal", text: "text-teal", bg: "bg-teal" },
+  simple: { border: "border-amber", text: "text-amber", bg: "bg-amber" },
+  custom: { border: "border-violet", text: "text-violet", bg: "bg-violet" },
 };
 
 const emptyAddress: Address = {
@@ -209,7 +191,6 @@ export default function Home() {
   }, [hasContent, from, to]);
 
   const isFr = settings.language === "fr";
-  const colors = MODE_COLORS[mode];
   const price = formatPrice(letterSize);
 
   const handleCheckout = async () => {
@@ -267,17 +248,11 @@ export default function Home() {
     setFileName("");
   };
 
-  const tabs: { id: Mode; label: string; labelFr: string; icon: React.ReactNode; color: string }[] = [
-    { id: "upload", label: "Upload", labelFr: "Télécharger", icon: <Upload className="w-4 h-4" />, color: "teal" },
-    { id: "custom", label: "Custom", labelFr: "Personnalisé", icon: <FileText className="w-4 h-4" />, color: "violet" },
-    { id: "simple", label: "Letter", labelFr: "Lettre", icon: <PenLine className="w-4 h-4" />, color: "amber" },
+  const tabs: { id: Mode; label: string; labelFr: string; icon: React.ReactNode }[] = [
+    { id: "upload", label: "Upload", labelFr: "Télécharger", icon: <Upload className="w-4 h-4" /> },
+    { id: "simple", label: "Classic Letter", labelFr: "Lettre classique", icon: <PenLine className="w-4 h-4" /> },
+    { id: "custom", label: "Custom", labelFr: "Personnalisé", icon: <FileText className="w-4 h-4" /> },
   ];
-
-  const tabColorClasses: Record<string, { active: string; inactive: string }> = {
-    teal: { active: "bg-teal text-white shadow-md", inactive: "text-gray-500 hover:text-teal hover:bg-teal/5" },
-    violet: { active: "bg-violet text-white shadow-md", inactive: "text-gray-500 hover:text-violet hover:bg-violet/5" },
-    amber: { active: "bg-amber text-white shadow-md", inactive: "text-gray-500 hover:text-amber hover:bg-amber/5" },
-  };
 
   const previewContent = (
     <div className="space-y-5">
@@ -316,7 +291,7 @@ export default function Home() {
     <button
       onClick={handleCheckout}
       disabled={sending}
-      className={`flex items-center justify-center gap-2 h-12 rounded-xl text-sm font-bold transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100 ${colors.bg} text-white ${colors.hover} ${opts?.className || "w-full"}`}
+      className={`flex items-center justify-center gap-2 h-12 rounded-xl text-sm font-bold transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100 bg-brand text-white hover:bg-brand-dark ${opts?.className || "w-full"}`}
     >
       {sending ? (
         <Loader2 className="w-4 h-4 animate-spin" />
@@ -336,7 +311,7 @@ export default function Home() {
       <header className="bg-zinc-950 text-white px-5 h-[56px] flex items-center justify-between shrink-0">
         <div className="flex items-center gap-6">
           <div className="flex items-center gap-2.5">
-            <div className={`w-8 h-8 ${colors.bg} rounded-lg flex items-center justify-center transition-colors`}>
+            <div className={`w-8 h-8 bg-brand rounded-lg flex items-center justify-center transition-colors`}>
               <Mail className="w-4 h-4 text-white" />
             </div>
             <span className="text-[16px] font-bold tracking-tight">
@@ -348,13 +323,15 @@ export default function Home() {
           <nav className="hidden sm:flex items-center gap-1">
             {tabs.map((tab) => {
               const isActive = mode === tab.id;
-              const cls = tabColorClasses[tab.color];
+              const tc = TAB_COLORS[tab.id];
               return (
                 <button
                   key={tab.id}
                   onClick={() => switchMode(tab.id)}
-                  className={`flex items-center gap-1.5 px-4 py-2 text-xs font-semibold rounded-lg transition-all ${
-                    isActive ? cls.active : cls.inactive
+                  className={`flex items-center gap-1.5 px-4 py-2 text-xs font-semibold rounded-lg border-2 transition-all ${
+                    isActive
+                      ? `${tc.border} ${tc.text} bg-white/10`
+                      : `border-transparent ${tc.text} opacity-60 hover:opacity-100`
                   }`}
                 >
                   {tab.icon}
@@ -389,13 +366,15 @@ export default function Home() {
         <nav className="flex items-center gap-1">
           {tabs.map((tab) => {
             const isActive = mode === tab.id;
-            const cls = tabColorClasses[tab.color];
+            const tc = TAB_COLORS[tab.id];
             return (
               <button
                 key={tab.id}
                 onClick={() => switchMode(tab.id)}
-                className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-lg transition-all ${
-                  isActive ? cls.active : cls.inactive
+                className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-lg border-2 transition-all ${
+                  isActive
+                    ? `${tc.border} ${tc.text} bg-white/10`
+                    : `border-transparent ${tc.text} opacity-60 hover:opacity-100`
                 }`}
               >
                 {tab.icon}
@@ -428,6 +407,7 @@ export default function Home() {
                   content={htmlContent}
                   onChange={setHtmlContent}
                   settings={settings}
+                  onSettingsChange={setSettings}
                 />
               )}
 
@@ -436,6 +416,8 @@ export default function Home() {
                   data={letterData}
                   onChange={setLetterData}
                   language={settings.language}
+                  settings={settings}
+                  onSettingsChange={setSettings}
                 />
               )}
             </div>
@@ -485,6 +467,7 @@ export default function Home() {
                 to={to}
                 onFromChange={setFrom}
                 onToChange={setTo}
+                language={settings.language}
                 errors={validationErrors.from || validationErrors.to ? { from: validationErrors.from, to: validationErrors.to } : undefined}
               />
             </div>

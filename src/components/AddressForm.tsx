@@ -188,24 +188,27 @@ export function AddressSection({
   onFromChange,
   onToChange,
   errors,
+  language = "en",
 }: {
   from: Address;
   to: Address;
   onFromChange: (a: Address) => void;
   onToChange: (a: Address) => void;
   errors?: { from?: boolean; to?: boolean };
+  language?: "en" | "fr";
 }) {
+  const isFr = language === "fr";
   return (
     <div className="grid sm:grid-cols-2 gap-6">
       <AddressBlock
-        label="Return address"
+        label={isFr ? "De \u2013 Adresse de retour" : "From \u2013 Return Address"}
         prefix="from"
         value={from}
         onChange={onFromChange}
         hasError={errors?.from}
       />
       <AddressBlock
-        label="Mailing to"
+        label={isFr ? "\u00C0 \u2013 Adresse postale" : "To \u2013 Mailing Address"}
         prefix="to"
         value={to}
         onChange={onToChange}
