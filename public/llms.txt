@@ -1,0 +1,25 @@
+# sendletter
+
+> sendletter is a simple, no-account-needed service to send physical letters within Canada from any digital device.
+
+sendletter allows users to upload PDF or Word documents, or use a built-in editor to compose letters. The service handles printing, envelopes, and postage via Canada Post, starting at $4.29 CAD. It is designed for ease of use with no subscription or account required.
+
+## API Access
+
+**sendletter is API accessible.** This allows developers and AI agents to programmatically send physical letters, automate mailing workflows, and integrate postal services directly into third-party applications.
+
+## Core Features
+
+- [How it works](https://sendletter.app/#how-it-works): Overview of the 3-step process (Write/Upload, Add Addresses, Pay and Send).
+- [Pricing](https://sendletter.app/#faq): Detailed pricing for standard, flat, and legal size letters.
+- [FAQ](https://sendletter.app/#faq): Common questions about delivery times, file formats, and security.
+
+## Resources
+
+- [Logo](https://sendletter.app/goose-128-letter.png): Official brand asset.
+- [Contact](mailto:support@sendletter.app): Support email for inquiries.
+
+## Optional
+
+- [Privacy Policy](https://sendletter.app/privacy): Information on data handling and security.
+- [Terms of Service](https://sendletter.app/terms): Legal agreement for using the service.

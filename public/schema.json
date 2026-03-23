@@ -1,0 +1,30 @@
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "sendletter",
+  "operatingSystem": "Web",
+  "applicationCategory": "BusinessApplication",
+  "offers": {
+    "@type": "Offer",
+    "price": "4.29",
+    "priceCurrency": "CAD",
+    "description": "Starts at $4.29 CAD for a standard tri-fold letter."
+  },
+  "description": "Send a real letter in the mail from your computer or phone. No account needed. API accessible for automated workflows. We print and mail within 1 business day via Canada Post.",
+  "url": "https://sendletter.app",
+  "image": "https://sendletter.app/goose-128-letter.png",
+  "author": {
+    "@type": "Organization",
+    "name": "sendletter",
+    "url": "https://sendletter.app"
+  },
+  "featureList": [
+    "API accessible for automated mailing",
+    "Upload PDF or Word documents",
+    "Classic letter template",
+    "Rich text editor",
+    "No account needed",
+    "Canada Post delivery anywhere in Canada"
+  ],
+  "screenshot": "https://sendletter.app/opengraph-image"
+}

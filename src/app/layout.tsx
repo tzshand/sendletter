@@ -23,6 +23,8 @@ export const metadata: Metadata = {
     "poster une lettre en ligne Canada", "courrier en ligne",
     "envoyer une lettre sans aller au bureau de poste",
     "Canada Post", "Postes Canada", "no account mail letter",
+    "letter mailing API", "send letter API Canada", "mail API",
+    "automate sending letters", "programmatic mail",
   ],
   alternates: {
     canonical: "https://sendletter.app",
@@ -65,7 +67,7 @@ const jsonLd = [
     url: "https://sendletter.app",
     logo: "https://sendletter.app/favicon.png",
     description:
-      "Send physical letters online from $4.29 CAD. Write or upload, we print and mail via Canada Post. No account, no subscription, no minimum.",
+      "Send physical letters online from $4.29 CAD. Write or upload, we print and mail via Canada Post. API accessible for automated workflows. No account, no subscription, no minimum.",
     address: {
       "@type": "PostalAddress",
       addressLocality: "Montréal",
@@ -101,6 +103,7 @@ const jsonLd = [
       "Bilingual English/French interface",
       "Canada-wide delivery via Canada Post",
       "No account or subscription required",
+      "API accessible for automated mailing workflows",
     ],
   },
   {
@@ -116,7 +119,7 @@ const jsonLd = [
     serviceType: "Letter Mailing Service",
     areaServed: { "@type": "Country", name: "Canada" },
     description:
-      "Write or upload your letter, add addresses, and we print and mail it via Canada Post. No minimum order, no subscription.",
+      "Write or upload your letter, add addresses, and we print and mail it via Canada Post. API accessible for developers and automated workflows. No minimum order, no subscription.",
     hasOfferCatalog: {
       "@type": "OfferCatalog",
       name: "Letter Mailing Options",
@@ -273,6 +276,22 @@ const jsonLd = [
         acceptedAnswer: {
           "@type": "Answer",
           text: "Nous livrons à toute adresse postale au Canada via Postes Canada.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "Does sendletter have an API?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Yes. sendletter offers API access for developers and AI agents to programmatically send physical letters, automate mailing workflows, and integrate postal services into applications.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "sendletter a-t-il une API?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Oui. sendletter offre un accès API permettant aux développeurs et agents IA d'envoyer des lettres physiques par programmation, d'automatiser les flux de courrier et d'intégrer les services postaux dans leurs applications.",
         },
       },
     ],
