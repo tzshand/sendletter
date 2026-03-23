@@ -365,7 +365,10 @@ export default function Home() {
       </header>
 
       {/* Settings bar */}
-      <div className="bg-white border-b border-gray-200/80 px-5 py-2.5 shrink-0">
+      <div className="bg-white border-b border-gray-200/80 px-5 py-2.5 shrink-0 flex items-center justify-between">
+        <h1 className="text-sm font-semibold text-gray-700">
+          {isFr ? "Poster une lettre au Canada" : "Mail a Letter in Canada"}
+        </h1>
         <LetterSettingsBar settings={settings} onChange={setSettings} />
       </div>
 
