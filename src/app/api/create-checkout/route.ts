@@ -80,7 +80,7 @@ export async function POST(req: Request) {
       },
       custom_text: {
         terms_of_service_acceptance: {
-          message: "I agree to the [Terms of Service](https://sendletter.app/terms). All sales are final — no refunds once payment is completed.",
+          message: "I agree to the [Terms of Service](https://sendletter.app/terms). All sales are final.",
         },
       },
       success_url: `${req.headers.get("origin")}/success?session_id={CHECKOUT_SESSION_ID}`,

@@ -491,9 +491,9 @@ export default function Home() {
               />
               <span className="text-xs text-gray-500 leading-relaxed">
                 {isFr ? (
-                  <>J&apos;accepte les <a href="/terms" target="_blank" className="underline text-gray-700 hover:text-gray-900">conditions d&apos;utilisation</a>, y compris la politique de non-remboursement. Le service est rendu au moment du paiement.</>
+                  <>J&apos;accepte les <a href="/terms" target="_blank" className="underline text-gray-700 hover:text-gray-900">conditions d&apos;utilisation</a>.</>
                 ) : (
-                  <>I agree to the <a href="/terms" target="_blank" className="underline text-gray-700 hover:text-gray-900">Terms of Service</a>, including the no-refund policy. Service is rendered at the time of payment.</>
+                  <>I agree to the <a href="/terms" target="_blank" className="underline text-gray-700 hover:text-gray-900">Terms of Service</a>.</>
                 )}
               </span>
             </label>
