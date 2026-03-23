@@ -36,20 +36,81 @@ class ApiInputError extends Error {
   }
 }
 
-function buildDraftHtml(letter: Record<string, string>): string {
-  const parts: string[] = [];
-  if (letter.date) parts.push(`<p>${letter.date}</p>`);
-  if (letter.recipient) parts.push(`<p>${letter.recipient}</p>`);
-  if (letter.salutation) parts.push(`<p>${letter.salutation}</p>`);
-  if (letter.body) parts.push(`<div style="white-space:pre-wrap;">${letter.body}</div>`);
-  if (letter.closing) parts.push(`<p style="margin-top:20pt;">${letter.closing}</p>`);
-  if (letter.signature) parts.push(`<p style="margin-top:32pt;">${letter.signature}</p>`);
-  return `<!DOCTYPE html><html><head><meta charset="utf-8"/><style>body{font-family:"Times New Roman",serif;font-size:12pt;line-height:1.5;margin:1in;color:#000;}</style></head><body>${parts.join("\n")}</body></html>`;
+// Page dimensions at 72dpi — matches LivePreview.tsx and generatePdf.ts exactly
+const PAGE = { w: 612, h: { standard: 792, large: 792, legal: 1008 }, pad: 72 };
+
+function pageStyle(letterSize: string, font: string, fontSize: number, verticalCenter: boolean): string {
+  const h = PAGE.h[letterSize as keyof typeof PAGE.h] || PAGE.h.standard;
+  return `
+    @page { size: 8.5in ${h === 1008 ? "14in" : "11in"}; margin: 0; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { width: ${PAGE.w}px; height: ${h}px; }
+    body {
+      font-family: "${font}", serif;
+      font-size: ${fontSize}pt;
+      line-height: 1.5;
+      color: #000;
+      background: #fff;
+      padding: ${PAGE.pad}px;
+      display: flex;
+      flex-direction: column;
+      ${verticalCenter ? "justify-content: center;" : ""}
+      overflow: hidden;
+    }
+  `;
 }
 
-function buildFormattedHtml(html: string, css?: string): string {
-  const styleBlock = css ? `<style>${css}</style>` : "";
-  return `<!DOCTYPE html><html><head><meta charset="utf-8"/>${styleBlock}<style>body{margin:1in;}</style></head><body>${html}</body></html>`;
+function buildDraftHtml(
+  letter: Record<string, string>,
+  letterSize: string,
+  options?: { font?: string; font_size?: number; vertical_center?: boolean },
+): string {
+  const font = options?.font || "Times New Roman";
+  const fontSize = options?.font_size || 12;
+  const vc = options?.vertical_center ?? false;
+
+  // Build content blocks matching LivePreview.tsx simple letter layout exactly
+  const parts: string[] = [];
+  if (letter.date)
+    parts.push(`<div style="text-align:right;margin-bottom:20pt;">${letter.date}</div>`);
+  if (letter.reference)
+    parts.push(`<div style="margin-bottom:12pt;font-size:0.9em;">Ref: ${letter.reference}</div>`);
+  if (letter.subject)
+    parts.push(`<div style="margin-bottom:16pt;"><strong>Re: ${letter.subject}</strong></div>`);
+  if (letter.salutation)
+    parts.push(`<div style="margin-bottom:12pt;">${letter.salutation}</div>`);
+  if (letter.body)
+    parts.push(`<div style="white-space:pre-wrap;">${letter.body}</div>`);
+  if (letter.closing || letter.signature) {
+    let closing = `<div style="margin-top:20pt;">`;
+    if (letter.closing) closing += `<div>${letter.closing}</div>`;
+    if (letter.signature) closing += `<div style="margin-top:32pt;">${letter.signature}</div>`;
+    closing += `</div>`;
+    parts.push(closing);
+  }
+  if (letter.cc)
+    parts.push(`<div style="margin-top:16pt;font-size:0.9em;">CC: ${letter.cc}</div>`);
+  if (letter.enclosures)
+    parts.push(`<div style="margin-top:8pt;font-size:0.9em;">Encl.: ${letter.enclosures}</div>`);
+  if (letter.ps)
+    parts.push(`<div style="margin-top:12pt;font-style:italic;font-size:0.9em;">P.S. ${letter.ps}</div>`);
+
+  const css = pageStyle(letterSize, font, fontSize, vc);
+  return `<!DOCTYPE html><html><head><meta charset="utf-8"/><style>${css}</style></head><body>${parts.join("\n")}</body></html>`;
+}
+
+function buildFormattedHtml(
+  html: string,
+  letterSize: string,
+  options?: { css?: string; font?: string; font_size?: number; vertical_center?: boolean },
+): string {
+  const font = options?.font || "Times New Roman";
+  const fontSize = options?.font_size || 12;
+  const vc = options?.vertical_center ?? false;
+  const userCss = options?.css ? `<style>${options.css}</style>` : "";
+
+  const baseCss = pageStyle(letterSize, font, fontSize, vc);
+  return `<!DOCTYPE html><html><head><meta charset="utf-8"/><style>${baseCss}</style>${userCss}</head><body>${html}</body></html>`;
 }
 
 export async function POST(req: Request) {
@@ -108,12 +169,21 @@ export async function POST(req: Request) {
       if (!body.letter?.body) {
         return NextResponse.json({ error: "letter.body is required for draft mode" }, { status: 400 });
       }
-      letterHtml = buildDraftHtml(body.letter);
+      letterHtml = buildDraftHtml(body.letter, letter_size, {
+        font: body.font,
+        font_size: body.font_size,
+        vertical_center: body.vertical_center,
+      });
     } else if (mode === "formatted") {
       if (!body.html) {
         return NextResponse.json({ error: "html is required for formatted mode" }, { status: 400 });
       }
-      letterHtml = buildFormattedHtml(body.html, body.css);
+      letterHtml = buildFormattedHtml(body.html, letter_size, {
+        css: body.css,
+        font: body.font,
+        font_size: body.font_size,
+        vertical_center: body.vertical_center,
+      });
     }
 
     const amountCents = PRICES[letter_size];

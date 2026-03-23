@@ -219,13 +219,13 @@ export async function POST(req: Request) {
     if (hasPdf && pdfBase64.length < 10_000_000) {
       internalAttachments.push({ filename: "letter.pdf", content: pdfBase64 });
     } else if (hasHtml) {
-      const printHtml = `<!DOCTYPE html><html><head><meta charset="utf-8"/><style>body{font-family:serif;margin:1in;}</style></head><body>${htmlContent}</body></html>`;
+      const printHtml = buildPrintHtml(htmlContent, meta.letterSize || "standard");
       internalAttachments.push({
         filename: "letter.html",
         content: Buffer.from(printHtml).toString("base64"),
       });
     } else if (letterData) {
-      const simpleHtml = buildSimpleLetterHtml(letterData);
+      const simpleHtml = buildSimpleLetterHtml(letterData, meta.letterSize || "standard");
       internalAttachments.push({
         filename: "letter.html",
         content: Buffer.from(simpleHtml).toString("base64"),
@@ -267,7 +267,7 @@ export async function POST(req: Request) {
         to_province: meta.toProvince || "",
         to_postal: meta.toPostal || "",
         has_pdf_attachment: hasPdf,
-        letter_html: hasHtml ? htmlContent : letterData ? buildSimpleLetterHtml(letterData) : undefined,
+        letter_html: hasHtml ? htmlContent : letterData ? buildSimpleLetterHtml(letterData, meta.letterSize || "standard") : undefined,
       };
 
       const { error: dbError } = await supabase
@@ -289,20 +289,51 @@ export async function POST(req: Request) {
   }
 }
 
-function buildSimpleLetterHtml(data: Record<string, unknown>): string {
+const PAGE_H: Record<string, number> = { standard: 792, large: 792, legal: 1008 };
+
+function printPageCss(letterSize: string): string {
+  const h = PAGE_H[letterSize] || 792;
+  return `
+    @page { size: 8.5in ${h === 1008 ? "14in" : "11in"}; margin: 0; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { width: 612px; height: ${h}px; }
+    body {
+      font-family: "Times New Roman", serif;
+      font-size: 12pt;
+      line-height: 1.5;
+      color: #000;
+      background: #fff;
+      padding: 72px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+  `;
+}
+
+function buildPrintHtml(content: string, letterSize: string): string {
+  return `<!DOCTYPE html><html><head><meta charset="utf-8"/><style>${printPageCss(letterSize)}</style></head><body>${content}</body></html>`;
+}
+
+function buildSimpleLetterHtml(data: Record<string, unknown>, letterSize: string): string {
   const d = data as Record<string, string>;
   const parts: string[] = [];
 
-  if (d.date) parts.push(`<p>${d.date}</p>`);
-  if (d.greeting) parts.push(`<p>${d.greeting}</p>`);
-  if (d.subject) parts.push(`<p><strong>${d.subject}</strong></p>`);
+  if (d.date) parts.push(`<div style="text-align:right;margin-bottom:20pt;">${d.date}</div>`);
+  if (d.reference) parts.push(`<div style="margin-bottom:12pt;font-size:0.9em;">Ref: ${d.reference}</div>`);
+  if (d.subject) parts.push(`<div style="margin-bottom:16pt;"><strong>Re: ${d.subject}</strong></div>`);
+  if (d.greeting) parts.push(`<div style="margin-bottom:12pt;">${d.greeting}</div>`);
   if (d.body) parts.push(`<div style="white-space:pre-wrap;">${d.body}</div>`);
-  if (d.closing) parts.push(`<p style="margin-top:20pt;">${d.closing}</p>`);
-  if (d.senderName) parts.push(`<p style="margin-top:32pt;">${d.senderName}</p>`);
-  if (d.reference) parts.push(`<p><em>Ref: ${d.reference}</em></p>`);
-  if (d.cc) parts.push(`<p>CC: ${d.cc}</p>`);
-  if (d.enclosures) parts.push(`<p>Encl: ${d.enclosures}</p>`);
-  if (d.ps) parts.push(`<p><em>P.S. ${d.ps}</em></p>`);
+  if (d.closing || d.senderName) {
+    let closing = `<div style="margin-top:20pt;">`;
+    if (d.closing) closing += `<div>${d.closing}</div>`;
+    if (d.senderName) closing += `<div style="margin-top:32pt;">${d.senderName}</div>`;
+    closing += `</div>`;
+    parts.push(closing);
+  }
+  if (d.cc) parts.push(`<div style="margin-top:16pt;font-size:0.9em;">CC: ${d.cc}</div>`);
+  if (d.enclosures) parts.push(`<div style="margin-top:8pt;font-size:0.9em;">Encl.: ${d.enclosures}</div>`);
+  if (d.ps) parts.push(`<div style="margin-top:12pt;font-style:italic;font-size:0.9em;">P.S. ${d.ps}</div>`);
 
-  return `<!DOCTYPE html><html><head><meta charset="utf-8"/><style>body{font-family:"Times New Roman",serif;font-size:12pt;line-height:1.5;margin:1in;color:#000;}</style></head><body>${parts.join("\n")}</body></html>`;
+  return `<!DOCTYPE html><html><head><meta charset="utf-8"/><style>${printPageCss(letterSize)}</style></head><body>${parts.join("\n")}</body></html>`;
 }
