@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist } from "next/font/google";
+import { Analytics } from "@/components/Analytics";
 import "./globals.css";
 
 const geist = Geist({ subsets: ["latin"] });
@@ -290,10 +291,9 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
-        <script async src="https://www.googletagmanager.com/gtag/js?id=G-312ZDLVT4J" />
-        <script dangerouslySetInnerHTML={{ __html: `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-312ZDLVT4J');gtag('config','AW-11542356574');` }} />
       </head>
       <body className="h-full text-gray-900 antialiased">
+        <Analytics />
         {children}
       </body>
     </html>
