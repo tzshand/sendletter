@@ -53,7 +53,6 @@ export default function Home() {
   const [sending, setSending] = useState(false);
   const [letterSize, setLetterSize] = useState<LetterSize>("standard");
 
-  const [tosAccepted, setTosAccepted] = useState(false);
   const [pageCount, setPageCount] = useState(1);
 
   const [settings, setSettings] = useState<Settings>({
@@ -86,7 +85,6 @@ export default function Home() {
     content?: boolean;
     from?: boolean;
     to?: boolean;
-    tos?: boolean;
   }>({});
 
   const contentRef = useRef<HTMLDivElement>(null);
@@ -183,7 +181,7 @@ export default function Home() {
   const hasContent =
     mode === "simple" ? !!letterData.body.trim() : !!htmlContent;
 
-  const canSend = isAddressValid(from) && isAddressValid(to) && hasContent && tosAccepted;
+  const canSend = isAddressValid(from) && isAddressValid(to) && hasContent;
 
   // Clear validation errors reactively as fields are corrected
   useEffect(() => {
@@ -192,11 +190,10 @@ export default function Home() {
       if (prev.content && hasContent) next.content = false;
       if (prev.from && isAddressValid(from)) next.from = false;
       if (prev.to && isAddressValid(to)) next.to = false;
-      if (prev.tos && tosAccepted) next.tos = false;
-      if (next.content === prev.content && next.from === prev.from && next.to === prev.to && next.tos === prev.tos) return prev;
+      if (next.content === prev.content && next.from === prev.from && next.to === prev.to) return prev;
       return next;
     });
-  }, [hasContent, from, to, tosAccepted]);
+  }, [hasContent, from, to]);
 
   const isFr = settings.language === "fr";
   const price = formatPrice(letterSize);
@@ -208,7 +205,6 @@ export default function Home() {
       if (!hasContent) errors.content = true;
       if (!isAddressValid(from)) errors.from = true;
       if (!isAddressValid(to)) errors.to = true;
-      if (!tosAccepted) errors.tos = true;
       setValidationErrors(errors);
 
       // Scroll to first error
@@ -548,22 +544,6 @@ export default function Home() {
               </div>
             </div>
 
-            {/* TOS */}
-            <label className={`flex items-start gap-3 cursor-pointer rounded-xl p-3 -mx-3 transition-all ${validationErrors.tos ? "ring-2 ring-red-400 bg-red-50/40" : ""}`}>
-              <input
-                type="checkbox"
-                checked={tosAccepted}
-                onChange={(e) => setTosAccepted(e.target.checked)}
-                className="mt-0.5 w-4 h-4 rounded border-gray-300 accent-brand shrink-0"
-              />
-              <span className="text-xs text-gray-500 leading-relaxed">
-                {isFr ? (
-                  <>J&apos;accepte les <a href="/terms" target="_blank" className="underline text-gray-700 hover:text-gray-900">conditions d&apos;utilisation</a>.</>
-                ) : (
-                  <>I agree to the <a href="/terms" target="_blank" className="underline text-gray-700 hover:text-gray-900">Terms of Service</a>.</>
-                )}
-              </span>
-            </label>
 
             <div className="h-4 lg:hidden" />
           </div>
