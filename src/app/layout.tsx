@@ -298,8 +298,11 @@ export default function RootLayout({
                 function gtag(){dataLayer.push(arguments);}
                 window.gtag=gtag;
                 gtag('js',new Date());
-                gtag('config','G-312ZDLVT4J',{transport_url:'https://sendletter.app/ga',first_party_collection:true});
+                gtag('config','G-312ZDLVT4J',{transport_url:'https://sendletter.app/ga',first_party_collection:true,send_page_view:false});
                 gtag('config','AW-11542356574',{transport_url:'https://sendletter.app/ga',first_party_collection:true});
+                document.addEventListener('DOMContentLoaded',function(){
+                  gtag('event','page_view',{page_title:document.title,page_location:window.location.href});
+                });
               })();
             `,
           }}
