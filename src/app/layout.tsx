@@ -287,6 +287,12 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${geist.className} h-full`}>
       <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      </head>
+      <body className="h-full text-gray-900 antialiased">
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-312ZDLVT4J"
           strategy="afterInteractive"
@@ -298,12 +304,8 @@ gtag('js', new Date());
 gtag('config', 'G-312ZDLVT4J');
 gtag('config', 'AW-11542356574');`}
         </Script>
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-        />
-      </head>
-      <body className="h-full text-gray-900 antialiased">{children}</body>
+        {children}
+      </body>
     </html>
   );
 }
