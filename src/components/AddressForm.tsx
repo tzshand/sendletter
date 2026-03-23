@@ -319,9 +319,8 @@ function AddressBlock({
         </div>
         {/* Country selector */}
         {lockCountry ? (
-          <div className="flex items-center gap-1.5 text-xs text-gray-400">
-            <span>🇨🇦</span>
-            <span>Canada</span>
+          <div className="input input-sm w-full flex items-center text-gray-500 cursor-default">
+            Canada
           </div>
         ) : (
           <select

@@ -433,7 +433,7 @@ export default function Home() {
 
         <div className="flex items-center gap-4">
           <h1 className="text-xs text-white/50 font-semibold tracking-wide hidden md:block">
-            {isFr ? "Envoyez une lettre en ligne au Canada" : "Send a Letter Online in Canada"}
+            {isFr ? "Envoyez une lettre en ligne" : "Send a Letter Online"}
           </h1>
           <a
             href="/signup"
@@ -447,7 +447,7 @@ export default function Home() {
       {/* Settings bar */}
       <div className="bg-white border-b border-gray-200/80 px-5 py-2.5 shrink-0 flex items-center justify-between">
         <h2 className="text-sm font-semibold text-gray-700">
-          {isFr ? "Poster une lettre au Canada" : "Mail a Letter in Canada"}
+          {isFr ? "Poster une lettre à une adresse au Canada" : "Mail a Letter to an Address in Canada"}
         </h2>
         <LetterSettingsBar settings={settings} onChange={setSettings} />
       </div>
