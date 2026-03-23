@@ -1,5 +1,9 @@
 "use client";
 
+declare global {
+  interface Window { gtag?: (...args: unknown[]) => void; }
+}
+
 import { useEffect, useState, useRef } from "react";
 import { Check, Mail, Loader2 } from "lucide-react";
 import Link from "next/link";
@@ -17,6 +21,17 @@ export default function SuccessPage() {
   const sessionId = useSessionId();
   const [emailStatus, setEmailStatus] = useState<"sending" | "sent" | "error" | "idle">("idle");
   const sentRef = useRef(false);
+
+  // Fire Google Ads conversion event
+  useEffect(() => {
+    if (!sessionId) return;
+    if (typeof window !== "undefined" && typeof window.gtag === "function") {
+      window.gtag("event", "conversion", {
+        send_to: "AW-11542356574/UzL5CMvJko4cEN7E6f8q",
+        transaction_id: sessionId,
+      });
+    }
+  }, [sessionId]);
 
   useEffect(() => {
     if (!sessionId || sentRef.current) return;
