@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import { Geist } from "next/font/google";
 import "./globals.css";
 
@@ -281,6 +282,16 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${geist.className} h-full`}>
       <head>
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-312ZDLVT4J"
+          strategy="afterInteractive"
+        />
+        <Script id="gtag-init" strategy="afterInteractive">
+          {`window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-312ZDLVT4J');`}
+        </Script>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
