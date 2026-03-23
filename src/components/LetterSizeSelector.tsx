@@ -19,7 +19,7 @@ export const LETTER_SIZE_CONFIG: Record<
   },
   large: {
     maxPages: 15,
-    priceAdd: 4,
+    priceAdd: 4.99,
     label: "Letter",
     labelFr: "Lettre",
     desc: "8.5×11, flat envelope",
@@ -27,7 +27,7 @@ export const LETTER_SIZE_CONFIG: Record<
   },
   legal: {
     maxPages: 15,
-    priceAdd: 4,
+    priceAdd: 4.99,
     label: "Legal",
     labelFr: "Légal",
     desc: "8.5×14, large envelope",
@@ -35,7 +35,7 @@ export const LETTER_SIZE_CONFIG: Record<
   },
 };
 
-const BASE_PRICE = 5;
+const BASE_PRICE = 4.29;
 
 const ICONS: Record<LetterSize, React.ReactNode> = {
   standard: <Mail className="w-4 h-4" />,

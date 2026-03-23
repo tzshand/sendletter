@@ -8,9 +8,9 @@ function getStripe() {
 }
 
 const PRICES: Record<string, number> = {
-  standard: 500, // $5.00
-  legal: 900, // $9.00
-  large: 900, // $9.00
+  standard: 429, // $4.29
+  legal: 928, // $9.28
+  large: 928, // $9.28
 };
 
 const SIZE_LABELS: Record<string, string> = {
