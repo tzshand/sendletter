@@ -15,13 +15,21 @@ const PRICES: Record<string, number> = {
 
 const SIZE_LABELS: Record<string, string> = {
   standard: "Standard tri-fold",
+  large: "Letter (8.5×11)",
   legal: "Legal (8.5×14)",
-  large: "Full size (8.5×11)",
 };
 
 export async function POST(req: Request) {
   const body = await req.json();
-  const { htmlContent, from, to, mode, letterData, letterSize = "standard" } = body;
+  const {
+    htmlContent,
+    from,
+    to,
+    mode,
+    letterData,
+    letterSize = "standard",
+    pageCount = 1,
+  } = body;
 
   if (!from || !to) {
     return NextResponse.json(
@@ -46,6 +54,7 @@ export async function POST(req: Request) {
 
   const unitAmount = PRICES[letterSize] || PRICES.standard;
   const sizeLabel = SIZE_LABELS[letterSize] || SIZE_LABELS.standard;
+  const pages = Math.max(1, Math.min(Number(pageCount) || 1, 15));
 
   try {
     const stripe = getStripe();
@@ -57,7 +66,8 @@ export async function POST(req: Request) {
             currency: "cad",
             product_data: {
               name: "Mail a Letter",
-              description: `${sizeLabel} — to ${to.name} in ${to.city}, ${to.province}`,
+              description: `${sizeLabel} — ${pages} page${pages > 1 ? "s" : ""} — to ${to.name} in ${to.city}, ${to.province}`,
+              // images: ["https://sendletter.app/og-letter.png"], // TODO: add branded preview image
             },
             unit_amount: unitAmount,
           },
@@ -65,15 +75,30 @@ export async function POST(req: Request) {
         },
       ],
       mode: "payment",
+      consent_collection: {
+        terms_of_service: "required",
+      },
+      custom_text: {
+        terms_of_service_acceptance: {
+          message: "I agree to the [Terms of Service](https://sendletter.app/terms). All sales are final — no refunds once payment is completed.",
+        },
+      },
       success_url: `${req.headers.get("origin")}/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${req.headers.get("origin")}`,
       metadata: {
         letterMode: mode,
         letterSize,
+        pageCount: String(pages),
         fromName: from.name,
+        fromLine1: from.line1,
+        fromCity: from.city,
+        fromProvince: from.province,
+        fromPostal: from.postalCode,
         toName: to.name,
+        toLine1: to.line1,
         toCity: to.city,
         toProvince: to.province,
+        toPostal: to.postalCode,
       },
     });
 

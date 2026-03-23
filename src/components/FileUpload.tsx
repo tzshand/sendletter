@@ -8,9 +8,11 @@ import mammoth from "mammoth";
 export function FileUpload({
   onContent,
   fileName,
+  onPageCount,
 }: {
   onContent: (html: string, name: string) => void;
   fileName: string;
+  onPageCount?: (count: number) => void;
 }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -23,12 +25,22 @@ export function FileUpload({
       try {
         if (file.type === "application/pdf") {
           const reader = new FileReader();
-          reader.onload = () => {
+          reader.onload = async () => {
             const base64 = (reader.result as string).split(",")[1];
             onContent(
               `<div data-pdf="${base64}" data-filename="${file.name}"></div>`,
               file.name
             );
+            // Detect page count
+            if (onPageCount) {
+              try {
+                const pdfjsLib = await import("pdfjs-dist");
+                pdfjsLib.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`;
+                const data = Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
+                const pdf = await pdfjsLib.getDocument({ data }).promise;
+                onPageCount(pdf.numPages);
+              } catch { /* ignore */ }
+            }
             setLoading(false);
           };
           reader.readAsDataURL(file);

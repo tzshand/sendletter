@@ -245,7 +245,7 @@ function LetterPageContent({
     }
     const pdfMatch = htmlContent.match(/data-pdf="([^"]+)"/);
     if (pdfMatch) {
-      return <PdfCanvasPreview base64={pdfMatch[1]} width={612} height={792} />;
+      return <PdfCanvasPreview base64={pdfMatch[1]} width={612} />;
     }
     return (
       <div style={pageStyle}>
@@ -398,13 +398,10 @@ function PdfPagesScaled({ base64 }: { base64: string }) {
     return () => obs.disconnect();
   }, []);
 
-  // Assuming letter-size aspect ratio for height calc
-  const pageH = width > 0 ? width * (792 / 612) : 0;
-
   return (
     <div ref={containerRef} className="w-full">
       {width > 0 && (
-        <PdfCanvasPreview base64={base64} width={width} height={pageH} />
+        <PdfCanvasPreview base64={base64} width={width} />
       )}
     </div>
   );

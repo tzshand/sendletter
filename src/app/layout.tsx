@@ -5,9 +5,10 @@ import "./globals.css";
 const geist = Geist({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "sendletter — Mail a letter online for $4.99",
+  title: "sendletter — Mail a letter online from $4.20",
   description:
-    "Write or upload your letter, add addresses, and we'll print and mail it anywhere in Canada for a flat $4.99.",
+    "Write or upload your letter, add addresses, and we'll print and mail it anywhere in Canada from $4.20.",
+  metadataBase: new URL("https://sendletter.app"),
 };
 
 export default function RootLayout({

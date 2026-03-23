@@ -18,24 +18,6 @@ export type SimpleLetterData = {
   ps: string;
 };
 
-const GREETINGS_EN = [
-  "",
-  "Dear Sir or Madam,",
-  "To Whom It May Concern,",
-  "Dear Hiring Manager,",
-  "Hello,",
-  "Good day,",
-];
-const GREETINGS_FR = [
-  "",
-  "Madame, Monsieur,",
-  "À qui de droit,",
-  "Bonjour,",
-  "Cher Monsieur,",
-  "Chère Madame,",
-];
-
-// Removed dropdown closings - now a free text input
 
 function Toggle({
   label,
@@ -93,7 +75,6 @@ export function SimpleLetterForm({
     onChange({ ...data, [field]: value });
 
   const isFr = language === "fr";
-  const greetings = isFr ? GREETINGS_FR : GREETINGS_EN;
 
   const toggleExtra = (key: keyof typeof extrasEnabled) => {
     const newVal = !extrasEnabled[key];
@@ -115,22 +96,12 @@ export function SimpleLetterForm({
       />
 
       {/* Greeting */}
-      <select
+      <input
+        placeholder={isFr ? "Salutation (facultatif)" : "Greeting (optional)"}
         value={data.greeting}
         onChange={(e) => set("greeting", e.target.value)}
         className="input"
-      >
-        <option value="">
-          {isFr ? "Salutation (facultatif)" : "Greeting (optional)"}
-        </option>
-        {greetings
-          .filter((g) => g !== "")
-          .map((g) => (
-            <option key={g} value={g}>
-              {g}
-            </option>
-          ))}
-      </select>
+      />
 
       {/* Subject */}
       <input

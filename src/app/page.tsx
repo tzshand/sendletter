@@ -52,6 +52,9 @@ export default function Home() {
   const [sending, setSending] = useState(false);
   const [letterSize, setLetterSize] = useState<LetterSize>("standard");
 
+  const [tosAccepted, setTosAccepted] = useState(false);
+  const [pageCount, setPageCount] = useState(1);
+
   const [settings, setSettings] = useState<Settings>({
     language: "en",
     fontFamily: "Times New Roman",
@@ -60,10 +63,10 @@ export default function Home() {
 
   const [letterData, setLetterData] = useState<SimpleLetterData>({
     date: new Date().toISOString().split("T")[0],
-    greeting: "",
+    greeting: "Hello,",
     subject: "",
     body: "",
-    closing: "",
+    closing: "Sincerely,",
     senderName: "",
     reference: "",
     cc: "",
@@ -81,6 +84,7 @@ export default function Home() {
     content?: boolean;
     from?: boolean;
     to?: boolean;
+    tos?: boolean;
   }>({});
 
   const contentRef = useRef<HTMLDivElement>(null);
@@ -176,7 +180,7 @@ export default function Home() {
   const hasContent =
     mode === "simple" ? !!letterData.body.trim() : !!htmlContent;
 
-  const canSend = isAddressValid(from) && isAddressValid(to) && hasContent;
+  const canSend = isAddressValid(from) && isAddressValid(to) && hasContent && tosAccepted;
 
   // Clear validation errors reactively as fields are corrected
   useEffect(() => {
@@ -185,10 +189,11 @@ export default function Home() {
       if (prev.content && hasContent) next.content = false;
       if (prev.from && isAddressValid(from)) next.from = false;
       if (prev.to && isAddressValid(to)) next.to = false;
-      if (next.content === prev.content && next.from === prev.from && next.to === prev.to) return prev;
+      if (prev.tos && tosAccepted) next.tos = false;
+      if (next.content === prev.content && next.from === prev.from && next.to === prev.to && next.tos === prev.tos) return prev;
       return next;
     });
-  }, [hasContent, from, to]);
+  }, [hasContent, from, to, tosAccepted]);
 
   const isFr = settings.language === "fr";
   const price = formatPrice(letterSize);
@@ -200,6 +205,7 @@ export default function Home() {
       if (!hasContent) errors.content = true;
       if (!isAddressValid(from)) errors.from = true;
       if (!isAddressValid(to)) errors.to = true;
+      if (!tosAccepted) errors.tos = true;
       setValidationErrors(errors);
 
       // Scroll to first error
@@ -223,6 +229,7 @@ export default function Home() {
           mode,
           letterData,
           letterSize,
+          pageCount,
         }),
       });
       const data = await res.json();
@@ -400,6 +407,7 @@ export default function Home() {
                     setFileName(name);
                   }}
                   fileName={fileName}
+                  onPageCount={setPageCount}
                 />
               )}
 
@@ -472,6 +480,23 @@ export default function Home() {
                 errors={validationErrors.from || validationErrors.to ? { from: validationErrors.from, to: validationErrors.to } : undefined}
               />
             </div>
+
+            {/* TOS */}
+            <label className={`flex items-start gap-3 cursor-pointer rounded-xl p-3 -mx-3 transition-all ${validationErrors.tos ? "ring-2 ring-red-400 bg-red-50/40" : ""}`}>
+              <input
+                type="checkbox"
+                checked={tosAccepted}
+                onChange={(e) => setTosAccepted(e.target.checked)}
+                className="mt-0.5 w-4 h-4 rounded border-gray-300 accent-brand shrink-0"
+              />
+              <span className="text-xs text-gray-500 leading-relaxed">
+                {isFr ? (
+                  <>J&apos;accepte les <a href="/terms" target="_blank" className="underline text-gray-700 hover:text-gray-900">conditions d&apos;utilisation</a>, y compris la politique de non-remboursement. Le service est rendu au moment du paiement.</>
+                ) : (
+                  <>I agree to the <a href="/terms" target="_blank" className="underline text-gray-700 hover:text-gray-900">Terms of Service</a>, including the no-refund policy. Service is rendered at the time of payment.</>
+                )}
+              </span>
+            </label>
 
             <div className="h-4 lg:hidden" />
           </div>
