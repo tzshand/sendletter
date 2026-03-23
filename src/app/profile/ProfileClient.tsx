@@ -64,6 +64,9 @@ function CardForm({ onSuccess }: { onSuccess: () => void }) {
       setError(result.error.message || "Failed to save card");
       setLoading(false);
     } else {
+      // Tell our backend the card was saved (don't wait for webhook)
+      await fetch("/api/stripe/confirm-card", { method: "POST" });
+      setLoading(false);
       onSuccess();
     }
   }
