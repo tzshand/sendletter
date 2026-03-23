@@ -388,7 +388,7 @@ export default function Home() {
             {isFr ? "Aperçu" : "Preview"}
           </button>
           <span className="text-xs text-white/50 font-medium hidden sm:block">
-            {isFr ? `À partir de $5` : `From $5`}
+            {isFr ? "Sans timbres. Sans file. Sans stress." : "No stamps. No line. No hassle."}
           </span>
         </div>
       </header>
