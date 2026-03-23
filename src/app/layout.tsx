@@ -34,9 +34,10 @@ export const metadata: Metadata = {
     locale: "en_CA",
     alternateLocale: "fr_CA",
     type: "website",
+    images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "sendletter — Mail a letter online from $4.29" }],
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
     title: "sendletter — Mail a letter online from $4.29",
     description:
       "Upload or write your letter, we print and mail it via Canada Post from $4.29 CAD.",
@@ -44,6 +45,9 @@ export const metadata: Metadata = {
   robots: {
     index: true,
     follow: true,
+  },
+  verification: {
+    google: "2Qz6zRch06Qztpj9q1R4zTYvFiu5YEpH83AXSZNjLI4",
   },
 };
 
