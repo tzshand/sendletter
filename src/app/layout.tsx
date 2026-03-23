@@ -66,11 +66,6 @@ const jsonLd = [
     priceRange: "$$",
     currenciesAccepted: "CAD",
     paymentAccepted: "Credit Card",
-    parentOrganization: {
-      "@type": "Organization",
-      name: "iaminternet",
-      url: "https://iaminter.net",
-    },
   },
   {
     "@context": "https://schema.org",
