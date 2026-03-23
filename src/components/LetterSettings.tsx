@@ -1,6 +1,6 @@
 "use client";
 
-import { Globe, Type, ALargeSmall } from "lucide-react";
+import { Globe, Type, ALargeSmall, AlignVerticalSpaceAround } from "lucide-react";
 
 export type Language = "en" | "fr";
 export type FontFamily = "Times New Roman" | "Garamond" | "Georgia" | "Helvetica" | "Arial";
@@ -10,6 +10,7 @@ export type Settings = {
   language: Language;
   fontFamily: FontFamily;
   fontSize: FontSize;
+  verticalCenter?: boolean;
 };
 
 const FONTS: { value: FontFamily; label: string }[] = [
@@ -97,6 +98,19 @@ export function FontSizeBar({
           ))}
         </div>
       </div>
+
+      {/* Vertical center */}
+      <button
+        onClick={() => onChange({ ...settings, verticalCenter: !settings.verticalCenter })}
+        className={`flex items-center gap-1.5 px-2 py-1 rounded-md text-xs font-medium transition-all ${
+          settings.verticalCenter
+            ? "bg-gray-900 text-white"
+            : "bg-gray-100 text-gray-500 hover:text-gray-700 hover:bg-gray-200"
+        }`}
+        title="Center content vertically"
+      >
+        <AlignVerticalSpaceAround className="w-3.5 h-3.5" />
+      </button>
     </div>
   );
 }

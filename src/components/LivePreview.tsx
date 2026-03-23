@@ -214,6 +214,7 @@ function LetterPageContent({
     display: "flex",
     flexDirection: "column",
     overflow: "hidden",
+    ...(settings.verticalCenter ? { justifyContent: "center" } : {}),
   };
 
   if (mode === "custom") {
