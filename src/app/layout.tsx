@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist } from "next/font/google";
+import { Analytics } from "@/components/Analytics";
 import "./globals.css";
 
 const geist = Geist({ subsets: ["latin"] });
@@ -287,32 +288,12 @@ export default function RootLayout({
     <html lang="en" className={`${geist.className} h-full`}>
       <head>
         <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              (function(){
-                var s=document.createElement('script');
-                s.async=true;
-                s.src='/ga/js?id=G-312ZDLVT4J';
-                document.head.appendChild(s);
-                window.dataLayer=window.dataLayer||[];
-                function gtag(){dataLayer.push(arguments);}
-                window.gtag=gtag;
-                gtag('js',new Date());
-                gtag('config','G-312ZDLVT4J',{transport_url:'https://sendletter.app/ga',first_party_collection:true,send_page_view:false});
-                gtag('config','AW-11542356574',{transport_url:'https://sendletter.app/ga',first_party_collection:true});
-                document.addEventListener('DOMContentLoaded',function(){
-                  gtag('event','page_view',{page_title:document.title,page_location:window.location.href});
-                });
-              })();
-            `,
-          }}
-        />
-        <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
       <body className="h-full text-gray-900 antialiased">
+        <Analytics />
         {children}
       </body>
     </html>
