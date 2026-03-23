@@ -27,7 +27,7 @@ export function SnowGoose({ size = 32 }: { size?: number }) {
 
   return (
     <Image
-      src="/goose-logo.png"
+      src="/goose-128-letter.png"
       alt="Snow goose"
       width={size}
       height={size}

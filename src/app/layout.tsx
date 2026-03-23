@@ -10,7 +10,7 @@ export const metadata: Metadata = {
     "Write or upload your letter, add addresses, and we'll print and mail it anywhere in Canada from $4.29. No account, no subscription, no minimum.",
   metadataBase: new URL("https://sendletter.app"),
   icons: {
-    icon: "/favicon.svg",
+    icon: "/favicon.png",
   },
   keywords: [
     "send letter online", "mail a letter", "send real mail", "send physical mail",
@@ -57,7 +57,7 @@ const jsonLd = [
     "@type": "LocalBusiness",
     name: "sendletter",
     url: "https://sendletter.app",
-    logo: "https://sendletter.app/favicon.svg",
+    logo: "https://sendletter.app/favicon.png",
     description:
       "Send physical letters online from $4.29 CAD. Write or upload, we print and mail via Canada Post. No account, no subscription, no minimum.",
     address: {
