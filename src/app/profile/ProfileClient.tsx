@@ -147,6 +147,9 @@ export function ProfileClient({ account, apiKey, cardInfo, usage, billing }: Pro
           <span className="text-[14px] font-bold tracking-tight text-gray-900">sendletter</span>
         </a>
         <div className="flex items-center gap-3">
+          <a href="/docs" className="text-sm text-white/60 hover:text-white transition-colors">
+            API Docs
+          </a>
           <span className="text-sm text-white/60">{account.email}</span>
           <button
             onClick={handleLogout}
@@ -263,6 +266,12 @@ export function ProfileClient({ account, apiKey, cardInfo, usage, billing }: Pro
   -H "Content-Type: application/json" \\
   -d '{"mode":"draft","letter":{"body":"Hello"},...}'`}
             </pre>
+            <a
+              href="/docs"
+              className="inline-block mt-2 text-xs text-blue-600 hover:text-blue-800 font-medium transition-colors"
+            >
+              Full API Reference &rarr;
+            </a>
           </div>
         </section>
 
