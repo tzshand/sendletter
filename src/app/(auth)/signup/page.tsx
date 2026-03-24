@@ -69,6 +69,8 @@ export default function SignupPage() {
               <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
               <input
                 type="email"
+                name="email"
+                autoComplete="email"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -81,6 +83,8 @@ export default function SignupPage() {
               <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
               <input
                 type="password"
+                name="password"
+                autoComplete="new-password"
                 required
                 minLength={8}
                 value={password}
@@ -94,6 +98,8 @@ export default function SignupPage() {
               <label className="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
               <input
                 type="password"
+                name="confirm-password"
+                autoComplete="new-password"
                 required
                 value={confirm}
                 onChange={(e) => setConfirm(e.target.value)}
