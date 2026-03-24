@@ -103,8 +103,23 @@ const jsonLd = [
       "Bilingual English/French interface",
       "Canada-wide delivery via Canada Post",
       "No account or subscription required",
-      "API accessible for automated mailing workflows",
+      "REST API for programmatic letter sending",
     ],
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "WebAPI",
+    name: "sendletter API",
+    url: "https://sendletter.app/api/v1/send",
+    documentation: "https://sendletter.app/docs",
+    description:
+      "REST API for sending physical letters anywhere in Canada. Supports draft, formatted HTML, and file upload modes.",
+    provider: {
+      "@type": "Organization",
+      name: "sendletter",
+      url: "https://sendletter.app",
+    },
+    termsOfService: "https://sendletter.app/terms",
   },
   {
     "@context": "https://schema.org",
@@ -306,6 +321,9 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${geist.className} h-full`}>
       <head>
+        <link rel="api-description" href="/openapi.json" type="application/openapi+json" />
+        <link rel="alternate" href="/llms.txt" type="text/plain" title="LLM-readable site info" />
+        <link rel="alternate" href="/llms-full.txt" type="text/plain" title="LLM-readable full API reference" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

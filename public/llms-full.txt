@@ -1,0 +1,213 @@
+# sendletter API — Full Reference
+
+> This file is the complete API reference for LLMs and AI agents integrating with sendletter.
+> Human-readable docs: https://sendletter.app/docs
+> OpenAPI spec: https://sendletter.app/openapi.json
+
+## Overview
+
+sendletter lets you send physical letters to any address in Canada via a single API call. Letters are printed and mailed within 1 business day via Canada Post.
+
+Base URL: https://sendletter.app
+Endpoint: POST /api/v1/send
+Content-Type: application/json
+Auth: Bearer sl_live_YOUR_API_KEY
+
+## Authentication
+
+All requests require an API key in the Authorization header:
+
+    Authorization: Bearer sl_live_YOUR_API_KEY
+
+Get an API key:
+1. Sign up at https://sendletter.app/signup
+2. Add a payment method at https://sendletter.app/profile
+3. Generate an API key on the same page
+
+Keys start with "sl_live_". Store securely. Regenerating invalidates the previous key.
+
+If no payment method is on file, requests return 402.
+
+## Request Format
+
+POST /api/v1/send
+
+Required fields:
+- mode (string): "draft", "formatted", or "upload"
+- from (object): return address
+- to (object): delivery address — MUST be in Canada (country: "CA")
+
+Optional fields:
+- letter_size (string): "standard" (default), "large", or "legal"
+- font (string): "Times New Roman" (default), "Georgia", "Arial", "Helvetica", "Courier New", "Verdana"
+- font_size (number): 8-24, default 12
+- vertical_center (boolean): center content vertically on page, default false
+
+### Address Object
+
+Required: name, line1, city
+Required for CA/US: province, postal_code
+Optional: line2, country (2-letter ISO, default "CA")
+
+All string fields: max 200 characters.
+Canadian postal codes must match FSA format minimum (letter-digit-letter, e.g. "K1A").
+Full format preferred: "K1A 0B1".
+
+IMPORTANT: to.country MUST be "CA". Delivery is Canada-only.
+from.country can be any valid 2-letter ISO country code.
+
+### Draft Mode
+
+Set mode: "draft" and provide a letter object:
+
+    {
+      "mode": "draft",
+      "from": { ... },
+      "to": { ... },
+      "letter": {
+        "body": "Main letter text here. Required. Max 50,000 chars. Whitespace preserved.",
+        "date": "2026-03-23",
+        "salutation": "Dear John,",
+        "subject": "Account Update",
+        "reference": "REF-12345",
+        "closing": "Sincerely,",
+        "signature": "Jane Smith",
+        "cc": "Legal Department",
+        "enclosures": "Invoice #1234",
+        "ps": "Please respond by March 30."
+      }
+    }
+
+Only letter.body is required. All other fields are optional.
+
+### Formatted Mode
+
+Set mode: "formatted" and provide html (string, max 500 KB):
+
+    {
+      "mode": "formatted",
+      "from": { ... },
+      "to": { ... },
+      "html": "<h1>Title</h1><p>Your custom HTML content.</p>",
+      "css": "h1 { color: navy; }",
+      "font": "Georgia",
+      "font_size": 14
+    }
+
+HTML is wrapped in a print-safe page template (8.5×11 or 8.5×14 at 72dpi, 1-inch margins).
+
+### Upload Mode
+
+Set mode: "upload" and provide file (base64 string, max 10 MB):
+
+    {
+      "mode": "upload",
+      "from": { ... },
+      "to": { ... },
+      "file": "JVBERi0xLjQK...",
+      "file_type": "pdf",
+      "page_count": 3
+    }
+
+file_type: "pdf" or "docx"
+page_count: 1-15 (default 1)
+
+## Response
+
+Success (200):
+
+    {
+      "id": "uuid-order-id",
+      "status": "queued",
+      "letter_size": "standard",
+      "amount_cents": 429
+    }
+
+## Error Responses
+
+All errors return:
+
+    { "error": "Human-readable error message" }
+
+Status codes:
+- 400: Bad request (missing fields, invalid values, non-CA delivery, bad postal code, content too large)
+- 401: Unauthorized (missing or invalid API key)
+- 402: Payment required (no payment method on file — add at https://sendletter.app/profile)
+- 500: Internal server error
+
+Common 400 errors:
+- "mode is required. Must be \"draft\", \"formatted\", or \"upload\"."
+- "from address is required"
+- "to address is required"
+- "from.name is required"
+- "from.postal_code must start with a valid Canadian FSA (e.g. \"K1A\" or \"K1A 0B1\")"
+- "Delivery is currently only available to Canadian addresses. to.country must be \"CA\"."
+- "letter.body is required for draft mode"
+- "letter.body exceeds maximum size of 50000 characters"
+- "html exceeds maximum size of 500000 characters"
+- "file exceeds maximum size of 10 MB"
+- "font_size must be a number between 8 and 24"
+- "Invalid font. Allowed fonts: Times New Roman, Georgia, Arial, Helvetica, Courier New, Verdana"
+
+## Pricing (CAD)
+
+All prices include printing, envelope, and Canada Post postage.
+
+| Size     | Envelope         | Max Pages | Price  |
+|----------|-----------------|-----------|--------|
+| standard | #10 (tri-fold)  | 5         | $4.29  |
+| large    | 9×12 (flat)     | 15        | $9.28  |
+| legal    | 10×15 (flat)    | 15        | $9.28  |
+
+## Billing
+
+API usage is accumulated and charged daily against your saved payment method.
+View usage and billing history at https://sendletter.app/profile.
+
+## Limits
+
+- File upload: 10 MB (base64)
+- HTML content: 500 KB
+- Draft body: 50,000 characters
+- Address fields: 200 characters each
+- Page count: 1-15
+- Font size: 8-24 pt
+- Country codes: 2-letter ISO
+- Delivery: Canada only
+
+## Complete Example
+
+    curl -X POST https://sendletter.app/api/v1/send \
+      -H "Authorization: Bearer sl_live_abc123..." \
+      -H "Content-Type: application/json" \
+      -d '{
+        "mode": "draft",
+        "letter_size": "standard",
+        "from": {
+          "name": "Acme Corp",
+          "line1": "100 King St W",
+          "line2": "Suite 5600",
+          "city": "Toronto",
+          "province": "ON",
+          "postal_code": "M5X 1C9",
+          "country": "CA"
+        },
+        "to": {
+          "name": "Jane Doe",
+          "line1": "456 Rue Sainte-Catherine",
+          "city": "Montréal",
+          "province": "QC",
+          "postal_code": "H3B 1A2",
+          "country": "CA"
+        },
+        "letter": {
+          "date": "2026-03-23",
+          "reference": "INV-2026-0042",
+          "salutation": "Dear Ms. Doe,",
+          "subject": "Outstanding Invoice",
+          "body": "Please find enclosed your invoice for services rendered in February 2026.\n\nThe total amount due is $1,250.00 CAD, payable within 30 days.\n\nThank you for your continued business.",
+          "closing": "Best regards,",
+          "signature": "Accounting Department\nAcme Corp",
+          "enclosures": "Invoice #INV-2026-0042"
+        }
+      }'

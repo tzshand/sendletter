@@ -1,25 +1,45 @@
 # sendletter
 
-> sendletter is a simple, no-account-needed service to send physical letters within Canada from any digital device.
+> Send physical letters anywhere in Canada from any digital device. API accessible.
 
-sendletter allows users to upload PDF or Word documents, or use a built-in editor to compose letters. The service handles printing, envelopes, and postage via Canada Post, starting at $4.29 CAD. It is designed for ease of use with no subscription or account required.
+sendletter prints and mails letters via Canada Post within 1 business day. Starting at $4.29 CAD. No account needed for the website; API access requires an account with a payment method.
 
-## API Access
+## API
 
-**sendletter is API accessible.** This allows developers and AI agents to programmatically send physical letters, automate mailing workflows, and integrate postal services directly into third-party applications.
+sendletter has a REST API for programmatically sending physical letters.
 
-## Core Features
+- Endpoint: POST https://sendletter.app/api/v1/send
+- Auth: Bearer token (API key starting with sl_live_)
+- Docs: https://sendletter.app/docs
+- OpenAPI: https://sendletter.app/openapi.json
+- Full reference for LLMs: https://sendletter.app/llms-full.txt
 
-- [How it works](https://sendletter.app/#how-it-works): Overview of the 3-step process (Write/Upload, Add Addresses, Pay and Send).
-- [Pricing](https://sendletter.app/#faq): Detailed pricing for standard, flat, and legal size letters.
-- [FAQ](https://sendletter.app/#faq): Common questions about delivery times, file formats, and security.
+### Modes
+- **draft**: Structured letter fields (date, salutation, body, closing, signature, etc.)
+- **formatted**: Custom HTML/CSS content
+- **upload**: Base64-encoded PDF or DOCX file
 
-## Resources
+### Pricing (CAD, includes printing + postage)
+- Standard (tri-fold, #10 envelope): $4.29
+- Large (flat, 9×12 envelope): $9.28
+- Legal (flat 8.5×14, 10×15 envelope): $9.28
 
-- [Logo](https://sendletter.app/goose-128-letter.png): Official brand asset.
-- [Contact](mailto:support@sendletter.app): Support email for inquiries.
+### Constraints
+- Delivery: Canada only (to.country must be "CA")
+- From address: any country
+- Canadian postal codes: FSA format minimum (A1A or A1A 1A1)
+- File upload: max 10 MB
+- Max 15 pages
+- Billing: daily, charged to saved payment method
 
-## Optional
+## Getting Started
+1. Create account: https://sendletter.app/signup
+2. Add payment method and generate API key: https://sendletter.app/profile
+3. Send a letter via POST /api/v1/send
 
-- [Privacy Policy](https://sendletter.app/privacy): Information on data handling and security.
-- [Terms of Service](https://sendletter.app/terms): Legal agreement for using the service.
+## Links
+- Website: https://sendletter.app
+- API Docs: https://sendletter.app/docs
+- OpenAPI Spec: https://sendletter.app/openapi.json
+- Terms: https://sendletter.app/terms
+- Contact: support@sendletter.app

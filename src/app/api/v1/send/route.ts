@@ -16,25 +16,67 @@ type Address = {
   country?: string;
 };
 
+// Canadian FSA format: letter-digit-letter (first 3 chars of postal code)
+const CA_FSA_REGEX = /^[A-Za-z]\d[A-Za-z]/;
+const CA_POSTAL_REGEX = /^[A-Za-z]\d[A-Za-z]\s?\d[A-Za-z]\d$/;
+const MAX_FIELD_LENGTH = 200;
+
 function validateAddress(addr: unknown, label: string): Address {
+  if (!addr || typeof addr !== "object") {
+    throw new ApiInputError(`${label} address is required and must be an object`);
+  }
   const a = addr as Record<string, unknown>;
-  if (!a?.name || !a?.line1 || !a?.city) {
-    throw new ApiInputError(`Missing required fields in ${label} address (name, line1, city are required)`);
+  if (!a.name || typeof a.name !== "string" || !a.name.trim()) {
+    throw new ApiInputError(`${label}.name is required`);
   }
-  const country = a.country ? String(a.country) : "CA";
-  // Require province and postal_code for CA and US
-  if ((country === "CA" || country === "US") && (!a.province || !a.postal_code)) {
-    throw new ApiInputError(`province and postal_code are required for ${country} addresses in ${label}`);
+  if (!a.line1 || typeof a.line1 !== "string" || !a.line1.trim()) {
+    throw new ApiInputError(`${label}.line1 is required`);
   }
-  return {
-    name: String(a.name),
-    line1: String(a.line1),
-    line2: a.line2 ? String(a.line2) : undefined,
-    city: String(a.city),
-    province: a.province ? String(a.province) : undefined,
-    postal_code: a.postal_code ? String(a.postal_code) : undefined,
-    country,
-  };
+  if (!a.city || typeof a.city !== "string" || !a.city.trim()) {
+    throw new ApiInputError(`${label}.city is required`);
+  }
+
+  const name = String(a.name).trim();
+  const line1 = String(a.line1).trim();
+  const line2 = a.line2 ? String(a.line2).trim() : undefined;
+  const city = String(a.city).trim();
+  const province = a.province ? String(a.province).trim() : undefined;
+  const postalCode = a.postal_code ? String(a.postal_code).trim() : undefined;
+  const country = a.country ? String(a.country).trim().toUpperCase() : "CA";
+
+  // Length limits
+  for (const [field, val] of [["name", name], ["line1", line1], ["line2", line2], ["city", city], ["province", province], ["postal_code", postalCode]] as const) {
+    if (val && val.length > MAX_FIELD_LENGTH) {
+      throw new ApiInputError(`${label}.${field} exceeds maximum length of ${MAX_FIELD_LENGTH} characters`);
+    }
+  }
+
+  // Country code must be 2 letters
+  if (!/^[A-Z]{2}$/.test(country)) {
+    throw new ApiInputError(`${label}.country must be a 2-letter ISO country code (e.g. "CA", "US")`);
+  }
+
+  // CA/US require province and postal_code
+  if (country === "CA" || country === "US") {
+    if (!province) {
+      throw new ApiInputError(`${label}.province is required for ${country} addresses`);
+    }
+    if (!postalCode) {
+      throw new ApiInputError(`${label}.postal_code is required for ${country} addresses`);
+    }
+  }
+
+  // Canadian postal code must match at least FSA format
+  if (country === "CA" && postalCode) {
+    if (!CA_FSA_REGEX.test(postalCode)) {
+      throw new ApiInputError(`${label}.postal_code must start with a valid Canadian FSA (e.g. "K1A" or "K1A 0B1")`);
+    }
+    if (postalCode.replace(/\s/g, "").length > 3 && !CA_POSTAL_REGEX.test(postalCode)) {
+      throw new ApiInputError(`${label}.postal_code is not a valid Canadian postal code. Expected format: A1A 1A1`);
+    }
+  }
+
+  return { name, line1, line2, city, province, postal_code: postalCode, country };
 }
 
 class ApiInputError extends Error {
@@ -120,29 +162,56 @@ function buildFormattedHtml(
   return `<!DOCTYPE html><html><head><meta charset="utf-8"/><style>${baseCss}</style>${userCss}</head><body>${html}</body></html>`;
 }
 
+// Limits
+const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB base64
+const MAX_HTML_SIZE = 500_000; // 500 KB
+const MAX_BODY_SIZE = 50_000; // 50 KB of text
+const MAX_PAGE_COUNT = 15;
+const ALLOWED_FONTS = ["Times New Roman", "Georgia", "Arial", "Helvetica", "Courier New", "Verdana"];
+
 export async function POST(req: Request) {
   try {
     const { accountId, keyId } = await validateApiKey(req);
-    const body = await req.json();
+
+    let body: Record<string, unknown>;
+    try {
+      body = await req.json();
+    } catch {
+      return NextResponse.json({ error: "Invalid JSON in request body" }, { status: 400 });
+    }
+
     const { mode, letter_size = "standard", from, to } = body;
 
     // Validate mode
+    if (!mode || typeof mode !== "string") {
+      return NextResponse.json(
+        { error: 'mode is required. Must be "upload", "draft", or "formatted".' },
+        { status: 400 }
+      );
+    }
     if (!["upload", "draft", "formatted"].includes(mode)) {
       return NextResponse.json(
-        { error: 'Invalid mode. Must be "upload", "draft", or "formatted".' },
+        { error: `Invalid mode "${mode}". Must be "upload", "draft", or "formatted".` },
         { status: 400 }
       );
     }
 
     // Validate letter size
-    if (!PRICES[letter_size]) {
+    if (!PRICES[letter_size as string]) {
       return NextResponse.json(
-        { error: 'Invalid letter_size. Must be "standard", "large", or "legal".' },
+        { error: `Invalid letter_size "${letter_size}". Must be "standard", "large", or "legal".` },
         { status: 400 }
       );
     }
 
-    // Validate addresses
+    // Validate addresses exist
+    if (!from) {
+      return NextResponse.json({ error: "from address is required" }, { status: 400 });
+    }
+    if (!to) {
+      return NextResponse.json({ error: "to address is required" }, { status: 400 });
+    }
+
     let fromAddr: Address, toAddr: Address;
     try {
       fromAddr = validateAddress(from, "from");
@@ -154,6 +223,33 @@ export async function POST(req: Request) {
       throw e;
     }
 
+    // To address must be in Canada
+    if (toAddr.country !== "CA") {
+      return NextResponse.json(
+        { error: "Delivery is currently only available to Canadian addresses. to.country must be \"CA\"." },
+        { status: 400 }
+      );
+    }
+
+    // Validate optional font
+    if (body.font && typeof body.font === "string" && !ALLOWED_FONTS.includes(body.font)) {
+      return NextResponse.json(
+        { error: `Invalid font. Allowed fonts: ${ALLOWED_FONTS.join(", ")}` },
+        { status: 400 }
+      );
+    }
+
+    // Validate optional font_size
+    if (body.font_size !== undefined) {
+      const fs = Number(body.font_size);
+      if (isNaN(fs) || fs < 8 || fs > 24) {
+        return NextResponse.json(
+          { error: "font_size must be a number between 8 and 24" },
+          { status: 400 }
+        );
+      }
+    }
+
     // Validate content based on mode
     let letterHtml: string | undefined;
     let hasPdf = false;
@@ -163,37 +259,51 @@ export async function POST(req: Request) {
 
     if (mode === "upload") {
       if (!body.file || typeof body.file !== "string") {
-        return NextResponse.json({ error: "file (base64) is required for upload mode" }, { status: 400 });
+        return NextResponse.json({ error: "file (base64 string) is required for upload mode" }, { status: 400 });
       }
-      if (!["pdf", "docx"].includes(body.file_type)) {
-        return NextResponse.json({ error: 'file_type must be "pdf" or "docx"' }, { status: 400 });
+      if ((body.file as string).length > MAX_FILE_SIZE) {
+        return NextResponse.json({ error: `file exceeds maximum size of 10 MB` }, { status: 400 });
+      }
+      if (!body.file_type || !["pdf", "docx"].includes(body.file_type as string)) {
+        return NextResponse.json({ error: 'file_type is required and must be "pdf" or "docx"' }, { status: 400 });
       }
       hasPdf = body.file_type === "pdf";
-      pdfBase64 = body.file;
+      pdfBase64 = body.file as string;
       originalFileName = `letter.${body.file_type}`;
-      pageCount = body.page_count || 1;
+      const rawPageCount = Number(body.page_count) || 1;
+      pageCount = Math.max(1, Math.min(rawPageCount, MAX_PAGE_COUNT));
     } else if (mode === "draft") {
-      if (!body.letter?.body) {
+      if (!body.letter || typeof body.letter !== "object") {
+        return NextResponse.json({ error: "letter object is required for draft mode" }, { status: 400 });
+      }
+      const letter = body.letter as Record<string, unknown>;
+      if (!letter.body || typeof letter.body !== "string" || !letter.body.trim()) {
         return NextResponse.json({ error: "letter.body is required for draft mode" }, { status: 400 });
       }
-      letterHtml = buildDraftHtml(body.letter, letter_size, {
-        font: body.font,
-        font_size: body.font_size,
-        vertical_center: body.vertical_center,
+      if ((letter.body as string).length > MAX_BODY_SIZE) {
+        return NextResponse.json({ error: `letter.body exceeds maximum size of ${MAX_BODY_SIZE} characters` }, { status: 400 });
+      }
+      letterHtml = buildDraftHtml(body.letter as Record<string, string>, letter_size as string, {
+        font: body.font as string,
+        font_size: body.font_size as number,
+        vertical_center: body.vertical_center as boolean,
       });
     } else if (mode === "formatted") {
-      if (!body.html) {
-        return NextResponse.json({ error: "html is required for formatted mode" }, { status: 400 });
+      if (!body.html || typeof body.html !== "string") {
+        return NextResponse.json({ error: "html (string) is required for formatted mode" }, { status: 400 });
       }
-      letterHtml = buildFormattedHtml(body.html, letter_size, {
-        css: body.css,
-        font: body.font,
-        font_size: body.font_size,
-        vertical_center: body.vertical_center,
+      if ((body.html as string).length > MAX_HTML_SIZE) {
+        return NextResponse.json({ error: `html exceeds maximum size of ${MAX_HTML_SIZE} characters` }, { status: 400 });
+      }
+      letterHtml = buildFormattedHtml(body.html as string, letter_size as string, {
+        css: body.css as string,
+        font: body.font as string,
+        font_size: body.font_size as number,
+        vertical_center: body.vertical_center as boolean,
       });
     }
 
-    const amountCents = PRICES[letter_size];
+    const amountCents = PRICES[letter_size as string];
     const supabase = getSupabase();
 
     // Insert order into sendletter_orders

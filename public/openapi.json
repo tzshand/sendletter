@@ -1,0 +1,147 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "sendletter API",
+    "version": "1.0.0",
+    "description": "Send physical letters anywhere in Canada programmatically. Letters are printed and mailed within 1 business day via Canada Post.",
+    "contact": { "email": "support@sendletter.app" },
+    "x-logo": { "url": "https://sendletter.app/goose-128-letter.png" }
+  },
+  "servers": [
+    { "url": "https://sendletter.app", "description": "Production" }
+  ],
+  "security": [{ "bearerAuth": [] }],
+  "paths": {
+    "/api/v1/send": {
+      "post": {
+        "operationId": "sendLetter",
+        "summary": "Send a physical letter",
+        "description": "Creates a letter order. The letter is queued for printing and mailed within 1 business day via Canada Post. Delivery address must be in Canada.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/SendRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Order created successfully",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/SendResponse" }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "402": {
+            "description": "No payment method on file",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "API key starting with sl_live_. Get one at https://sendletter.app/profile"
+      }
+    },
+    "schemas": {
+      "Address": {
+        "type": "object",
+        "required": ["name", "line1", "city"],
+        "properties": {
+          "name": { "type": "string", "maxLength": 200, "description": "Full name" },
+          "line1": { "type": "string", "maxLength": 200, "description": "Street address" },
+          "line2": { "type": "string", "maxLength": 200, "description": "Apt, suite, unit (optional)" },
+          "city": { "type": "string", "maxLength": 200, "description": "City" },
+          "province": { "type": "string", "maxLength": 200, "description": "Province or state code. Required for CA and US." },
+          "postal_code": { "type": "string", "maxLength": 200, "description": "Postal or ZIP code. Required for CA and US. Canadian format: A1A 1A1." },
+          "country": { "type": "string", "pattern": "^[A-Z]{2}$", "default": "CA", "description": "2-letter ISO country code. to address must be CA." }
+        }
+      },
+      "DraftLetter": {
+        "type": "object",
+        "required": ["body"],
+        "properties": {
+          "body": { "type": "string", "maxLength": 50000, "description": "Main letter text. Whitespace preserved." },
+          "date": { "type": "string", "description": "Date line (top-right)" },
+          "salutation": { "type": "string", "description": "Greeting, e.g. Dear John," },
+          "subject": { "type": "string", "description": "Subject line" },
+          "reference": { "type": "string", "description": "Reference number" },
+          "closing": { "type": "string", "description": "Sign-off, e.g. Sincerely," },
+          "signature": { "type": "string", "description": "Printed name below closing" },
+          "cc": { "type": "string", "description": "CC line" },
+          "enclosures": { "type": "string", "description": "Enclosures note" },
+          "ps": { "type": "string", "description": "Post-script (rendered italic)" }
+        }
+      },
+      "SendRequest": {
+        "type": "object",
+        "required": ["mode", "from", "to"],
+        "properties": {
+          "mode": { "type": "string", "enum": ["draft", "formatted", "upload"], "description": "Letter content mode" },
+          "letter_size": { "type": "string", "enum": ["standard", "large", "legal"], "default": "standard", "description": "Envelope size" },
+          "from": { "$ref": "#/components/schemas/Address", "description": "Return address (any country)" },
+          "to": { "$ref": "#/components/schemas/Address", "description": "Delivery address (Canada only)" },
+          "letter": { "$ref": "#/components/schemas/DraftLetter", "description": "Letter fields (draft mode)" },
+          "html": { "type": "string", "maxLength": 500000, "description": "HTML content (formatted mode)" },
+          "css": { "type": "string", "description": "Additional CSS (formatted mode)" },
+          "file": { "type": "string", "format": "byte", "description": "Base64-encoded PDF or DOCX (upload mode, max 10 MB)" },
+          "file_type": { "type": "string", "enum": ["pdf", "docx"], "description": "File type (upload mode)" },
+          "page_count": { "type": "integer", "minimum": 1, "maximum": 15, "description": "Number of pages (upload mode)" },
+          "font": { "type": "string", "enum": ["Times New Roman", "Georgia", "Arial", "Helvetica", "Courier New", "Verdana"], "description": "Font family (draft/formatted)" },
+          "font_size": { "type": "number", "minimum": 8, "maximum": 24, "default": 12, "description": "Font size in pt" },
+          "vertical_center": { "type": "boolean", "default": false, "description": "Vertically center content on page" }
+        }
+      },
+      "SendResponse": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "format": "uuid", "description": "Order ID" },
+          "status": { "type": "string", "enum": ["queued"], "description": "Order status" },
+          "letter_size": { "type": "string" },
+          "amount_cents": { "type": "integer", "description": "Amount charged in CAD cents" }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": { "type": "string", "description": "Human-readable error message" }
+        }
+      }
+    }
+  }
+}
