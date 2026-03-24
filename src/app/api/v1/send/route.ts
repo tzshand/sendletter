@@ -3,6 +3,7 @@ import { validateApiKey, ApiAuthError } from "@/lib/api-auth";
 import { getSupabase } from "@/lib/supabase";
 import { PRICES } from "@/lib/pricing";
 import { Resend } from "resend";
+import { escapeHtml, stripControl, sanitizeCss } from "@/lib/sanitize";
 
 const INTERNAL_EMAIL = "colinh.shand@gmail.com";
 
@@ -36,13 +37,13 @@ function validateAddress(addr: unknown, label: string): Address {
     throw new ApiInputError(`${label}.city is required`);
   }
 
-  const name = String(a.name).trim();
-  const line1 = String(a.line1).trim();
-  const line2 = a.line2 ? String(a.line2).trim() : undefined;
-  const city = String(a.city).trim();
-  const province = a.province ? String(a.province).trim() : undefined;
-  const postalCode = a.postal_code ? String(a.postal_code).trim() : undefined;
-  const country = a.country ? String(a.country).trim().toUpperCase() : "CA";
+  const name = stripControl(String(a.name).trim());
+  const line1 = stripControl(String(a.line1).trim());
+  const line2 = a.line2 ? stripControl(String(a.line2).trim()) : undefined;
+  const city = stripControl(String(a.city).trim());
+  const province = a.province ? stripControl(String(a.province).trim()) : undefined;
+  const postalCode = a.postal_code ? stripControl(String(a.postal_code).trim()) : undefined;
+  const country = a.country ? stripControl(String(a.country).trim().toUpperCase()) : "CA";
 
   // Length limits
   for (const [field, val] of [["name", name], ["line1", line1], ["line2", line2], ["city", city], ["province", province], ["postal_code", postalCode]] as const) {
@@ -119,30 +120,32 @@ function buildDraftHtml(
   const vc = options?.vertical_center ?? false;
 
   // Build content blocks matching LivePreview.tsx simple letter layout exactly
+  // All fields are plain text — escape to prevent HTML injection
+  const e = (s: string) => escapeHtml(stripControl(s));
   const parts: string[] = [];
   if (letter.date)
-    parts.push(`<div style="text-align:right;margin-bottom:20pt;">${letter.date}</div>`);
+    parts.push(`<div style="text-align:right;margin-bottom:20pt;">${e(letter.date)}</div>`);
   if (letter.reference)
-    parts.push(`<div style="margin-bottom:12pt;font-size:0.9em;">Ref: ${letter.reference}</div>`);
+    parts.push(`<div style="margin-bottom:12pt;font-size:0.9em;">Ref: ${e(letter.reference)}</div>`);
   if (letter.subject)
-    parts.push(`<div style="margin-bottom:16pt;"><strong>Re: ${letter.subject}</strong></div>`);
+    parts.push(`<div style="margin-bottom:16pt;"><strong>Re: ${e(letter.subject)}</strong></div>`);
   if (letter.salutation)
-    parts.push(`<div style="margin-bottom:12pt;">${letter.salutation}</div>`);
+    parts.push(`<div style="margin-bottom:12pt;">${e(letter.salutation)}</div>`);
   if (letter.body)
-    parts.push(`<div style="white-space:pre-wrap;">${letter.body}</div>`);
+    parts.push(`<div style="white-space:pre-wrap;">${e(letter.body)}</div>`);
   if (letter.closing || letter.signature) {
     let closing = `<div style="margin-top:20pt;">`;
-    if (letter.closing) closing += `<div>${letter.closing}</div>`;
-    if (letter.signature) closing += `<div style="margin-top:32pt;">${letter.signature}</div>`;
+    if (letter.closing) closing += `<div>${e(letter.closing)}</div>`;
+    if (letter.signature) closing += `<div style="margin-top:32pt;">${e(letter.signature)}</div>`;
     closing += `</div>`;
     parts.push(closing);
   }
   if (letter.cc)
-    parts.push(`<div style="margin-top:16pt;font-size:0.9em;">CC: ${letter.cc}</div>`);
+    parts.push(`<div style="margin-top:16pt;font-size:0.9em;">CC: ${e(letter.cc)}</div>`);
   if (letter.enclosures)
-    parts.push(`<div style="margin-top:8pt;font-size:0.9em;">Encl.: ${letter.enclosures}</div>`);
+    parts.push(`<div style="margin-top:8pt;font-size:0.9em;">Encl.: ${e(letter.enclosures)}</div>`);
   if (letter.ps)
-    parts.push(`<div style="margin-top:12pt;font-style:italic;font-size:0.9em;">P.S. ${letter.ps}</div>`);
+    parts.push(`<div style="margin-top:12pt;font-style:italic;font-size:0.9em;">P.S. ${e(letter.ps)}</div>`);
 
   const css = pageStyle(letterSize, font, fontSize, vc);
   return `<!DOCTYPE html><html><head><meta charset="utf-8"/><style>${css}</style></head><body>${parts.join("\n")}</body></html>`;
@@ -156,7 +159,7 @@ function buildFormattedHtml(
   const font = options?.font || "Times New Roman";
   const fontSize = options?.font_size || 12;
   const vc = options?.vertical_center ?? false;
-  const userCss = options?.css ? `<style>${options.css}</style>` : "";
+  const userCss = options?.css ? `<style>${sanitizeCss(options.css)}</style>` : "";
 
   const baseCss = pageStyle(letterSize, font, fontSize, vc);
   return `<!DOCTYPE html><html><head><meta charset="utf-8"/><style>${baseCss}</style>${userCss}</head><body>${html}</body></html>`;
@@ -177,7 +180,13 @@ export async function POST(req: Request) {
     try {
       body = await req.json();
     } catch {
-      return NextResponse.json({ error: "Invalid JSON in request body" }, { status: 400 });
+      return NextResponse.json(
+        { error: 'Invalid JSON in request body. Ensure all strings are properly escaped — double quotes inside values must be written as \\". Example: "name": "John \\"Jr\\" Smith"' },
+        { status: 400 },
+      );
+    }
+    if (!body || typeof body !== "object" || Array.isArray(body)) {
+      return NextResponse.json({ error: "Request body must be a JSON object" }, { status: 400 });
     }
 
     const { mode, letter_size = "standard", from, to } = body;
@@ -191,15 +200,15 @@ export async function POST(req: Request) {
     }
     if (!["upload", "draft", "formatted"].includes(mode)) {
       return NextResponse.json(
-        { error: `Invalid mode "${mode}". Must be "upload", "draft", or "formatted".` },
+        { error: `Invalid mode. Must be "upload", "draft", or "formatted".` },
         { status: 400 }
       );
     }
 
     // Validate letter size
-    if (!PRICES[letter_size as string]) {
+    if (typeof letter_size !== "string" || !PRICES[letter_size]) {
       return NextResponse.json(
-        { error: `Invalid letter_size "${letter_size}". Must be "standard", "large", or "legal".` },
+        { error: `Invalid letter_size. Must be "standard", "large", or "legal".` },
         { status: 400 }
       );
     }
@@ -232,11 +241,16 @@ export async function POST(req: Request) {
     }
 
     // Validate optional font
-    if (body.font && typeof body.font === "string" && !ALLOWED_FONTS.includes(body.font)) {
-      return NextResponse.json(
-        { error: `Invalid font. Allowed fonts: ${ALLOWED_FONTS.join(", ")}` },
-        { status: 400 }
-      );
+    if (body.font !== undefined) {
+      if (typeof body.font !== "string") {
+        return NextResponse.json({ error: "font must be a string" }, { status: 400 });
+      }
+      if (!ALLOWED_FONTS.includes(body.font)) {
+        return NextResponse.json(
+          { error: `Invalid font "${escapeHtml(body.font)}". Allowed fonts: ${ALLOWED_FONTS.join(", ")}` },
+          { status: 400 },
+        );
+      }
     }
 
     // Validate optional font_size
@@ -283,7 +297,20 @@ export async function POST(req: Request) {
       if ((letter.body as string).length > MAX_BODY_SIZE) {
         return NextResponse.json({ error: `letter.body exceeds maximum size of ${MAX_BODY_SIZE} characters` }, { status: 400 });
       }
-      letterHtml = buildDraftHtml(body.letter as Record<string, string>, letter_size as string, {
+      // Validate all letter fields are strings and within length limits
+      const LETTER_FIELDS = ["date", "reference", "subject", "salutation", "body", "closing", "signature", "cc", "enclosures", "ps"];
+      for (const field of LETTER_FIELDS) {
+        const val = letter[field];
+        if (val !== undefined && val !== null) {
+          if (typeof val !== "string") {
+            return NextResponse.json({ error: `letter.${field} must be a string` }, { status: 400 });
+          }
+          if (field !== "body" && val.length > MAX_FIELD_LENGTH) {
+            return NextResponse.json({ error: `letter.${field} exceeds maximum length of ${MAX_FIELD_LENGTH} characters` }, { status: 400 });
+          }
+        }
+      }
+      letterHtml = buildDraftHtml(body.letter as Record<string, string>, letter_size, {
         font: body.font as string,
         font_size: body.font_size as number,
         vertical_center: body.vertical_center as boolean,
@@ -295,7 +322,13 @@ export async function POST(req: Request) {
       if ((body.html as string).length > MAX_HTML_SIZE) {
         return NextResponse.json({ error: `html exceeds maximum size of ${MAX_HTML_SIZE} characters` }, { status: 400 });
       }
-      letterHtml = buildFormattedHtml(body.html as string, letter_size as string, {
+      if (body.css !== undefined && typeof body.css !== "string") {
+        return NextResponse.json({ error: "css must be a string" }, { status: 400 });
+      }
+      if (typeof body.css === "string" && body.css.length > MAX_HTML_SIZE) {
+        return NextResponse.json({ error: `css exceeds maximum size of ${MAX_HTML_SIZE} characters` }, { status: 400 });
+      }
+      letterHtml = buildFormattedHtml(body.html as string, letter_size, {
         css: body.css as string,
         font: body.font as string,
         font_size: body.font_size as number,
@@ -303,7 +336,7 @@ export async function POST(req: Request) {
       });
     }
 
-    const amountCents = PRICES[letter_size as string];
+    const amountCents = PRICES[letter_size];
     const supabase = getSupabase();
 
     // Insert order into sendletter_orders
@@ -375,17 +408,18 @@ export async function POST(req: Request) {
           });
         }
 
+        const eh = escapeHtml;
         await resend.emails.send({
           from: "sendletter <noreply@sendletter.app>",
           to: INTERNAL_EMAIL,
           subject: `API Order: ${toAddr.name} in ${toAddr.city}, ${toAddr.province} — $${(amountCents / 100).toFixed(2)}`,
           html: `<h2>New API Order</h2>
 <p><strong>Order ID:</strong> ${order.id}</p>
-<p><strong>Mode:</strong> ${mode}</p>
-<p><strong>Size:</strong> ${letter_size}</p>
+<p><strong>Mode:</strong> ${eh(mode)}</p>
+<p><strong>Size:</strong> ${eh(String(letter_size))}</p>
 <p><strong>Amount:</strong> $${(amountCents / 100).toFixed(2)} CAD</p>
-<p><strong>From:</strong> ${fromAddr.name}, ${fromAddr.line1}, ${fromAddr.city} ${fromAddr.province || ""} ${fromAddr.postal_code || ""} ${fromAddr.country || "CA"}</p>
-<p><strong>To:</strong> ${toAddr.name}, ${toAddr.line1}, ${toAddr.city} ${toAddr.province || ""} ${toAddr.postal_code || ""} ${toAddr.country || "CA"}</p>`,
+<p><strong>From:</strong> ${eh(fromAddr.name)}, ${eh(fromAddr.line1)}, ${eh(fromAddr.city)} ${eh(fromAddr.province || "")} ${eh(fromAddr.postal_code || "")} ${eh(fromAddr.country || "CA")}</p>
+<p><strong>To:</strong> ${eh(toAddr.name)}, ${eh(toAddr.line1)}, ${eh(toAddr.city)} ${eh(toAddr.province || "")} ${eh(toAddr.postal_code || "")} ${eh(toAddr.country || "CA")}</p>`,
           attachments: attachments.length > 0 ? attachments : undefined,
         });
       }

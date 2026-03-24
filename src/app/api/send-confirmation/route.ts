@@ -3,6 +3,7 @@ import { Resend } from "resend";
 import { getSupabase, type OrderInsert } from "@/lib/supabase";
 import { getStripe } from "@/lib/stripe";
 import { SIZE_LABELS_BILINGUAL } from "@/lib/pricing";
+import { escapeHtml, stripControl } from "@/lib/sanitize";
 
 function getResend() {
   const key = process.env.RESEND_API_KEY;
@@ -15,20 +16,22 @@ const INTERNAL_EMAIL = "colinh.shand@gmail.com";
 const SIZE_LABELS = SIZE_LABELS_BILINGUAL;
 
 function formatAddress(name: string, line1: string, line2: string, city: string, province: string, postal: string, country?: string): string {
-  const lines = [name, line1];
-  if (line2) lines.push(line2);
-  const cityParts = [city, province].filter(Boolean).join(", ");
-  lines.push([cityParts, postal].filter(Boolean).join("  "));
+  const e = (s: string) => escapeHtml(stripControl(s));
+  const lines = [e(name), e(line1)];
+  if (line2) lines.push(e(line2));
+  const cityParts = [city, province].filter(Boolean).map(e).join(", ");
+  lines.push([cityParts, postal ? e(postal) : ""].filter(Boolean).join("  "));
   if (country && country !== "CA") {
     const NAMES: Record<string, string> = { US: "United States", GB: "United Kingdom", FR: "France", DE: "Germany", AU: "Australia" };
-    lines.push(NAMES[country] || country);
+    lines.push(e(NAMES[country] || country));
   }
   return lines.join("<br/>");
 }
 
 function buildEmailHtml(meta: Record<string, string>, amount: string, date: string, pdfAttached: boolean): string {
+  const eh = escapeHtml;
   const size = SIZE_LABELS[meta.letterSize] || SIZE_LABELS.standard;
-  const pages = meta.pageCount || "1";
+  const pages = eh(meta.pageCount || "1");
   const fromAddr = formatAddress(meta.fromName, meta.fromLine1, meta.fromLine2 || "", meta.fromCity, meta.fromProvince, meta.fromPostal, meta.fromCountry);
   const toAddr = formatAddress(meta.toName, meta.toLine1, meta.toLine2 || "", meta.toCity, meta.toProvince, meta.toPostal, meta.toCountry);
 
@@ -120,8 +123,9 @@ function buildInternalEmailHtml(
   hasPdf: boolean,
   hasHtml: boolean,
 ): string {
+  const eh = escapeHtml;
   const size = SIZE_LABELS[meta.letterSize] || SIZE_LABELS.standard;
-  const pages = meta.pageCount || "1";
+  const pages = eh(meta.pageCount || "1");
 
   return `<!DOCTYPE html>
 <html><head><meta charset="utf-8"/></head>
@@ -130,27 +134,27 @@ function buildInternalEmailHtml(
 <h2 style="font-size:18px;margin:0 0 16px;color:#F0513C;">New sendletter Order</h2>
 
 <table style="width:100%;font-size:13px;border-collapse:collapse;margin-bottom:16px;">
-  <tr><td style="padding:6px 0;color:#888;width:140px;">Date</td><td style="padding:6px 0;">${date}</td></tr>
-  <tr><td style="padding:6px 0;color:#888;">Stripe Session</td><td style="padding:6px 0;font-family:monospace;font-size:11px;">${sessionId}</td></tr>
-  <tr><td style="padding:6px 0;color:#888;">Customer Email</td><td style="padding:6px 0;">${customerEmail}</td></tr>
-  <tr><td style="padding:6px 0;color:#888;">Amount</td><td style="padding:6px 0;font-weight:600;">${amount} CAD</td></tr>
-  <tr><td style="padding:6px 0;color:#888;">Mode</td><td style="padding:6px 0;">${letterMode}</td></tr>
+  <tr><td style="padding:6px 0;color:#888;width:140px;">Date</td><td style="padding:6px 0;">${eh(date)}</td></tr>
+  <tr><td style="padding:6px 0;color:#888;">Stripe Session</td><td style="padding:6px 0;font-family:monospace;font-size:11px;">${eh(sessionId)}</td></tr>
+  <tr><td style="padding:6px 0;color:#888;">Customer Email</td><td style="padding:6px 0;">${eh(customerEmail)}</td></tr>
+  <tr><td style="padding:6px 0;color:#888;">Amount</td><td style="padding:6px 0;font-weight:600;">${eh(amount)} CAD</td></tr>
+  <tr><td style="padding:6px 0;color:#888;">Mode</td><td style="padding:6px 0;">${eh(letterMode)}</td></tr>
   <tr><td style="padding:6px 0;color:#888;">Format</td><td style="padding:6px 0;">${size.en}</td></tr>
   <tr><td style="padding:6px 0;color:#888;">Pages</td><td style="padding:6px 0;">${pages}</td></tr>
 </table>
 
 <h3 style="font-size:14px;margin:16px 0 8px;">From (Return Address)</h3>
 <p style="font-size:13px;margin:0;line-height:1.6;">
-  ${meta.fromName}<br/>
-  ${meta.fromLine1}<br/>
-  ${meta.fromLine2 ? meta.fromLine2 + "<br/>" : ""}${meta.fromCity}, ${meta.fromProvince} ${meta.fromPostal}${meta.fromCountry && meta.fromCountry !== "CA" ? "<br/>" + meta.fromCountry : ""}
+  ${eh(meta.fromName || "")}<br/>
+  ${eh(meta.fromLine1 || "")}<br/>
+  ${meta.fromLine2 ? eh(meta.fromLine2) + "<br/>" : ""}${eh(meta.fromCity || "")}, ${eh(meta.fromProvince || "")} ${eh(meta.fromPostal || "")}${meta.fromCountry && meta.fromCountry !== "CA" ? "<br/>" + eh(meta.fromCountry) : ""}
 </p>
 
 <h3 style="font-size:14px;margin:16px 0 8px;">To (Mailing Address)</h3>
 <p style="font-size:13px;margin:0;line-height:1.6;">
-  ${meta.toName}<br/>
-  ${meta.toLine1}<br/>
-  ${meta.toLine2 ? meta.toLine2 + "<br/>" : ""}${meta.toCity}, ${meta.toProvince} ${meta.toPostal}${meta.toCountry && meta.toCountry !== "CA" ? "<br/>" + meta.toCountry : ""}
+  ${eh(meta.toName || "")}<br/>
+  ${eh(meta.toLine1 || "")}<br/>
+  ${meta.toLine2 ? eh(meta.toLine2) + "<br/>" : ""}${eh(meta.toCity || "")}, ${eh(meta.toProvince || "")} ${eh(meta.toPostal || "")}${meta.toCountry && meta.toCountry !== "CA" ? "<br/>" + eh(meta.toCountry) : ""}
 </p>
 
 <div style="background:#f0f9f0;border-radius:8px;padding:12px 16px;font-size:12px;color:#666;margin:20px 0;">
@@ -242,7 +246,7 @@ export async function POST(req: Request) {
       await resend.emails.send({
         from: "sendletter <noreply@sendletter.app>",
         to: INTERNAL_EMAIL,
-        subject: `New Order: ${meta.toName} in ${meta.toCity}, ${meta.toProvince} — $${amount}`,
+        subject: `New Order: ${stripControl(meta.toName || "")} in ${stripControl(meta.toCity || "")}, ${stripControl(meta.toProvince || "")} — $${amount}`,
         html: internalHtml,
         attachments: internalAttachments.length > 0 ? internalAttachments : undefined,
       });
@@ -324,23 +328,24 @@ function buildPrintHtml(content: string, letterSize: string): string {
 
 function buildSimpleLetterHtml(data: Record<string, unknown>, letterSize: string): string {
   const d = data as Record<string, string>;
+  const e = (s: string) => escapeHtml(stripControl(s));
   const parts: string[] = [];
 
-  if (d.date) parts.push(`<div style="text-align:right;margin-bottom:20pt;">${d.date}</div>`);
-  if (d.reference) parts.push(`<div style="margin-bottom:12pt;font-size:0.9em;">Ref: ${d.reference}</div>`);
-  if (d.subject) parts.push(`<div style="margin-bottom:16pt;"><strong>Re: ${d.subject}</strong></div>`);
-  if (d.greeting) parts.push(`<div style="margin-bottom:12pt;">${d.greeting}</div>`);
-  if (d.body) parts.push(`<div style="white-space:pre-wrap;">${d.body}</div>`);
+  if (d.date) parts.push(`<div style="text-align:right;margin-bottom:20pt;">${e(d.date)}</div>`);
+  if (d.reference) parts.push(`<div style="margin-bottom:12pt;font-size:0.9em;">Ref: ${e(d.reference)}</div>`);
+  if (d.subject) parts.push(`<div style="margin-bottom:16pt;"><strong>Re: ${e(d.subject)}</strong></div>`);
+  if (d.greeting) parts.push(`<div style="margin-bottom:12pt;">${e(d.greeting)}</div>`);
+  if (d.body) parts.push(`<div style="white-space:pre-wrap;">${e(d.body)}</div>`);
   if (d.closing || d.senderName) {
     let closing = `<div style="margin-top:20pt;">`;
-    if (d.closing) closing += `<div>${d.closing}</div>`;
-    if (d.senderName) closing += `<div style="margin-top:32pt;">${d.senderName}</div>`;
+    if (d.closing) closing += `<div>${e(d.closing)}</div>`;
+    if (d.senderName) closing += `<div style="margin-top:32pt;">${e(d.senderName)}</div>`;
     closing += `</div>`;
     parts.push(closing);
   }
-  if (d.cc) parts.push(`<div style="margin-top:16pt;font-size:0.9em;">CC: ${d.cc}</div>`);
-  if (d.enclosures) parts.push(`<div style="margin-top:8pt;font-size:0.9em;">Encl.: ${d.enclosures}</div>`);
-  if (d.ps) parts.push(`<div style="margin-top:12pt;font-style:italic;font-size:0.9em;">P.S. ${d.ps}</div>`);
+  if (d.cc) parts.push(`<div style="margin-top:16pt;font-size:0.9em;">CC: ${e(d.cc)}</div>`);
+  if (d.enclosures) parts.push(`<div style="margin-top:8pt;font-size:0.9em;">Encl.: ${e(d.enclosures)}</div>`);
+  if (d.ps) parts.push(`<div style="margin-top:12pt;font-style:italic;font-size:0.9em;">P.S. ${e(d.ps)}</div>`);
 
   return `<!DOCTYPE html><html><head><meta charset="utf-8"/><style>${printPageCss(letterSize)}</style></head><body>${parts.join("\n")}</body></html>`;
 }
