@@ -436,12 +436,6 @@ export default function Home() {
             {isFr ? "Envoyez une lettre en ligne" : "Send a Letter Online"}
           </h1>
           <a
-            href="/docs"
-            className="text-xs font-semibold text-white/70 hover:text-white transition-colors whitespace-nowrap"
-          >
-            {isFr ? "Docs API" : "API Docs"}
-          </a>
-          <a
             href="/signup"
             className="text-xs font-semibold text-white/70 hover:text-white transition-colors whitespace-nowrap"
           >
