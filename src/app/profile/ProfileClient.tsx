@@ -21,10 +21,21 @@ const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
 );
 
+type BillingAddress = {
+  name: string | null;
+  line1: string | null;
+  line2: string | null;
+  city: string | null;
+  state: string | null;
+  postal_code: string | null;
+  country: string | null;
+};
+
 type Props = {
   account: { email: string; hasPaymentMethod: boolean; createdAt: string };
   apiKey: { prefix: string; createdAt: string } | null;
   cardInfo: { brand: string; last4: string } | null;
+  billingAddress: BillingAddress | null;
   usage: Array<{
     id: string;
     letter_mode: string;
@@ -88,7 +99,7 @@ function CardForm({ onSuccess }: { onSuccess: () => void }) {
   );
 }
 
-export function ProfileClient({ account, apiKey, cardInfo, usage, billing }: Props) {
+export function ProfileClient({ account, apiKey, cardInfo, billingAddress, usage, billing }: Props) {
   const router = useRouter();
   const [newKey, setNewKey] = useState<string | null>(null);
   const [keyPrefix, setKeyPrefix] = useState(apiKey?.prefix || null);
@@ -254,6 +265,23 @@ export function ProfileClient({ account, apiKey, cardInfo, usage, billing }: Pro
                   {removeError && (
                     <p className="text-xs text-red-600 mt-2">{removeError}</p>
                   )}
+                </div>
+              )}
+              {billingAddress && (
+                <div className="pt-3 border-t border-gray-100 text-xs text-gray-500 leading-relaxed">
+                  <span className="font-medium text-gray-400 uppercase tracking-wider text-[10px]">Billing address</span>
+                  <div className="mt-1">
+                    {billingAddress.name && <div>{billingAddress.name}</div>}
+                    {billingAddress.line1 && <div>{billingAddress.line1}</div>}
+                    {billingAddress.line2 && <div>{billingAddress.line2}</div>}
+                    <div>
+                      {[billingAddress.city, billingAddress.state].filter(Boolean).join(", ")}
+                      {billingAddress.postal_code ? `  ${billingAddress.postal_code}` : ""}
+                    </div>
+                    {billingAddress.country && billingAddress.country !== "CA" && (
+                      <div>{billingAddress.country}</div>
+                    )}
+                  </div>
                 </div>
               )}
             </div>

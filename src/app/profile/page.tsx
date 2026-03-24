@@ -43,8 +43,17 @@ export default async function ProfilePage() {
     .order("created_at", { ascending: false })
     .limit(10);
 
-  // Get card info from Stripe if payment method is on file
+  // Get card info and billing address from Stripe if payment method is on file
   let cardInfo: { brand: string; last4: string } | null = null;
+  let billingAddress: {
+    name: string | null;
+    line1: string | null;
+    line2: string | null;
+    city: string | null;
+    state: string | null;
+    postal_code: string | null;
+    country: string | null;
+  } | null = null;
   if (account.has_payment_method && account.stripe_customer_id) {
     try {
       const stripe = getStripe();
@@ -55,6 +64,21 @@ export default async function ProfilePage() {
           const pm = await stripe.paymentMethods.retrieve(defaultPm);
           if (pm.card) {
             cardInfo = { brand: pm.card.brand, last4: pm.card.last4 };
+          }
+          if (pm.billing_details) {
+            const bd = pm.billing_details;
+            const a = bd.address;
+            if (bd.name || a?.line1) {
+              billingAddress = {
+                name: bd.name || null,
+                line1: a?.line1 || null,
+                line2: a?.line2 || null,
+                city: a?.city || null,
+                state: a?.state || null,
+                postal_code: a?.postal_code || null,
+                country: a?.country || null,
+              };
+            }
           }
         }
       }
@@ -72,6 +96,7 @@ export default async function ProfilePage() {
       }}
       apiKey={apiKey ? { prefix: apiKey.key_prefix, createdAt: apiKey.created_at } : null}
       cardInfo={cardInfo}
+      billingAddress={billingAddress}
       usage={usage || []}
       billing={billing || []}
     />

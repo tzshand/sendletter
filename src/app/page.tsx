@@ -55,6 +55,7 @@ export default function Home() {
   const [mobilePreview, setMobilePreview] = useState(false);
   const [sending, setSending] = useState(false);
   const [letterSize, setLetterSize] = useState<LetterSize>("standard");
+  const [sessionUser, setSessionUser] = useState<{ firstName: string } | null>(null);
 
   const [pageCount, setPageCount] = useState(1);
 
@@ -72,6 +73,13 @@ export default function Home() {
   useEffect(() => {
     try { localStorage.setItem("sl-settings", JSON.stringify(settings)); } catch { /* ignore */ }
   }, [settings]);
+
+  // Check if user is logged in (for header link)
+  useEffect(() => {
+    fetch("/api/auth/me").then(r => r.json()).then(d => {
+      if (d.loggedIn) setSessionUser({ firstName: d.firstName });
+    }).catch(() => {});
+  }, []);
 
   const [letterData, setLetterData] = useState<SimpleLetterData>({
     date: new Date().toISOString().split("T")[0],
@@ -436,10 +444,10 @@ export default function Home() {
             {isFr ? "Envoyez une lettre en ligne" : "Send a Letter Online"}
           </h1>
           <a
-            href="/signup"
+            href={sessionUser ? "/profile" : "/signup"}
             className="text-xs font-semibold text-white/70 hover:text-white transition-colors whitespace-nowrap"
           >
-            {isFr ? "Accès API" : "API Access"}
+            {sessionUser ? sessionUser.firstName : (isFr ? "Accès API" : "API Access")}
           </a>
         </div>
       </header>
