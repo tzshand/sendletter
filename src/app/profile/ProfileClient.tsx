@@ -14,6 +14,7 @@ import {
   LogOut,
   Loader2,
   AlertTriangle,
+  Trash2,
 } from "lucide-react";
 
 const stripePromise = loadStripe(
@@ -96,6 +97,9 @@ export function ProfileClient({ account, apiKey, cardInfo, usage, billing }: Pro
   const [showCardForm, setShowCardForm] = useState(false);
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [cardLoading, setCardLoading] = useState(false);
+  const [removeLoading, setRemoveLoading] = useState(false);
+  const [removeConfirm, setRemoveConfirm] = useState(false);
+  const [removeError, setRemoveError] = useState("");
 
   const handleLogout = useCallback(async () => {
     await fetch("/api/auth/logout", { method: "POST" });
@@ -126,6 +130,8 @@ export function ProfileClient({ account, apiKey, cardInfo, usage, billing }: Pro
 
   async function openCardForm() {
     setCardLoading(true);
+    setRemoveConfirm(false);
+    setRemoveError("");
     try {
       const res = await fetch("/api/stripe/setup-intent", { method: "POST" });
       const data = await res.json();
@@ -135,6 +141,25 @@ export function ProfileClient({ account, apiKey, cardInfo, usage, billing }: Pro
       }
     } finally {
       setCardLoading(false);
+    }
+  }
+
+  async function handleRemoveCard() {
+    setRemoveLoading(true);
+    setRemoveError("");
+    try {
+      const res = await fetch("/api/stripe/remove-card", { method: "POST" });
+      const data = await res.json();
+      if (res.ok) {
+        router.refresh();
+      } else {
+        setRemoveError(data.error || "Failed to remove card");
+      }
+    } catch {
+      setRemoveError("Something went wrong");
+    } finally {
+      setRemoveLoading(false);
+      setRemoveConfirm(false);
     }
   }
 
@@ -168,26 +193,70 @@ export function ProfileClient({ account, apiKey, cardInfo, usage, billing }: Pro
             <h2 className="text-sm font-semibold text-gray-900">Payment Method</h2>
           </div>
 
-          {cardInfo ? (
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="bg-gray-100 rounded-lg px-3 py-2 text-sm font-mono">
-                  {cardInfo.brand.toUpperCase()} •••• {cardInfo.last4}
-                </div>
-                <span className="text-xs text-green-600 font-medium">Active</span>
-              </div>
+          {showCardForm && clientSecret ? (
+            <div>
+              <Elements stripe={stripePromise} options={{ clientSecret }}>
+                <CardForm onSuccess={() => { setShowCardForm(false); router.refresh(); }} />
+              </Elements>
               <button
-                onClick={openCardForm}
-                disabled={cardLoading}
-                className="text-sm text-gray-500 hover:text-gray-900 transition-colors"
+                onClick={() => setShowCardForm(false)}
+                className="mt-2 text-sm text-gray-500 hover:text-gray-900 transition-colors"
               >
-                Change
+                Cancel
               </button>
             </div>
-          ) : showCardForm && clientSecret ? (
-            <Elements stripe={stripePromise} options={{ clientSecret }}>
-              <CardForm onSuccess={() => router.refresh()} />
-            </Elements>
+          ) : cardInfo ? (
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="bg-gray-100 rounded-lg px-3 py-2 text-sm font-mono">
+                    {cardInfo.brand.toUpperCase()} •••• {cardInfo.last4}
+                  </div>
+                  <span className="text-xs text-green-600 font-medium">Active</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={openCardForm}
+                    disabled={cardLoading}
+                    className="text-sm text-gray-500 hover:text-gray-900 transition-colors disabled:opacity-50"
+                  >
+                    {cardLoading ? <Loader2 size={14} className="animate-spin" /> : "Change"}
+                  </button>
+                  <button
+                    onClick={() => setRemoveConfirm(true)}
+                    className="text-sm text-gray-400 hover:text-red-600 transition-colors"
+                  >
+                    <Trash2 size={14} />
+                  </button>
+                </div>
+              </div>
+              {removeConfirm && (
+                <div className="bg-red-50 border border-red-200 rounded-lg px-4 py-3">
+                  <p className="text-sm text-red-800 mb-2">
+                    Remove your payment method? This will deactivate your API key. Any outstanding balance will be charged first.
+                  </p>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={handleRemoveCard}
+                      disabled={removeLoading}
+                      className="flex items-center gap-1.5 bg-red-600 text-white text-xs font-semibold px-3 py-1.5 rounded-lg hover:bg-red-700 disabled:opacity-50 transition-colors"
+                    >
+                      {removeLoading && <Loader2 size={12} className="animate-spin" />}
+                      Remove Card
+                    </button>
+                    <button
+                      onClick={() => { setRemoveConfirm(false); setRemoveError(""); }}
+                      className="text-xs text-gray-500 hover:text-gray-900 px-3 py-1.5 transition-colors"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                  {removeError && (
+                    <p className="text-xs text-red-600 mt-2">{removeError}</p>
+                  )}
+                </div>
+              )}
+            </div>
           ) : (
             <div>
               <div className="flex items-center gap-2 mb-3 text-sm text-amber-700 bg-amber-50 rounded-lg px-3 py-2">
