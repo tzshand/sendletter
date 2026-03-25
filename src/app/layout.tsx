@@ -90,7 +90,7 @@ const jsonLd = [
     offers: {
       "@type": "AggregateOffer",
       lowPrice: "4.29",
-      highPrice: "9.28",
+      highPrice: "6.28",
       priceCurrency: "CAD",
       offerCount: 3,
     },
@@ -149,14 +149,14 @@ const jsonLd = [
         {
           "@type": "Offer",
           name: "Letter (flat)",
-          price: "9.28",
+          price: "6.28",
           priceCurrency: "CAD",
           description: "8.5×11 letter, mailed flat in a 9×12 envelope. Up to 15 pages.",
         },
         {
           "@type": "Offer",
           name: "Legal (flat)",
-          price: "9.28",
+          price: "6.28",
           priceCurrency: "CAD",
           description: "8.5×14 legal, mailed flat in a 10×15 envelope. Up to 15 pages.",
         },
@@ -202,7 +202,7 @@ const jsonLd = [
         name: "How much does it cost to send a letter online?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "Starting from $4.29 CAD for a standard tri-fold letter. Flat letter and legal sizes are $9.28 CAD. No hidden fees, no subscription.",
+          text: "Starting from $4.29 CAD for a standard tri-fold letter. Flat letter and legal sizes are $6.28 CAD. No hidden fees, no subscription.",
         },
       },
       {
@@ -210,7 +210,7 @@ const jsonLd = [
         name: "Combien coûte l'envoi d'une lettre en ligne?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "À partir de 4,29 $ CAD pour une lettre standard pliée en trois. Les formats lettre et légal à plat sont à 9,28 $ CAD. Aucun frais caché, aucun abonnement.",
+          text: "À partir de 4,29 $ CAD pour une lettre standard pliée en trois. Les formats lettre et légal à plat sont à 6,28 $ CAD. Aucun frais caché, aucun abonnement.",
         },
       },
       {

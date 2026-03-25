@@ -34,10 +34,10 @@ import {
 
 type Mode = "upload" | "custom" | "simple";
 
-const TAB_COLORS: Record<Mode, { border: string; text: string; bg: string }> = {
-  upload: { border: "border-teal", text: "text-teal", bg: "bg-teal" },
-  simple: { border: "border-amber", text: "text-amber", bg: "bg-amber" },
-  custom: { border: "border-violet", text: "text-violet", bg: "bg-violet" },
+const TAB_COLORS: Record<Mode, { border: string; text: string; bg: string; bgLight: string }> = {
+  upload: { border: "border-teal", text: "text-teal", bg: "bg-teal", bgLight: "bg-teal/5" },
+  simple: { border: "border-amber", text: "text-amber", bg: "bg-amber", bgLight: "bg-amber/5" },
+  custom: { border: "border-violet", text: "text-violet", bg: "bg-violet", bgLight: "bg-violet/5" },
 };
 
 const emptyAddress: Address = {
@@ -373,7 +373,7 @@ export default function Home() {
 
   const faqItems = isFr ? [
     { q: "Peut-on vraiment envoyer une lettre en ligne?", a: "Oui. Vous écrivez ou téléchargez votre lettre, ajoutez les adresses, payez, et nous l'imprimons et la postons via Postes Canada dans un délai de 1 jour ouvrable." },
-    { q: "Combien ça coûte?", a: "À partir de 4,29 $ CAD pour une lettre standard pliée en trois. Les formats lettre et légal à plat sont à 9,28 $ CAD. Tout est inclus : impression, enveloppe et affranchissement." },
+    { q: "Combien ça coûte?", a: "À partir de 4,29 $ CAD pour une lettre standard pliée en trois. Les formats lettre et légal à plat sont à 6,28 $ CAD. Tout est inclus : impression, enveloppe et affranchissement." },
     { q: "Quel est le délai de livraison?", a: "Les lettres sont imprimées et postées dans un délai de 1 jour ouvrable. La livraison via Postes Canada prend généralement de 2 à 5 jours ouvrables au Canada." },
     { q: "Ai-je besoin d'un compte?", a: "Non. Aucun compte, aucun abonnement, aucune commande minimale. Écrivez votre lettre, payez et c'est posté." },
     { q: "Quels formats de fichier puis-je télécharger?", a: "PDF et documents Word (.docx), jusqu'à 15 pages et 10 Mo." },
@@ -383,7 +383,7 @@ export default function Home() {
     { q: "Avez-vous une API?", a: "Oui. sendletter offre un accès API pour envoyer des lettres par programmation, automatiser les flux de courrier et intégrer les services postaux dans vos applications." },
   ] : [
     { q: "Can you actually send a letter online?", a: "Yes. Write or upload your letter, add addresses, pay, and we print and mail it via Canada Post within 1 business day." },
-    { q: "How much does it cost?", a: "Starting from $4.29 CAD for a standard tri-fold letter. Flat letter and legal sizes are $9.28 CAD. Printing, envelope, and postage are all included." },
+    { q: "How much does it cost?", a: "Starting from $4.29 CAD for a standard tri-fold letter. Flat letter and legal sizes are $6.28 CAD. Printing, envelope, and postage are all included." },
     { q: "How long does delivery take?", a: "Letters are printed and mailed within 1 business day. Delivery via Canada Post typically takes 2–5 business days within Canada." },
     { q: "Do I need an account?", a: "No. No account, no subscription, no minimum order. Write your letter, pay, and it's in the mail." },
     { q: "What file formats can I upload?", a: "PDF and Word documents (.docx), up to 15 pages and 10 MB." },
@@ -416,27 +416,6 @@ export default function Home() {
             </span>
           </div>
 
-          {/* Tabs */}
-          <nav className="hidden sm:flex items-center gap-1">
-            {tabs.map((tab) => {
-              const isActive = mode === tab.id;
-              const tc = TAB_COLORS[tab.id];
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => switchMode(tab.id)}
-                  className={`flex items-center gap-1.5 px-4 py-2 text-xs font-semibold rounded-lg border-2 transition-all ${
-                    isActive
-                      ? `${tc.border} ${tc.text} bg-white/10`
-                      : `border-transparent ${tc.text} opacity-60 hover:opacity-100`
-                  }`}
-                >
-                  {tab.icon}
-                  {isFr ? tab.labelFr : tab.label}
-                </button>
-              );
-            })}
-          </nav>
         </div>
 
         <div className="flex items-center gap-4">
@@ -460,30 +439,6 @@ export default function Home() {
         <LetterSettingsBar settings={settings} onChange={setSettings} />
       </div>
 
-      {/* Mobile tabs */}
-      <div className="sm:hidden bg-zinc-950 px-4 py-2 shrink-0">
-        <nav className="flex items-center gap-1">
-          {tabs.map((tab) => {
-            const isActive = mode === tab.id;
-            const tc = TAB_COLORS[tab.id];
-            return (
-              <button
-                key={tab.id}
-                onClick={() => switchMode(tab.id)}
-                className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-lg border-2 transition-all ${
-                  isActive
-                    ? `${tc.border} ${tc.text} bg-white/10`
-                    : `border-transparent ${tc.text} opacity-60 hover:opacity-100`
-                }`}
-              >
-                {tab.icon}
-                {isFr ? tab.labelFr : tab.label}
-              </button>
-            );
-          })}
-        </nav>
-      </div>
-
       {/* Main split */}
       <div className="flex-1 flex overflow-hidden">
         {/* Left: Form */}
@@ -498,6 +453,33 @@ export default function Home() {
                 </button>
               </div>
             )}
+            {/* Mode selector */}
+            <div className="grid grid-cols-3 gap-2">
+              {tabs.map((tab) => {
+                const isActive = mode === tab.id;
+                const tc = TAB_COLORS[tab.id];
+                return (
+                  <button
+                    key={tab.id}
+                    type="button"
+                    onClick={() => switchMode(tab.id)}
+                    className={`flex flex-col items-center gap-1 px-3 py-3 rounded-xl border-2 transition-all text-center ${
+                      isActive
+                        ? `${tc.border} ${tc.bgLight} text-gray-900`
+                        : "border-gray-200 hover:border-gray-300 text-gray-500"
+                    }`}
+                  >
+                    <div className={isActive ? tc.text : "text-gray-400"}>
+                      {tab.icon}
+                    </div>
+                    <span className="text-xs font-semibold">
+                      {isFr ? tab.labelFr : tab.label}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+
             {/* Content area */}
             <div ref={contentRef} className={`rounded-xl transition-all ${validationErrors.content ? "ring-2 ring-red-400 bg-red-50/40 p-3 -mx-3" : ""}`}>
               {mode === "upload" && (

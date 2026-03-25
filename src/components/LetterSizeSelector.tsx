@@ -20,7 +20,7 @@ export const LETTER_SIZE_CONFIG: Record<
   },
   large: {
     maxPages: 15,
-    priceAdd: 4.99,
+    priceAdd: 1.99,
     label: "Letter",
     labelFr: "Lettre",
     desc: "8.5×11 flat, 9×12 envelope",
@@ -28,7 +28,7 @@ export const LETTER_SIZE_CONFIG: Record<
   },
   legal: {
     maxPages: 15,
-    priceAdd: 4.99,
+    priceAdd: 1.99,
     label: "Legal",
     labelFr: "Légal",
     desc: "8.5×14 flat, 10×15 envelope",
