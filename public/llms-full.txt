@@ -120,7 +120,7 @@ Success (200):
       "id": "uuid-order-id",
       "status": "queued",
       "letter_size": "standard",
-      "amount_cents": 429
+      "amount_cents": 379
     }
 
 ## Error Responses
@@ -155,9 +155,9 @@ All prices include printing, envelope, and Canada Post postage.
 
 | Size     | Envelope         | Max Pages | Price  |
 |----------|-----------------|-----------|--------|
-| standard | #10 (tri-fold)  | 5         | $4.29  |
-| large    | 9×12 (flat)     | 15        | $9.28  |
-| legal    | 10×15 (flat)    | 15        | $9.28  |
+| standard | #10 (tri-fold)  | 5         | $3.79  |
+| large    | 9×12 (flat)     | 15        | $5.78  |
+| legal    | 10×15 (flat)    | 15        | $5.78  |
 
 ## Billing
 

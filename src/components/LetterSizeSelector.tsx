@@ -36,7 +36,7 @@ export const LETTER_SIZE_CONFIG: Record<
   },
 };
 
-const BASE_PRICE = 4.29;
+const BASE_PRICE = 3.79;
 
 const ICONS: Record<LetterSize, React.ReactNode> = {
   standard: <Mail className="w-4 h-4" />,

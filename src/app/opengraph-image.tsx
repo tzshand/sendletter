@@ -1,7 +1,7 @@
 import { ImageResponse } from "next/og";
 
 export const runtime = "edge";
-export const alt = "sendletter — Mail a letter online from $4.29";
+export const alt = "sendletter — Mail a letter online from $3.79";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -82,7 +82,7 @@ export default async function Image() {
           }}
         >
           Write or upload your letter, add addresses, and we print and mail it
-          anywhere in Canada. From $4.29 CAD.
+          anywhere in Canada. From $3.79 CAD.
         </div>
 
         {/* Bottom bar */}

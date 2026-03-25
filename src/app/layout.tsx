@@ -6,9 +6,9 @@ import "./globals.css";
 const geist = Geist({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Send a Letter Online in Canada — From $4.29 | sendletter",
+  title: "Send a Letter Online in Canada — From $3.79 | sendletter",
   description:
-    "Send a real letter in the mail from your computer. Write or upload, add addresses, and we print and mail it anywhere in Canada from $4.29. No account, no subscription, no minimum.",
+    "Send a real letter in the mail from your computer. Write or upload, add addresses, and we print and mail it anywhere in Canada from $3.79. No account, no subscription, no minimum.",
   metadataBase: new URL("https://sendletter.app"),
   icons: {
     icon: "/favicon.png",
@@ -34,7 +34,7 @@ export const metadata: Metadata = {
     },
   },
   openGraph: {
-    title: "Send a Letter Online in Canada — From $4.29 | sendletter",
+    title: "Send a Letter Online in Canada — From $3.79 | sendletter",
     description:
       "Write or upload your letter, add addresses, and we print and mail it anywhere in Canada. No account needed.",
     url: "https://sendletter.app",
@@ -42,13 +42,13 @@ export const metadata: Metadata = {
     locale: "en_CA",
     alternateLocale: "fr_CA",
     type: "website",
-    images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "Send a Letter Online in Canada — From $4.29 | sendletter" }],
+    images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "Send a Letter Online in Canada — From $3.79 | sendletter" }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Send a Letter Online in Canada — From $4.29 | sendletter",
+    title: "Send a Letter Online in Canada — From $3.79 | sendletter",
     description:
-      "Upload or write your letter, we print and mail it via Canada Post from $4.29 CAD.",
+      "Upload or write your letter, we print and mail it via Canada Post from $3.79 CAD.",
   },
   robots: {
     index: true,
@@ -67,7 +67,7 @@ const jsonLd = [
     url: "https://sendletter.app",
     logo: "https://sendletter.app/favicon.png",
     description:
-      "Send physical letters online from $4.29 CAD. Write or upload, we print and mail via Canada Post. API accessible for automated workflows. No account, no subscription, no minimum.",
+      "Send physical letters online from $3.79 CAD. Write or upload, we print and mail via Canada Post. API accessible for automated workflows. No account, no subscription, no minimum.",
     address: {
       "@type": "PostalAddress",
       addressLocality: "Montréal",
@@ -89,8 +89,8 @@ const jsonLd = [
     inLanguage: ["en", "fr"],
     offers: {
       "@type": "AggregateOffer",
-      lowPrice: "4.29",
-      highPrice: "6.28",
+      lowPrice: "3.79",
+      highPrice: "5.78",
       priceCurrency: "CAD",
       offerCount: 3,
     },
@@ -142,21 +142,21 @@ const jsonLd = [
         {
           "@type": "Offer",
           name: "Standard (tri-fold)",
-          price: "4.29",
+          price: "3.79",
           priceCurrency: "CAD",
           description: "8.5×11 letter, tri-folded in a #10 envelope. Up to 5 pages.",
         },
         {
           "@type": "Offer",
           name: "Letter (flat)",
-          price: "6.28",
+          price: "5.78",
           priceCurrency: "CAD",
           description: "8.5×11 letter, mailed flat in a 9×12 envelope. Up to 15 pages.",
         },
         {
           "@type": "Offer",
           name: "Legal (flat)",
-          price: "6.28",
+          price: "5.78",
           priceCurrency: "CAD",
           description: "8.5×14 legal, mailed flat in a 10×15 envelope. Up to 15 pages.",
         },
@@ -171,7 +171,7 @@ const jsonLd = [
     description:
       "Send a physical letter through Canada Post in 3 simple steps using sendletter.app.",
     totalTime: "PT5M",
-    estimatedCost: { "@type": "MonetaryAmount", currency: "CAD", value: "4.29" },
+    estimatedCost: { "@type": "MonetaryAmount", currency: "CAD", value: "3.79" },
     step: [
       {
         "@type": "HowToStep",
@@ -189,7 +189,7 @@ const jsonLd = [
         "@type": "HowToStep",
         position: 3,
         name: "Pay and send",
-        text: "Choose your envelope size, pay securely from $4.29 CAD, and we print and mail your letter within 1 business day via Canada Post.",
+        text: "Choose your envelope size, pay securely from $3.79 CAD, and we print and mail your letter within 1 business day via Canada Post.",
       },
     ],
   },
@@ -202,7 +202,7 @@ const jsonLd = [
         name: "How much does it cost to send a letter online?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "Starting from $4.29 CAD for a standard tri-fold letter. Flat letter and legal sizes are $6.28 CAD. No hidden fees, no subscription.",
+          text: "Starting from $3.79 CAD for a standard tri-fold letter. Flat letter and legal sizes are $5.78 CAD. No hidden fees, no subscription.",
         },
       },
       {
@@ -210,7 +210,7 @@ const jsonLd = [
         name: "Combien coûte l'envoi d'une lettre en ligne?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "À partir de 4,29 $ CAD pour une lettre standard pliée en trois. Les formats lettre et légal à plat sont à 6,28 $ CAD. Aucun frais caché, aucun abonnement.",
+          text: "À partir de 3,79 $ CAD pour une lettre standard pliée en trois. Les formats lettre et légal à plat sont à 5,78 $ CAD. Aucun frais caché, aucun abonnement.",
         },
       },
       {

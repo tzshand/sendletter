@@ -1,7 +1,7 @@
 export const PRICES: Record<string, number> = {
-  standard: 429, // $4.29
-  legal: 628,    // $6.28
-  large: 628,    // $6.28
+  standard: 379, // $3.79
+  legal: 578,    // $5.78
+  large: 578,    // $5.78
 };
 
 export const SIZE_LABELS: Record<string, string> = {

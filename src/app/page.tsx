@@ -373,7 +373,7 @@ export default function Home() {
 
   const faqItems = isFr ? [
     { q: "Peut-on vraiment envoyer une lettre en ligne?", a: "Oui. Vous écrivez ou téléchargez votre lettre, ajoutez les adresses, payez, et nous l'imprimons et la postons via Postes Canada dans un délai de 1 jour ouvrable." },
-    { q: "Combien ça coûte?", a: "À partir de 4,29 $ CAD pour une lettre standard pliée en trois. Les formats lettre et légal à plat sont à 6,28 $ CAD. Tout est inclus : impression, enveloppe et affranchissement." },
+    { q: "Combien ça coûte?", a: "À partir de 3,79 $ CAD pour une lettre standard pliée en trois. Les formats lettre et légal à plat sont à 5,78 $ CAD. Tout est inclus : impression, enveloppe et affranchissement." },
     { q: "Quel est le délai de livraison?", a: "Les lettres sont imprimées et postées dans un délai de 1 jour ouvrable. La livraison via Postes Canada prend généralement de 2 à 5 jours ouvrables au Canada." },
     { q: "Ai-je besoin d'un compte?", a: "Non. Aucun compte, aucun abonnement, aucune commande minimale. Écrivez votre lettre, payez et c'est posté." },
     { q: "Quels formats de fichier puis-je télécharger?", a: "PDF et documents Word (.docx), jusqu'à 15 pages et 10 Mo." },
@@ -383,7 +383,7 @@ export default function Home() {
     { q: "Avez-vous une API?", a: "Oui. sendletter offre un accès API pour envoyer des lettres par programmation, automatiser les flux de courrier et intégrer les services postaux dans vos applications." },
   ] : [
     { q: "Can you actually send a letter online?", a: "Yes. Write or upload your letter, add addresses, pay, and we print and mail it via Canada Post within 1 business day." },
-    { q: "How much does it cost?", a: "Starting from $4.29 CAD for a standard tri-fold letter. Flat letter and legal sizes are $6.28 CAD. Printing, envelope, and postage are all included." },
+    { q: "How much does it cost?", a: "Starting from $3.79 CAD for a standard tri-fold letter. Flat letter and legal sizes are $5.78 CAD. Printing, envelope, and postage are all included." },
     { q: "How long does delivery take?", a: "Letters are printed and mailed within 1 business day. Delivery via Canada Post typically takes 2–5 business days within Canada." },
     { q: "Do I need an account?", a: "No. No account, no subscription, no minimum order. Write your letter, pay, and it's in the mail." },
     { q: "What file formats can I upload?", a: "PDF and Word documents (.docx), up to 15 pages and 10 MB." },
@@ -716,8 +716,8 @@ export default function Home() {
           </div>
           <p className="text-xs text-gray-400 text-center max-w-md">
             {isFr
-              ? "Envoyez une lettre par la poste au Canada depuis 4,29 $ CAD. Impression, enveloppe et affranchissement inclus. Aucun compte requis."
-              : "Mail a letter anywhere in Canada from $4.29 CAD. Printing, envelope, and postage included. No account required."}
+              ? "Envoyez une lettre par la poste au Canada depuis 3,79 $ CAD. Impression, enveloppe et affranchissement inclus. Aucun compte requis."
+              : "Mail a letter anywhere in Canada from $3.79 CAD. Printing, envelope, and postage included. No account required."}
           </p>
           <div className="flex items-center gap-4 text-xs text-gray-400">
             <a href="/docs" className="hover:text-gray-600 transition-colors">{isFr ? "Docs API" : "API Docs"}</a>

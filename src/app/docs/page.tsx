@@ -192,7 +192,7 @@ export default function DocsPage() {
   "id": "uuid-of-order",
   "status": "queued",
   "letter_size": "standard",
-  "amount_cents": 429
+  "amount_cents": 379
 }`}</Pre>
 
         <H2 id="modes">Modes</H2>
@@ -266,9 +266,9 @@ export default function DocsPage() {
         <Table
           headers={["Value", "Dimensions", "Envelope", "Max Pages", "Price"]}
           rows={[
-            ["standard", "8.5 × 11 in", "#10 (tri-fold)", "5", "$4.29 CAD"],
-            ["large", "8.5 × 11 in", "9 × 12 (flat)", "15", "$9.28 CAD"],
-            ["legal", "8.5 × 14 in", "10 × 15 (flat)", "15", "$9.28 CAD"],
+            ["standard", "8.5 × 11 in", "#10 (tri-fold)", "5", "$3.79 CAD"],
+            ["large", "8.5 × 11 in", "9 × 12 (flat)", "15", "$5.78 CAD"],
+            ["legal", "8.5 × 14 in", "10 × 15 (flat)", "15", "$5.78 CAD"],
           ]}
         />
 
@@ -292,9 +292,9 @@ export default function DocsPage() {
         <Table
           headers={["Size", "Price"]}
           rows={[
-            ["Standard (tri-fold)", "$4.29"],
-            ["Large (flat 8.5×11)", "$9.28"],
-            ["Legal (flat 8.5×14)", "$9.28"],
+            ["Standard (tri-fold)", "$3.79"],
+            ["Large (flat 8.5×11)", "$5.78"],
+            ["Legal (flat 8.5×14)", "$5.78"],
           ]}
         />
 

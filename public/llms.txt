@@ -2,7 +2,7 @@
 
 > Send physical letters anywhere in Canada from any digital device. API accessible.
 
-sendletter prints and mails letters via Canada Post within 1 business day. Starting at $4.29 CAD. No account needed for the website; API access requires an account with a payment method.
+sendletter prints and mails letters via Canada Post within 1 business day. Starting at $3.79 CAD. No account needed for the website; API access requires an account with a payment method.
 
 ## API
 
@@ -20,9 +20,9 @@ sendletter has a REST API for programmatically sending physical letters.
 - **upload**: Base64-encoded PDF or DOCX file
 
 ### Pricing (CAD, includes printing + postage)
-- Standard (tri-fold, #10 envelope): $4.29
-- Large (flat, 9×12 envelope): $9.28
-- Legal (flat 8.5×14, 10×15 envelope): $9.28
+- Standard (tri-fold, #10 envelope): $3.79
+- Large (flat, 9×12 envelope): $5.78
+- Legal (flat 8.5×14, 10×15 envelope): $5.78
 
 ### Constraints
 - Delivery: Canada only (to.country must be "CA")
