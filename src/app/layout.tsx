@@ -6,9 +6,9 @@ import "./globals.css";
 const geist = Geist({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Send a Letter Online in Canada — From $3.79 | sendletter",
+  title: "Send a Letter Online in Canada — From $3.79 (Printing & Tax Incl.) | sendletter",
   description:
-    "Send a real letter in the mail from your computer. Write or upload, add addresses, and we print and mail it anywhere in Canada from $3.79. No account, no subscription, no minimum.",
+    "Send a real letter in the mail from your computer. Write or upload, add addresses, and we print and mail it anywhere in Canada from $3.79 — printing and tax included. No account, no subscription, no minimum.",
   metadataBase: new URL("https://sendletter.app"),
   icons: {
     icon: "/favicon.png",
@@ -34,7 +34,7 @@ export const metadata: Metadata = {
     },
   },
   openGraph: {
-    title: "Send a Letter Online in Canada — From $3.79 | sendletter",
+    title: "Send a Letter Online in Canada — From $3.79 (Printing & Tax Incl.) | sendletter",
     description:
       "Write or upload your letter, add addresses, and we print and mail it anywhere in Canada. No account needed.",
     url: "https://sendletter.app",
@@ -42,13 +42,13 @@ export const metadata: Metadata = {
     locale: "en_CA",
     alternateLocale: "fr_CA",
     type: "website",
-    images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "Send a Letter Online in Canada — From $3.79 | sendletter" }],
+    images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "Send a Letter Online in Canada — From $3.79 (Printing & Tax Incl.) | sendletter" }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Send a Letter Online in Canada — From $3.79 | sendletter",
+    title: "Send a Letter Online in Canada — From $3.79 (Printing & Tax Incl.) | sendletter",
     description:
-      "Upload or write your letter, we print and mail it via Canada Post from $3.79 CAD.",
+      "Upload or write your letter, we print and mail it via Canada Post from $3.79 CAD — printing and tax included.",
   },
   robots: {
     index: true,
@@ -67,7 +67,7 @@ const jsonLd = [
     url: "https://sendletter.app",
     logo: "https://sendletter.app/favicon.png",
     description:
-      "Send physical letters online from $3.79 CAD. Write or upload, we print and mail via Canada Post. API accessible for automated workflows. No account, no subscription, no minimum.",
+      "Send physical letters online from $3.79 CAD — printing and tax included. Write or upload, we print and mail via Canada Post. API accessible for automated workflows. No account, no subscription, no minimum.",
     address: {
       "@type": "PostalAddress",
       addressLocality: "Montréal",
@@ -189,7 +189,7 @@ const jsonLd = [
         "@type": "HowToStep",
         position: 3,
         name: "Pay and send",
-        text: "Choose your envelope size, pay securely from $3.79 CAD, and we print and mail your letter within 1 business day via Canada Post.",
+        text: "Choose your envelope size, pay securely from $3.79 CAD (printing and tax included), and we print and mail your letter within 1 business day via Canada Post.",
       },
     ],
   },
@@ -202,7 +202,7 @@ const jsonLd = [
         name: "How much does it cost to send a letter online?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "Starting from $3.79 CAD for a standard tri-fold letter. Flat letter and legal sizes are $5.78 CAD. No hidden fees, no subscription.",
+          text: "Starting from $3.79 CAD for a standard tri-fold letter. Flat letter and legal sizes are $5.78 CAD. All prices include printing, postage, and tax. No hidden fees, no subscription.",
         },
       },
       {
@@ -210,7 +210,7 @@ const jsonLd = [
         name: "Combien coûte l'envoi d'une lettre en ligne?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "À partir de 3,79 $ CAD pour une lettre standard pliée en trois. Les formats lettre et légal à plat sont à 5,78 $ CAD. Aucun frais caché, aucun abonnement.",
+          text: "À partir de 3,79 $ CAD pour une lettre standard pliée en trois. Les formats lettre et légal à plat sont à 5,78 $ CAD. Tous les prix incluent l'impression, l'affranchissement et les taxes. Aucun frais caché, aucun abonnement.",
         },
       },
       {

@@ -287,7 +287,7 @@ export default function DocsPage() {
 
         <H2 id="pricing">Pricing</H2>
         <p className="text-sm text-gray-600 mb-2">
-          All prices are in Canadian dollars (CAD) and include printing, envelope, and Canada Post postage.
+          All prices are in Canadian dollars (CAD) and include printing, envelope, Canada Post postage, and tax.
         </p>
         <Table
           headers={["Size", "Price"]}

@@ -151,7 +151,7 @@ Common 400 errors:
 
 ## Pricing (CAD)
 
-All prices include printing, envelope, and Canada Post postage.
+All prices include printing, envelope, Canada Post postage, and tax.
 
 | Size     | Envelope         | Max Pages | Price  |
 |----------|-----------------|-----------|--------|
