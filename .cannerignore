@@ -1,0 +1,11 @@
+# Secrets & local env — env comes from `canner env set`, never the upload
+.env
+.env.local
+.env.test
+.env*.local
+
+# Local-only tooling / artifacts
+test-api.mjs
+tsconfig.tsbuildinfo
+supabase
+*.log

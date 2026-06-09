@@ -22,12 +22,25 @@ export async function POST(req: Request) {
     // Check if account already exists
     const { data: existing } = await supabase
       .from("sendletter_accounts")
-      .select("id")
+      .select("id, password_hash")
       .eq("email", normalizedEmail)
       .maybeSingle();
 
     if (existing) {
-      return NextResponse.json({ error: "An account with this email already exists" }, { status: 409 });
+      if (existing.password_hash) {
+        // Already has a password — true duplicate
+        return NextResponse.json({ error: "An account with this email already exists" }, { status: 409 });
+      }
+
+      // Google-only account — let them add a password
+      const passwordHash = await bcrypt.hash(password, 12);
+      await supabase
+        .from("sendletter_accounts")
+        .update({ password_hash: passwordHash })
+        .eq("id", existing.id);
+
+      await createSession(existing.id, normalizedEmail);
+      return NextResponse.json({ ok: true, email: normalizedEmail });
     }
 
     // Create Stripe customer
