@@ -184,6 +184,21 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "No customer email" }, { status: 400 });
     }
 
+    // Idempotency: the success page can call this endpoint more than once for
+    // the same paid session (e.g. a reload), which previously sent duplicate
+    // confirmation emails — and the retry often lacked the attachment because
+    // the client had already cleared the uploaded file. If we've already
+    // recorded an order for this session, do nothing further.
+    const existingDb = getSupabase();
+    const { data: existingOrder } = await existingDb
+      .from("sendletter_orders")
+      .select("id")
+      .eq("stripe_session_id", sessionId)
+      .maybeSingle();
+    if (existingOrder) {
+      return NextResponse.json({ ok: true, alreadyProcessed: true });
+    }
+
     const meta = (session.metadata || {}) as Record<string, string>;
     const amount = ((session.amount_total || 0) / 100).toFixed(2);
     const date = new Date().toLocaleDateString("en-CA");
