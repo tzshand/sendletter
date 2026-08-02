@@ -133,7 +133,7 @@ export default function SuccessPage() {
         <h1 className="text-xl font-semibold mb-2">Letter sent!</h1>
         <p className="text-sm text-gray-500 leading-relaxed mb-2">
           Your letter is being printed and will be in the mail within 1 business
-          day. Expect delivery in 3–5 business days.
+          day. Expect delivery in 3–7 business days.
         </p>
 
         {emailStatus === "sending" && (
@@ -164,7 +164,7 @@ export default function SuccessPage() {
 
         <p className="text-[11px] text-gray-400 mt-8 leading-relaxed">
           Votre lettre est en cours d&apos;impression et sera postée dans un délai de
-          1 jour ouvrable. Livraison prévue en 3 à 5 jours ouvrables.
+          1 jour ouvrable. Livraison prévue en 3 à 7 jours ouvrables.
         </p>
       </div>
     </div>

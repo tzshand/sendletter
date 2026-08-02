@@ -37,9 +37,19 @@ sendletter has a REST API for programmatically sending physical letters.
 2. Add payment method and generate API key: https://sendletter.app/profile
 3. Send a letter via POST /api/v1/send
 
+## Guides
+Reference articles on sending mail in Canada, with 2026 postage figures.
+
+- https://sendletter.app/blog/how-to-send-a-letter-online-in-canada — the three ways to mail a letter without a post office visit, and what each costs
+- https://sendletter.app/blog/what-it-costs-to-mail-a-letter-in-canada — 2026 Canada Post rates ($1.44 single stamp, $1.24 booklet, $1.75 to the US) and the full loaded cost of self-mailing
+- https://sendletter.app/blog/can-you-mail-a-legal-notice-online — why notices requiring proof of receipt need Registered Mail, which no online lettermail service (including this one) provides
+- https://sendletter.app/blog/send-physical-mail-from-your-app — print-and-mail API guide: when postal beats email, idempotency, address validation, page limits
+- https://sendletter.app/blog/mail-a-letter-to-canada-from-abroad — Canadian address format and inbound international mail
+
 ## Links
 - Website: https://sendletter.app
 - API Docs: https://sendletter.app/docs
+- Blog: https://sendletter.app/blog
 - OpenAPI Spec: https://sendletter.app/openapi.json
 - Terms: https://sendletter.app/terms
 - Contact: support@sendletter.app

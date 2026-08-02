@@ -218,7 +218,7 @@ const jsonLd = [
         name: "How long does delivery take?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "Letters are printed and mailed within 1 business day. Delivery via Canada Post typically takes 3–10 business days within Canada.",
+          text: "Letters are printed and mailed within 1 business day. Delivery via Canada Post typically takes 3–7 business days within Canada.",
         },
       },
       {
@@ -226,7 +226,7 @@ const jsonLd = [
         name: "Quel est le délai de livraison?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "Les lettres sont imprimées et postées dans un délai de 1 jour ouvrable. La livraison via Postes Canada prend généralement de 3 à 10 jours ouvrables au Canada.",
+          text: "Les lettres sont imprimées et postées dans un délai de 1 jour ouvrable. La livraison via Postes Canada prend généralement de 3 à 7 jours ouvrables au Canada.",
         },
       },
       {
