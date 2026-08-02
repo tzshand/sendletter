@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { getDb, DbConnectionError } from "@/lib/db";
-import { createSession } from "@/lib/auth";
+import { createSession, createPendingToken } from "@/lib/auth";
 
 export async function POST(req: Request) {
   try {
@@ -16,7 +16,7 @@ export async function POST(req: Request) {
 
     const { data: account } = await db
       .from("sendletter_accounts")
-      .select("id, email, password_hash")
+      .select("id, email, password_hash, passkey_enrolled_at")
       .eq("email", normalizedEmail)
       .single();
 
@@ -35,6 +35,15 @@ export async function POST(req: Request) {
     const valid = await bcrypt.compare(password, account.password_hash);
     if (!valid) {
       return NextResponse.json({ error: "Invalid email or password" }, { status: 401 });
+    }
+
+    // The gate. Once an account holds a passkey, a correct password stops being
+    // sufficient on its own — it earns a short-lived pending token and nothing
+    // else. No session is created and no cookie is set until the passkey
+    // ceremony also succeeds at /api/passkey/login.
+    if (account.passkey_enrolled_at) {
+      const pendingToken = await createPendingToken(account.id, account.email);
+      return NextResponse.json({ passkey_required: true, pending_token: pendingToken });
     }
 
     await createSession(account.id, account.email);

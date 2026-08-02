@@ -13,7 +13,7 @@ export default async function ProfilePage() {
   // Fetch account
   const { data: account } = await db
     .from("sendletter_accounts")
-    .select("id, email, stripe_customer_id, has_payment_method, created_at")
+    .select("id, email, stripe_customer_id, has_payment_method, created_at, passkey_enrolled_at")
     .eq("id", session.accountId)
     .single();
 
@@ -93,6 +93,7 @@ export default async function ProfilePage() {
         email: account.email,
         hasPaymentMethod: account.has_payment_method,
         createdAt: account.created_at,
+        hasPasskey: account.passkey_enrolled_at != null,
       }}
       apiKey={apiKey ? { prefix: apiKey.key_prefix, createdAt: apiKey.created_at } : null}
       cardInfo={cardInfo}

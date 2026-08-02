@@ -3,7 +3,8 @@
 import { Suspense, useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { SnowGoose } from "@/components/SnowGoose";
-import { Loader2 } from "lucide-react";
+import { Loader2, KeyRound } from "lucide-react";
+import { authenticatePasskey, passkeysSupported, wasDismissed } from "@/lib/passkey";
 
 function GoogleIcon() {
   return (
@@ -29,6 +30,12 @@ function LoginForm() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [passkeyLoading, setPasskeyLoading] = useState(false);
+  const [canUsePasskeys, setCanUsePasskeys] = useState(false);
+
+  // Feature-detected on the client only — rendering the passkey button during
+  // SSR would flash it for browsers that cannot use it.
+  useEffect(() => setCanUsePasskeys(passkeysSupported()), []);
 
   useEffect(() => {
     const oauthError = searchParams.get("error");
@@ -36,6 +43,36 @@ function LoginForm() {
       setError(GOOGLE_ERROR_MESSAGES[oauthError]);
     }
   }, [searchParams]);
+
+  /** Exchange a Canner passkey token for a sendletter session. */
+  async function finishWithPasskey(token: string, pendingToken?: string) {
+    const res = await fetch("/api/passkey/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(pendingToken ? { token, pending_token: pendingToken } : { token }),
+    });
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      throw new Error(data.error || "Passkey sign-in failed");
+    }
+    router.push("/profile");
+  }
+
+  /** Passkey-first: no email, no password — the browser picks the account. */
+  async function handlePasskey() {
+    setError("");
+    setPasskeyLoading(true);
+    try {
+      const token = await authenticatePasskey();
+      await finishWithPasskey(token);
+    } catch (err) {
+      if (!wasDismissed(err)) {
+        setError(err instanceof Error ? err.message : "Passkey sign-in failed");
+      }
+    } finally {
+      setPasskeyLoading(false);
+    }
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -52,6 +89,26 @@ function LoginForm() {
       const data = await res.json();
       if (!res.ok) {
         setError(data.error || "Login failed");
+        return;
+      }
+
+      // The password was right, but this account holds a passkey — so it is not
+      // a sign-in on its own. No session exists yet; the ceremony below is what
+      // completes it.
+      if (data.passkey_required) {
+        setPasskeyLoading(true);
+        try {
+          const token = await authenticatePasskey();
+          await finishWithPasskey(token, data.pending_token);
+        } catch (err) {
+          setError(
+            wasDismissed(err)
+              ? "Sign-in needs your passkey. Try again when you're ready."
+              : err instanceof Error ? err.message : "Passkey sign-in failed",
+          );
+        } finally {
+          setPasskeyLoading(false);
+        }
         return;
       }
 
@@ -81,6 +138,33 @@ function LoginForm() {
 
           {error && (
             <p className="text-sm text-red-600 bg-red-50 rounded-lg px-3 py-2 mb-4">{error}</p>
+          )}
+
+          {canUsePasskeys && (
+            <>
+              <button
+                type="button"
+                onClick={handlePasskey}
+                disabled={passkeyLoading || loading}
+                className="w-full flex items-center justify-center gap-2 bg-gray-900 text-white text-sm font-semibold py-2.5 rounded-lg hover:bg-gray-800 disabled:opacity-50 transition-colors"
+              >
+                {passkeyLoading ? (
+                  <Loader2 size={16} className="animate-spin" />
+                ) : (
+                  <KeyRound size={16} />
+                )}
+                Sign in with a passkey
+              </button>
+
+              <div className="relative my-5">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-gray-200" />
+                </div>
+                <div className="relative flex justify-center text-xs">
+                  <span className="bg-white px-3 text-gray-400">or use your password</span>
+                </div>
+              </div>
+            </>
           )}
 
           {/* Google OAuth — hidden until we have production credentials

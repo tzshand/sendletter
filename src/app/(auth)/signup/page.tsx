@@ -4,6 +4,7 @@ import { Suspense, useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { SnowGoose } from "@/components/SnowGoose";
 import { Loader2 } from "lucide-react";
+import { enrollPasskey, passkeysSupported, wasDismissed } from "@/lib/passkey";
 
 function GoogleIcon() {
   return (
@@ -30,6 +31,7 @@ function SignupForm() {
   const [confirm, setConfirm] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [enrolling, setEnrolling] = useState(false);
 
   useEffect(() => {
     const oauthError = searchParams.get("error");
@@ -62,6 +64,37 @@ function SignupForm() {
       const data = await res.json();
       if (!res.ok) {
         setError(data.error || "Signup failed");
+        return;
+      }
+
+      // The account exists and is signed in at this point. Offer the passkey
+      // immediately — no email round trip, because we already know who this is.
+      //
+      // Every failure below is non-fatal on purpose. A dismissed prompt, an
+      // unsupported browser, or a Canner outage must not strand someone who has
+      // just successfully created an account; they land on the profile page and
+      // can add a passkey there whenever they like.
+      if (passkeysSupported()) {
+        setEnrolling(true);
+        try {
+          const ticketRes = await fetch("/api/passkey/enroll-ticket", { method: "POST" });
+          if (ticketRes.ok) {
+            const { ticket } = await ticketRes.json();
+            const token = await enrollPasskey(ticket);
+            await fetch("/api/passkey/complete", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ token }),
+            });
+            router.push("/profile");
+            return;
+          }
+        } catch (err) {
+          if (!wasDismissed(err)) console.error("Passkey enrollment failed:", err);
+        } finally {
+          setEnrolling(false);
+        }
+        router.push("/profile?passkey=skipped");
         return;
       }
 
@@ -161,8 +194,14 @@ function SignupForm() {
               className="w-full flex items-center justify-center gap-2 bg-gray-900 text-white text-sm font-semibold py-2.5 rounded-lg hover:bg-gray-800 disabled:opacity-50 transition-colors"
             >
               {loading && <Loader2 size={16} className="animate-spin" />}
-              Create Account
+              {enrolling ? "Confirm your passkey…" : "Create Account"}
             </button>
+            {enrolling && (
+              <p className="text-xs text-gray-500 text-center">
+                Your device will ask you to confirm. This becomes your sign-in —
+                no password to remember next time.
+              </p>
+            )}
           </form>
 
           <p className="mt-4 text-center text-sm text-gray-500">

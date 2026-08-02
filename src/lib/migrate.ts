@@ -105,6 +105,16 @@ create table if not exists sendletter_billing_runs (
 create index if not exists idx_sendletter_billing_runs_account
   on sendletter_billing_runs(account_id, created_at desc);
 
+-- Canner Auth (passkeys). The credentials themselves live with Canner; all we
+-- keep is the join back to our own account row.
+--
+-- canner_auth_user_id is load-bearing: the JWT Canner issues on a successful
+-- ceremony carries the auth_app_users id as its subject, NOT the external_id we
+-- enrolled with. Without this column there is no way to resolve a sign-in to a
+-- sendletter account.
+alter table sendletter_accounts add column if not exists canner_auth_user_id text unique;
+alter table sendletter_accounts add column if not exists passkey_enrolled_at timestamptz;
+
 do $do$
 begin
   if not exists (select 1 from pg_constraint where conname = 'fk_api_usage_billing_run') then

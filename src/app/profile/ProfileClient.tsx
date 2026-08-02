@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { enrollPasskey, passkeysSupported, wasDismissed } from "@/lib/passkey";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements, PaymentElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import { SnowGoose } from "@/components/SnowGoose";
@@ -15,6 +16,7 @@ import {
   Loader2,
   AlertTriangle,
   Trash2,
+  KeyRound,
 } from "lucide-react";
 
 const stripePromise = loadStripe(
@@ -32,7 +34,7 @@ type BillingAddress = {
 };
 
 type Props = {
-  account: { email: string; hasPaymentMethod: boolean; createdAt: string };
+  account: { email: string; hasPaymentMethod: boolean; createdAt: string; hasPasskey: boolean };
   apiKey: { prefix: string; createdAt: string } | null;
   cardInfo: { brand: string; last4: string } | null;
   billingAddress: BillingAddress | null;
@@ -111,6 +113,38 @@ export function ProfileClient({ account, apiKey, cardInfo, billingAddress, usage
   const [removeLoading, setRemoveLoading] = useState(false);
   const [removeConfirm, setRemoveConfirm] = useState(false);
   const [removeError, setRemoveError] = useState("");
+  const [hasPasskey, setHasPasskey] = useState(account.hasPasskey);
+  const [passkeyLoading, setPasskeyLoading] = useState(false);
+  const [passkeyError, setPasskeyError] = useState("");
+  const [canUsePasskeys, setCanUsePasskeys] = useState(false);
+
+  useEffect(() => setCanUsePasskeys(passkeysSupported()), []);
+
+  // Same inline enrollment the signup page runs — for anyone who dismissed the
+  // prompt then, or who signed up before passkeys existed.
+  async function addPasskey() {
+    setPasskeyLoading(true);
+    setPasskeyError("");
+    try {
+      const ticketRes = await fetch("/api/passkey/enroll-ticket", { method: "POST" });
+      if (!ticketRes.ok) throw new Error("Could not start passkey setup");
+      const { ticket } = await ticketRes.json();
+      const token = await enrollPasskey(ticket);
+      const res = await fetch("/api/passkey/complete", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token }),
+      });
+      if (!res.ok) throw new Error("Could not finish passkey setup");
+      setHasPasskey(true);
+    } catch (err) {
+      if (!wasDismissed(err)) {
+        setPasskeyError(err instanceof Error ? err.message : "Passkey setup failed");
+      }
+    } finally {
+      setPasskeyLoading(false);
+    }
+  }
 
   const handleLogout = useCallback(async () => {
     await fetch("/api/auth/logout", { method: "POST" });
@@ -302,6 +336,58 @@ export function ProfileClient({ account, apiKey, cardInfo, billingAddress, usage
             </div>
           )}
         </section>
+
+        {/* Sign-in */}
+        {canUsePasskeys && (
+          <section className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm">
+            <div className="flex items-center gap-2 mb-4">
+              <KeyRound size={18} className="text-gray-400" />
+              <h2 className="text-sm font-semibold text-gray-900">Sign-in</h2>
+            </div>
+
+            {passkeyError && (
+              <p className="text-sm text-red-600 bg-red-50 rounded-lg px-3 py-2 mb-3">
+                {passkeyError}
+              </p>
+            )}
+
+            {hasPasskey ? (
+              <div className="flex items-start gap-3">
+                <div className="w-8 h-8 rounded-lg bg-emerald-50 ring-1 ring-emerald-200/60 flex items-center justify-center shrink-0">
+                  <Check className="w-4 h-4 text-emerald-600" />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-sm font-medium text-gray-900">Passkey active</p>
+                  <p className="text-xs text-gray-500 mt-0.5">
+                    You sign in with your device. Your password alone will no longer
+                    get you in — it now asks for the passkey too.
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <div className="flex items-start gap-3">
+                <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center shrink-0">
+                  <KeyRound className="w-4 h-4 text-gray-500" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-medium text-gray-900">Add a passkey</p>
+                  <p className="text-xs text-gray-500 mt-0.5 mb-3">
+                    Sign in with your fingerprint, face, or security key instead of
+                    typing a password.
+                  </p>
+                  <button
+                    onClick={addPasskey}
+                    disabled={passkeyLoading}
+                    className="inline-flex items-center gap-2 bg-gray-900 text-white text-sm font-semibold px-3 py-2 rounded-lg hover:bg-gray-800 disabled:opacity-50 transition-colors"
+                  >
+                    {passkeyLoading && <Loader2 size={14} className="animate-spin" />}
+                    Set up passkey
+                  </button>
+                </div>
+              </div>
+            )}
+          </section>
+        )}
 
         {/* API Key */}
         <section className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm">
