@@ -115,23 +115,49 @@ export function A({ href, children }: { href: string; children: React.ReactNode 
  * The single call to action. One per post, at the bottom, by design — a post
  * that interrupts itself to sell is a post nobody finishes.
  */
-export function CTA({ variant }: { variant: "home" | "api" }) {
+const CTA_COPY = {
+  en: {
+    apiTitle: "Send a letter from your code",
+    apiBody:
+      "One POST request, one physical letter, anywhere in Canada. No minimums and no monthly platform fee.",
+    apiButton: "Read the API reference",
+    homeTitle: "Send a letter without leaving your desk",
+    homeBody:
+      "Write or upload it, add the addresses, and we print and mail it via Canada Post. From $3.79, printing and tax included.",
+    homeButton: "Send a letter",
+  },
+  fr: {
+    apiTitle: "Envoyez une lettre depuis votre code",
+    apiBody:
+      "Une requête POST, une lettre physique, partout au Canada. Aucun minimum, aucuns frais mensuels de plateforme.",
+    apiButton: "Consulter la référence de l'API",
+    homeTitle: "Envoyez une lettre sans quitter votre bureau",
+    homeBody:
+      "Rédigez-la ou téléversez-la, ajoutez les adresses, et nous l'imprimons et la postons via Postes Canada. Dès 3,79 $, impression et taxes comprises.",
+    homeButton: "Envoyer une lettre",
+  },
+} as const;
+
+export function CTA({
+  variant,
+  locale = "en",
+}: {
+  variant: "home" | "api";
+  locale?: "en" | "fr";
+}) {
   const isApi = variant === "api";
+  const t = CTA_COPY[locale];
   return (
     <div className="mt-10 rounded-xl border border-gray-200 bg-white p-5">
       <p className="text-sm font-semibold text-gray-900 mb-1">
-        {isApi ? "Send a letter from your code" : "Send a letter without leaving your desk"}
+        {isApi ? t.apiTitle : t.homeTitle}
       </p>
-      <p className="text-[13px] text-gray-500 mb-4">
-        {isApi
-          ? "One POST request, one physical letter, anywhere in Canada. No minimums and no monthly platform fee."
-          : "Write or upload it, add the addresses, and we print and mail it via Canada Post. From $3.79, printing and tax included."}
-      </p>
+      <p className="text-[13px] text-gray-500 mb-4">{isApi ? t.apiBody : t.homeBody}</p>
       <Link
         href={isApi ? "/docs" : "/"}
         className="inline-flex items-center gap-2 bg-brand text-white text-sm font-bold px-4 h-10 rounded-xl hover:bg-brand-dark transition-colors"
       >
-        {isApi ? "Read the API reference" : "Send a letter"}
+        {isApi ? t.apiButton : t.homeButton}
       </Link>
     </div>
   );

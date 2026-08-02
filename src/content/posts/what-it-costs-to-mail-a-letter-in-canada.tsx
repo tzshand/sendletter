@@ -22,8 +22,9 @@ export default function Post() {
       />
 
       <P>
-        These went up in March 2026, when the domestic single-stamp rate moved from $1.15
-        to $1.44 — a 25% increase in one step. Current rates are published on{" "}
+        The domestic single-stamp rate rose from $1.15 to $1.44 in the most recent
+        increase — just over 25% in one step, with booklet stamps moving from $0.99 to
+        $1.24. Rates change periodically; the current table is always on{" "}
         <A href="https://www.canadapost-postescanada.ca/cpc/en/personal/stamp-prices.page">
           Canada Post&apos;s stamp prices page
         </A>

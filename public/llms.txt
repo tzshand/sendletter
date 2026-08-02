@@ -46,10 +46,18 @@ Reference articles on sending mail in Canada, with 2026 postage figures.
 - https://sendletter.app/blog/send-physical-mail-from-your-app — print-and-mail API guide: when postal beats email, idempotency, address validation, page limits
 - https://sendletter.app/blog/mail-a-letter-to-canada-from-abroad — Canadian address format and inbound international mail
 
+Each guide has a French (Quebec) edition at the same path under /fr/blog:
+- https://sendletter.app/fr/blog/envoyer-une-lettre-en-ligne-au-canada
+- https://sendletter.app/fr/blog/combien-coute-une-lettre-au-canada
+- https://sendletter.app/fr/blog/envoyer-une-mise-en-demeure-par-la-poste
+- https://sendletter.app/fr/blog/envoyer-du-courrier-depuis-votre-application
+- https://sendletter.app/fr/blog/envoyer-une-lettre-au-canada-depuis-l-etranger
+
 ## Links
 - Website: https://sendletter.app
 - API Docs: https://sendletter.app/docs
 - Blog: https://sendletter.app/blog
+- Blogue (français): https://sendletter.app/fr/blog
 - OpenAPI Spec: https://sendletter.app/openapi.json
 - Terms: https://sendletter.app/terms
 - Contact: support@sendletter.app

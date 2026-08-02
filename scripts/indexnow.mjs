@@ -15,9 +15,9 @@ const KEY = "5afed68102e34ccfa015f6346372cfd5";
 const HOST = "sendletter.app";
 const ENDPOINT = "https://api.indexnow.org/indexnow";
 
-// Mirrors src/lib/blog.ts. Kept as a plain list so this script stays runnable
+// Mirrors src/lib/blog.ts. Kept as plain lists so this script stays runnable
 // without a TypeScript loader.
-const POST_SLUGS = [
+const EN_SLUGS = [
   "how-to-send-a-letter-online-in-canada",
   "what-it-costs-to-mail-a-letter-in-canada",
   "can-you-mail-a-legal-notice-online",
@@ -25,8 +25,23 @@ const POST_SLUGS = [
   "mail-a-letter-to-canada-from-abroad",
 ];
 
+const FR_SLUGS = [
+  "envoyer-une-lettre-en-ligne-au-canada",
+  "combien-coute-une-lettre-au-canada",
+  "envoyer-une-mise-en-demeure-par-la-poste",
+  "envoyer-du-courrier-depuis-votre-application",
+  "envoyer-une-lettre-au-canada-depuis-l-etranger",
+];
+
+const DEFAULT_PATHS = [
+  "/blog",
+  ...EN_SLUGS.map((s) => `/blog/${s}`),
+  "/fr/blog",
+  ...FR_SLUGS.map((s) => `/fr/blog/${s}`),
+];
+
 const args = process.argv.slice(2);
-const paths = args.length > 0 ? args : ["/blog", ...POST_SLUGS.map((s) => `/blog/${s}`)];
+const paths = args.length > 0 ? args : DEFAULT_PATHS;
 
 const urlList = paths.map((p) => `https://${HOST}${p.startsWith("/") ? p : `/${p}`}`);
 
