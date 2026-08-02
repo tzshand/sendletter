@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getSession } from "@/lib/auth";
-import { getSupabase } from "@/lib/supabase";
+import { getDb } from "@/lib/db";
 import { getStripe } from "@/lib/stripe";
 
 export async function GET() {
@@ -12,8 +12,8 @@ export async function GET() {
   // Try to get the user's name from Stripe billing details
   let firstName: string | null = null;
   try {
-    const supabase = getSupabase();
-    const { data: account } = await supabase
+    const db = getDb();
+    const { data: account } = await db
       .from("sendletter_accounts")
       .select("stripe_customer_id, has_payment_method")
       .eq("id", session.accountId)

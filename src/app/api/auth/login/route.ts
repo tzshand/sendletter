@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
-import { getSupabase } from "@/lib/supabase";
+import { getDb, DbConnectionError } from "@/lib/db";
 import { createSession } from "@/lib/auth";
 
 export async function POST(req: Request) {
@@ -12,9 +12,9 @@ export async function POST(req: Request) {
     }
 
     const normalizedEmail = email.toLowerCase().trim();
-    const supabase = getSupabase();
+    const db = getDb();
 
-    const { data: account } = await supabase
+    const { data: account } = await db
       .from("sendletter_accounts")
       .select("id, email, password_hash")
       .eq("email", normalizedEmail)
@@ -41,6 +41,16 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ ok: true, email: account.email });
   } catch (error) {
+    // Never let an outage masquerade as a credential failure — a user told
+    // "invalid email or password" when the database is down will reset a
+    // password that was never wrong.
+    if (error instanceof DbConnectionError) {
+      console.error("Login: database unreachable:", error.message);
+      return NextResponse.json(
+        { error: "Sign-in is temporarily unavailable. Please try again shortly." },
+        { status: 503, headers: { "Retry-After": "30" } },
+      );
+    }
     console.error("Login error:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }

@@ -1,42 +1,60 @@
 import { NextResponse } from "next/server";
-import { getSupabase } from "@/lib/supabase";
+import { getDb } from "@/lib/db";
 import { getStripe } from "@/lib/stripe";
 
+// Constant-time-ish comparison. The secret is high-entropy and this endpoint is
+// not a realistic timing target, but string === on a credential is a bad habit
+// to leave in a file that authorises charges.
+function secretMatches(provided: string | null, expected: string | undefined): boolean {
+  if (!provided || !expected || provided.length !== expected.length) return false;
+  let diff = 0;
+  for (let i = 0; i < provided.length; i++) {
+    diff |= provided.charCodeAt(i) ^ expected.charCodeAt(i);
+  }
+  return diff === 0;
+}
+
 export async function POST(req: Request) {
-  // Verify cron secret
-  const auth = req.headers.get("authorization");
-  if (auth !== `Bearer ${process.env.CRON_SECRET}`) {
+  // Canner scheduled jobs send an arbitrary header set; `x-cron-key` is the
+  // documented convention. The Authorization form is what the old Vercel cron
+  // used and is accepted during the cutover.
+  const secret = process.env.CRON_SECRET;
+  const bearer = req.headers.get("authorization")?.replace(/^Bearer /, "") ?? null;
+  const cronKey = req.headers.get("x-cron-key");
+  if (!secretMatches(cronKey, secret) && !secretMatches(bearer, secret)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const supabase = getSupabase();
+  const db = getDb();
   const stripe = getStripe();
 
-  // Find all accounts with unbilled usage
-  const { data: unbilled } = await supabase
+  // Find all accounts with unbilled usage. `id` is selected because the mark-as-
+  // billed update below must target exactly these rows — see the note there.
+  const { data: unbilled } = await db
     .from("sendletter_api_usage")
-    .select("account_id, amount_cents")
+    .select("id, account_id, amount_cents")
     .eq("billed", false);
 
   if (!unbilled || unbilled.length === 0) {
     return NextResponse.json({ ok: true, message: "No unbilled usage" });
   }
 
-  // Group by account
-  const grouped: Record<string, number[]> = {};
+  // Group by account, carrying row ids alongside the amounts.
+  const grouped: Record<string, { ids: string[]; amounts: number[] }> = {};
   for (const row of unbilled) {
-    if (!grouped[row.account_id]) grouped[row.account_id] = [];
-    grouped[row.account_id].push(row.amount_cents);
+    if (!grouped[row.account_id]) grouped[row.account_id] = { ids: [], amounts: [] };
+    grouped[row.account_id].ids.push(row.id);
+    grouped[row.account_id].amounts.push(row.amount_cents);
   }
 
   const results: Array<{ accountId: string; status: string; amount?: number; error?: string }> = [];
 
-  for (const [accountId, amounts] of Object.entries(grouped)) {
+  for (const [accountId, { ids, amounts }] of Object.entries(grouped)) {
     const totalCents = amounts.reduce((sum, a) => sum + a, 0);
     if (totalCents === 0) continue;
 
     // Get Stripe customer ID
-    const { data: account } = await supabase
+    const { data: account } = await db
       .from("sendletter_accounts")
       .select("stripe_customer_id")
       .eq("id", accountId)
@@ -48,7 +66,7 @@ export async function POST(req: Request) {
     }
 
     // Create billing run record
-    const { data: run } = await supabase
+    const { data: run } = await db
       .from("sendletter_billing_runs")
       .insert({
         account_id: accountId,
@@ -75,15 +93,20 @@ export async function POST(req: Request) {
         metadata: { billing_run_id: run.id },
       });
 
-      // Mark usage as billed
-      await supabase
+      // Mark exactly the rows this PaymentIntent paid for.
+      //
+      // This previously matched on (account_id, billed = false), which silently
+      // swept up anything inserted between the read at the top of this handler
+      // and this update — marking usage as billed that no charge covered. With
+      // an API that inserts a usage row per letter, that window is as wide as a
+      // Stripe round trip. Target the ids instead.
+      await db
         .from("sendletter_api_usage")
         .update({ billed: true, billing_run_id: run.id })
-        .eq("account_id", accountId)
-        .eq("billed", false);
+        .in("id", ids);
 
       // Update billing run
-      await supabase
+      await db
         .from("sendletter_billing_runs")
         .update({
           status: "succeeded",
@@ -95,7 +118,7 @@ export async function POST(req: Request) {
     } catch (error) {
       const msg = error instanceof Error ? error.message : "Unknown error";
 
-      await supabase
+      await db
         .from("sendletter_billing_runs")
         .update({ status: "failed", error_message: msg })
         .eq("id", run.id);

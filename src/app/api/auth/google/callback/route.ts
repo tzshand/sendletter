@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSupabase } from "@/lib/supabase";
+import { getDb } from "@/lib/db";
 import { getStripe } from "@/lib/stripe";
 import { createSession } from "@/lib/auth";
 
@@ -71,10 +71,10 @@ export async function GET(req: NextRequest) {
 
     const normalizedEmail = googleUser.email.toLowerCase().trim();
     const googleId = googleUser.id;
-    const supabase = getSupabase();
+    const db = getDb();
 
     // Check if an account with this Google ID already exists
-    let { data: account } = await supabase
+    let { data: account } = await db
       .from("sendletter_accounts")
       .select("id, email")
       .eq("google_id", googleId)
@@ -82,7 +82,7 @@ export async function GET(req: NextRequest) {
 
     if (!account) {
       // Check if an account with this email exists (link Google to existing account)
-      const { data: emailAccount } = await supabase
+      const { data: emailAccount } = await db
         .from("sendletter_accounts")
         .select("id, email")
         .eq("email", normalizedEmail)
@@ -90,7 +90,7 @@ export async function GET(req: NextRequest) {
 
       if (emailAccount) {
         // Link Google ID to existing account
-        await supabase
+        await db
           .from("sendletter_accounts")
           .update({ google_id: googleId })
           .eq("id", emailAccount.id);
@@ -100,7 +100,7 @@ export async function GET(req: NextRequest) {
         const stripe = getStripe();
         const customer = await stripe.customers.create({ email: normalizedEmail });
 
-        const { data: newAccount, error: dbError } = await supabase
+        const { data: newAccount, error: dbError } = await db
           .from("sendletter_accounts")
           .insert({
             email: normalizedEmail,

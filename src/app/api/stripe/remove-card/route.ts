@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getSession } from "@/lib/auth";
 import { getStripe } from "@/lib/stripe";
-import { getSupabase } from "@/lib/supabase";
+import { getDb } from "@/lib/db";
 
 export async function POST() {
   const session = await getSession();
@@ -9,8 +9,8 @@ export async function POST() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const supabase = getSupabase();
-  const { data: account } = await supabase
+  const db = getDb();
+  const { data: account } = await db
     .from("sendletter_accounts")
     .select("stripe_customer_id")
     .eq("id", session.accountId)
@@ -21,7 +21,7 @@ export async function POST() {
   }
 
   // Check for unbilled usage
-  const { data: unbilled } = await supabase
+  const { data: unbilled } = await db
     .from("sendletter_api_usage")
     .select("id, amount_cents")
     .eq("account_id", session.accountId)
@@ -56,13 +56,13 @@ export async function POST() {
 
       // Mark usage as billed
       const usageIds = unbilled.map((u) => u.id);
-      await supabase
+      await db
         .from("sendletter_api_usage")
         .update({ billed: true })
         .in("id", usageIds);
 
       // Record billing run
-      await supabase.from("sendletter_billing_runs").insert({
+      await db.from("sendletter_billing_runs").insert({
         account_id: session.accountId,
         stripe_payment_intent_id: pi.id,
         amount_cents: totalCents,
@@ -96,13 +96,13 @@ export async function POST() {
   });
 
   // Update account
-  await supabase
+  await db
     .from("sendletter_accounts")
     .update({ has_payment_method: false, updated_at: new Date().toISOString() })
     .eq("id", session.accountId);
 
   // Deactivate API keys so they can't be used without payment
-  await supabase
+  await db
     .from("sendletter_api_keys")
     .update({ is_active: false })
     .eq("account_id", session.accountId);

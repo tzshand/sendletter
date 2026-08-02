@@ -1,12 +1,19 @@
-// Drop-in data layer backed by the Canner tenant Postgres (DATABASE_URL),
-// replacing the former Supabase PostgREST client. The public surface
-// (`getSupabase()` + a small query-builder) mirrors the subset of
-// @supabase/supabase-js this app actually used — from/select/insert/update,
-// eq/in filters, order/limit, single/maybeSingle — returning the same
-// `{ data, error }` shape, so call sites are unchanged.
+// Data layer for the Canner tenant Postgres (DATABASE_URL, auto-injected by
+// the platform).
+//
+// The query-builder shape here is a historical artefact: it was written as a
+// drop-in for the Supabase client during the migration off Supabase, so it
+// mirrors that subset — from/select/insert/update, eq/in filters, order/limit,
+// single/maybeSingle — and returns the same `{ data, error }`. Supabase itself
+// is long gone; the shape stayed because rewriting every call site into raw SQL
+// would have been unrelated risk. Treat it as this app's own small ORM.
 //
 // The connection string points at PgBouncer (transaction pooling, :6432).
 // node-postgres uses unnamed/simple queries here, so it is pooler-safe.
+//
+// One deliberate asymmetry, added after a silent outage: a query that matches
+// no rows returns `{ data: null }`, but a database that cannot be REACHED
+// throws DbConnectionError. See that class for why it matters.
 
 import { Pool, type QueryResult } from "pg";
 import { ensureSchema } from "./migrate";
@@ -27,6 +34,58 @@ function getPool(): Pool {
     });
   }
   return globalForPg.__sendletterPgPool;
+}
+
+/**
+ * Raised when the database itself is unreachable — connection refused, auth
+ * failure, timeout, missing DATABASE_URL — as opposed to a query that simply
+ * matched no rows.
+ *
+ * The distinction is the whole point. Previously every failure collapsed into
+ * `{ data: null }`, so a total outage was indistinguishable from an empty
+ * table: `validateApiKey` answered "Invalid API key", `/api/auth/login`
+ * answered "Invalid email or password", and the confirmation-email idempotency
+ * probe answered "no order yet" and sent a duplicate receipt. Callers that care
+ * about the difference now catch this; callers that do not are unchanged.
+ */
+export class DbConnectionError extends Error {
+  readonly cause?: unknown;
+  constructor(message: string, cause?: unknown) {
+    super(message);
+    this.name = "DbConnectionError";
+    this.cause = cause;
+  }
+}
+
+// Postgres error codes and node-postgres/libpq failure modes that mean "the
+// database did not answer", rather than "the database answered, with nothing".
+// Class 08 is connection exceptions; 53 is insufficient resources; 57P0x are
+// admin shutdown / crash recovery; 28xxx is authentication.
+const CONNECTION_ERROR_CODES = new Set([
+  "28000", "28P01",          // invalid authorization / bad password
+  "3D000",                   // database does not exist
+  "53300",                   // too many connections
+  "57P01", "57P02", "57P03", // admin shutdown, crash shutdown, cannot connect now
+]);
+
+function isConnectionFailure(e: unknown): boolean {
+  if (!e || typeof e !== "object") return false;
+  const err = e as { code?: string; message?: string };
+  const code = err.code;
+  if (typeof code === "string") {
+    if (code.startsWith("08")) return true;            // connection exception
+    if (CONNECTION_ERROR_CODES.has(code)) return true;
+    // Node socket-level failures surface as these, with no SQLSTATE.
+    if (["ECONNREFUSED", "ETIMEDOUT", "ENOTFOUND", "EHOSTUNREACH", "ECONNRESET", "EPIPE"].includes(code)) {
+      return true;
+    }
+  }
+  const msg = err.message ?? "";
+  return (
+    msg.includes("Connection terminated") ||
+    msg.includes("timeout exceeded when trying to connect") ||
+    msg.includes("DATABASE_URL not set")
+  );
 }
 
 export type DbError = { message: string } | null;
@@ -233,6 +292,14 @@ class QueryBuilder implements PromiseLike<DbResult<any[]>> {
 
       return { data: rows, error: null };
     } catch (e) {
+      // A dead database is not a query result. Throwing here is what lets
+      // callers answer 503 instead of 401/"invalid password"/"no such order".
+      if (isConnectionFailure(e)) {
+        const message = e instanceof Error ? e.message : String(e);
+        throw new DbConnectionError(`Database unreachable: ${message}`, e);
+      }
+      // Genuine query errors (constraint violations, bad SQL) keep the old
+      // `{ data, error }` shape — call sites already branch on those.
       const message = e instanceof Error ? e.message : String(e);
       return { data: null, error: { message } };
     }
@@ -256,11 +323,29 @@ class TenantDbClient {
   }
 }
 
-export function getSupabase(): TenantDbClient {
-  // Validate the connection is configured up-front, matching prior behaviour
-  // of throwing when the backing store was unconfigured.
-  if (!process.env.DATABASE_URL) throw new Error("DATABASE_URL not set");
+export function getDb(): TenantDbClient {
+  // Validate the connection is configured up-front. Throws the same error type
+  // a runtime connection failure produces, so callers need only one catch.
+  if (!process.env.DATABASE_URL) {
+    throw new DbConnectionError("DATABASE_URL not set");
+  }
   return new TenantDbClient();
+}
+
+/**
+ * Liveness probe for /api/health. Returns the round-trip time of a trivial
+ * query, or throws DbConnectionError.
+ */
+export async function pingDb(): Promise<number> {
+  const started = Date.now();
+  const pool = getPool();
+  try {
+    await pool.query("SELECT 1");
+  } catch (e) {
+    const message = e instanceof Error ? e.message : String(e);
+    throw new DbConnectionError(`Database unreachable: ${message}`, e);
+  }
+  return Date.now() - started;
 }
 
 export type OrderInsert = {

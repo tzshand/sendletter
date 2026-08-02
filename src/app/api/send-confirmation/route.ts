@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
-import { getSupabase, type OrderInsert } from "@/lib/supabase";
+import { getDb, DbConnectionError, type OrderInsert } from "@/lib/db";
 import { getStripe } from "@/lib/stripe";
 import { SIZE_LABELS_BILINGUAL } from "@/lib/pricing";
 import { escapeHtml, stripControl } from "@/lib/sanitize";
@@ -189,12 +189,31 @@ export async function POST(req: Request) {
     // confirmation emails — and the retry often lacked the attachment because
     // the client had already cleared the uploaded file. If we've already
     // recorded an order for this session, do nothing further.
-    const existingDb = getSupabase();
-    const { data: existingOrder } = await existingDb
-      .from("sendletter_orders")
-      .select("id")
-      .eq("stripe_session_id", sessionId)
-      .maybeSingle();
+    //
+    // If that probe cannot run, we must NOT proceed: an unreachable database
+    // means every reload looks like a first visit, which is precisely the
+    // duplicate-email bug this check exists to prevent. Fail closed and let the
+    // client retry — the payment is already captured and the order is
+    // recoverable from Stripe, so a delayed receipt beats a repeated one.
+    let existingOrder: { id: string } | null = null;
+    try {
+      const existingDb = getDb();
+      const res = await existingDb
+        .from("sendletter_orders")
+        .select("id")
+        .eq("stripe_session_id", sessionId)
+        .maybeSingle();
+      existingOrder = res.data;
+    } catch (e) {
+      if (e instanceof DbConnectionError) {
+        console.error("send-confirmation: database unreachable, refusing to send:", e.message);
+        return NextResponse.json(
+          { error: "Temporarily unavailable. Please retry." },
+          { status: 503, headers: { "Retry-After": "15" } },
+        );
+      }
+      throw e;
+    }
     if (existingOrder) {
       return NextResponse.json({ ok: true, alreadyProcessed: true });
     }
@@ -271,7 +290,7 @@ export async function POST(req: Request) {
 
     // Save order to database
     try {
-      const supabase = getSupabase();
+      const db = getDb();
       const order: OrderInsert = {
         stripe_session_id: sessionId,
         stripe_payment_status: session.payment_status,
@@ -296,7 +315,7 @@ export async function POST(req: Request) {
         letter_html: hasHtml ? htmlContent : letterData ? buildSimpleLetterHtml(letterData, meta.letterSize || "standard") : undefined,
       };
 
-      const { error: dbError } = await supabase
+      const { error: dbError } = await db
         .from("sendletter_orders")
         .insert(order);
 

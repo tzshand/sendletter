@@ -7,5 +7,4 @@
 # Local-only tooling / artifacts
 test-api.mjs
 tsconfig.tsbuildinfo
-supabase
 *.log

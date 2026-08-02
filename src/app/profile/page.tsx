@@ -1,6 +1,6 @@
 import { getSession } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import { getSupabase } from "@/lib/supabase";
+import { getDb } from "@/lib/db";
 import { getStripe } from "@/lib/stripe";
 import { ProfileClient } from "./ProfileClient";
 
@@ -8,10 +8,10 @@ export default async function ProfilePage() {
   const session = await getSession();
   if (!session) redirect("/login");
 
-  const supabase = getSupabase();
+  const db = getDb();
 
   // Fetch account
-  const { data: account } = await supabase
+  const { data: account } = await db
     .from("sendletter_accounts")
     .select("id, email, stripe_customer_id, has_payment_method, created_at")
     .eq("id", session.accountId)
@@ -20,7 +20,7 @@ export default async function ProfilePage() {
   if (!account) redirect("/login");
 
   // Fetch active API key info
-  const { data: apiKey } = await supabase
+  const { data: apiKey } = await db
     .from("sendletter_api_keys")
     .select("key_prefix, created_at")
     .eq("account_id", session.accountId)
@@ -28,7 +28,7 @@ export default async function ProfilePage() {
     .single();
 
   // Fetch recent usage
-  const { data: usage } = await supabase
+  const { data: usage } = await db
     .from("sendletter_api_usage")
     .select("id, letter_mode, letter_size, amount_cents, billed, created_at")
     .eq("account_id", session.accountId)
@@ -36,7 +36,7 @@ export default async function ProfilePage() {
     .limit(20);
 
   // Fetch billing history
-  const { data: billing } = await supabase
+  const { data: billing } = await db
     .from("sendletter_billing_runs")
     .select("id, amount_cents, usage_count, status, created_at")
     .eq("account_id", session.accountId)

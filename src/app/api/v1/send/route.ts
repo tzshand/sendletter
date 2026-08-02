@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { validateApiKey, ApiAuthError } from "@/lib/api-auth";
-import { getSupabase } from "@/lib/supabase";
+import { getDb, DbConnectionError } from "@/lib/db";
 import { PRICES } from "@/lib/pricing";
 import { Resend } from "resend";
 import { escapeHtml, stripControl, sanitizeCss } from "@/lib/sanitize";
@@ -337,10 +337,10 @@ export async function POST(req: Request) {
     }
 
     const amountCents = PRICES[letter_size];
-    const supabase = getSupabase();
+    const db = getDb();
 
     // Insert order into sendletter_orders
-    const { data: order, error: orderError } = await supabase
+    const { data: order, error: orderError } = await db
       .from("sendletter_orders")
       .insert({
         stripe_session_id: null,
@@ -377,7 +377,7 @@ export async function POST(req: Request) {
     }
 
     // Insert usage record
-    const { error: usageError } = await supabase
+    const { error: usageError } = await db
       .from("sendletter_api_usage")
       .insert({
         account_id: accountId,
@@ -436,6 +436,15 @@ export async function POST(req: Request) {
   } catch (error) {
     if (error instanceof ApiAuthError) {
       return NextResponse.json({ error: error.message }, { status: error.status });
+    }
+    // 503, not 401 or 500: the request was well-formed and the credential may
+    // be perfectly good — our datastore is down. Retryable, and says so.
+    if (error instanceof DbConnectionError) {
+      console.error("API send: database unreachable:", error.message);
+      return NextResponse.json(
+        { error: "Service temporarily unavailable. Please retry." },
+        { status: 503, headers: { "Retry-After": "30" } },
+      );
     }
     console.error("API send error:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });

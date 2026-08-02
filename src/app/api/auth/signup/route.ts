@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
-import { getSupabase } from "@/lib/supabase";
+import { getDb, DbConnectionError } from "@/lib/db";
 import { getStripe } from "@/lib/stripe";
 import { createSession } from "@/lib/auth";
 
@@ -17,10 +17,10 @@ export async function POST(req: Request) {
     }
 
     const normalizedEmail = email.toLowerCase().trim();
-    const supabase = getSupabase();
+    const db = getDb();
 
     // Check if account already exists
-    const { data: existing } = await supabase
+    const { data: existing } = await db
       .from("sendletter_accounts")
       .select("id, password_hash")
       .eq("email", normalizedEmail)
@@ -34,7 +34,7 @@ export async function POST(req: Request) {
 
       // Google-only account — let them add a password
       const passwordHash = await bcrypt.hash(password, 12);
-      await supabase
+      await db
         .from("sendletter_accounts")
         .update({ password_hash: passwordHash })
         .eq("id", existing.id);
@@ -49,7 +49,7 @@ export async function POST(req: Request) {
 
     // Hash password and create account
     const passwordHash = await bcrypt.hash(password, 12);
-    const { data: account, error: dbError } = await supabase
+    const { data: account, error: dbError } = await db
       .from("sendletter_accounts")
       .insert({
         email: normalizedEmail,
@@ -68,6 +68,16 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ ok: true, email: account.email });
   } catch (error) {
+    // The duplicate-email lookup runs before the Stripe customer is created,
+    // so an outage normally surfaces here with nothing to clean up. Reporting
+    // it as 503 keeps a would-be customer from concluding the address is taken.
+    if (error instanceof DbConnectionError) {
+      console.error("Signup: database unreachable:", error.message);
+      return NextResponse.json(
+        { error: "Sign-up is temporarily unavailable. Please try again shortly." },
+        { status: 503, headers: { "Retry-After": "30" } },
+      );
+    }
     console.error("Signup error:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }

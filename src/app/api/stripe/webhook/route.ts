@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getStripe } from "@/lib/stripe";
-import { getSupabase } from "@/lib/supabase";
+import { getDb } from "@/lib/db";
 
 export async function POST(req: Request) {
   const body = await req.text();
@@ -38,8 +38,8 @@ export async function POST(req: Request) {
       });
 
       // Update account
-      const supabase = getSupabase();
-      await supabase
+      const db = getDb();
+      await db
         .from("sendletter_accounts")
         .update({ has_payment_method: true, updated_at: new Date().toISOString() })
         .eq("stripe_customer_id", customerId);

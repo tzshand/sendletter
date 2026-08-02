@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getSession } from "@/lib/auth";
-import { getSupabase } from "@/lib/supabase";
+import { getDb } from "@/lib/db";
 import { generateApiKey } from "@/lib/api-auth";
 
 // Generate a new API key (revokes previous)
@@ -10,10 +10,10 @@ export async function POST() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const supabase = getSupabase();
+  const db = getDb();
 
   // Revoke any existing active keys
-  await supabase
+  await db
     .from("sendletter_api_keys")
     .update({ is_active: false, revoked_at: new Date().toISOString() })
     .eq("account_id", session.accountId)
@@ -22,7 +22,7 @@ export async function POST() {
   // Generate new key
   const { raw, hash, prefix } = generateApiKey();
 
-  const { error: dbError } = await supabase
+  const { error: dbError } = await db
     .from("sendletter_api_keys")
     .insert({
       account_id: session.accountId,
@@ -46,8 +46,8 @@ export async function GET() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const supabase = getSupabase();
-  const { data } = await supabase
+  const db = getDb();
+  const { data } = await db
     .from("sendletter_api_keys")
     .select("key_prefix, created_at")
     .eq("account_id", session.accountId)

@@ -1,5 +1,5 @@
 import { createHash, randomBytes } from "crypto";
-import { getSupabase } from "./supabase";
+import { getDb } from "./db";
 
 export function generateApiKey(): { raw: string; hash: string; prefix: string } {
   const bytes = randomBytes(32);
@@ -24,8 +24,12 @@ export async function validateApiKey(
   const key = auth.slice(7); // Remove "Bearer "
   const hash = hashApiKey(key);
 
-  const supabase = getSupabase();
-  const { data } = await supabase
+  // Note: a DbConnectionError from any of these queries propagates out of this
+  // function on purpose. The caller maps it to 503 — telling an integrator
+  // their key is invalid when the database is down sends them off to rotate a
+  // perfectly good credential.
+  const db = getDb();
+  const { data } = await db
     .from("sendletter_api_keys")
     .select("id, account_id")
     .eq("key_hash", hash)
@@ -34,7 +38,7 @@ export async function validateApiKey(
 
   if (!data) throw new ApiAuthError(401, "Invalid API key");
 
-  const { data: account } = await supabase
+  const { data: account } = await db
     .from("sendletter_accounts")
     .select("has_payment_method")
     .eq("id", data.account_id)
