@@ -32,6 +32,7 @@ function LoginForm() {
   const [loading, setLoading] = useState(false);
   const [passkeyLoading, setPasskeyLoading] = useState(false);
   const [canUsePasskeys, setCanUsePasskeys] = useState(false);
+  const [recoverySent, setRecoverySent] = useState(false);
 
   // Feature-detected on the client only — rendering the passkey button during
   // SSR would flash it for browsers that cannot use it.
@@ -56,6 +57,37 @@ function LoginForm() {
       throw new Error(data.error || "Passkey sign-in failed");
     }
     router.push("/profile");
+  }
+
+  /**
+   * Lost-passkey recovery. Canner emails a link back to /passkey/enroll; the
+   * email's language comes from the setting the user picked on the send form,
+   * which is the only signal we have about what they actually read. Falls back
+   * to the auth app's default_locale if we send nothing recognisable.
+   */
+  async function startRecovery() {
+    setError("");
+    if (!email.trim()) {
+      setError("Enter your email address first, then try again.");
+      return;
+    }
+    let locale = "en";
+    try {
+      const saved = localStorage.getItem("sl-settings");
+      if (saved) locale = JSON.parse(saved).language || "en";
+    } catch {
+      /* default to English */
+    }
+    try {
+      await fetch("/api/passkey/recover", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, locale }),
+      });
+    } catch {
+      /* the response is uniform by design — say the same thing either way */
+    }
+    setRecoverySent(true);
   }
 
   /** Passkey-first: no email, no password — the browser picks the account. */
@@ -154,6 +186,15 @@ function LoginForm() {
                   <KeyRound size={16} />
                 )}
                 Sign in with a passkey
+              </button>
+
+              <button
+                type="button"
+                onClick={startRecovery}
+                disabled={recoverySent || passkeyLoading}
+                className="w-full text-center text-xs font-medium text-gray-400 hover:text-gray-600 disabled:hover:text-gray-400 transition-colors mt-2.5"
+              >
+                {recoverySent ? "Check your email for a link" : "Lost your passkey?"}
               </button>
 
               <div className="relative my-5">

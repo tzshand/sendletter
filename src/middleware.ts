@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { verifyToken } from "@/lib/auth";
+// Edge-safe import: lib/auth.ts reaches the database and cannot load here.
+// This check is a pre-filter only — getSession() on the page is authoritative
+// and is what enforces session revocation.
+import { verifyToken } from "@/lib/auth-edge";
 
 export async function middleware(req: NextRequest) {
   const token = req.cookies.get("sl_session")?.value;

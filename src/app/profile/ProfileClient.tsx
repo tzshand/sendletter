@@ -17,6 +17,7 @@ import {
   AlertTriangle,
   Trash2,
   KeyRound,
+  Monitor,
 } from "lucide-react";
 
 const stripePromise = loadStripe(
@@ -34,7 +35,20 @@ type BillingAddress = {
 };
 
 type Props = {
-  account: { email: string; hasPaymentMethod: boolean; createdAt: string; hasPasskey: boolean };
+  account: {
+    email: string;
+    hasPaymentMethod: boolean;
+    createdAt: string;
+    hasPasskey: boolean;
+    canRemovePasskey: boolean;
+  };
+  sessions: Array<{
+    id: string;
+    device: string;
+    createdAt: string;
+    lastSeenAt: string;
+    current: boolean;
+  }>;
   apiKey: { prefix: string; createdAt: string } | null;
   cardInfo: { brand: string; last4: string } | null;
   billingAddress: BillingAddress | null;
@@ -101,7 +115,27 @@ function CardForm({ onSuccess }: { onSuccess: () => void }) {
   );
 }
 
-export function ProfileClient({ account, apiKey, cardInfo, billingAddress, usage, billing }: Props) {
+function relativeTime(iso: string): string {
+  const diff = Date.now() - new Date(iso).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 2) return "Active now";
+  if (mins < 60) return `${mins} minutes ago`;
+  const hours = Math.floor(mins / 60);
+  if (hours < 24) return `${hours} hour${hours === 1 ? "" : "s"} ago`;
+  const days = Math.floor(hours / 24);
+  if (days < 30) return `${days} day${days === 1 ? "" : "s"} ago`;
+  return new Date(iso).toLocaleDateString("en-CA");
+}
+
+export function ProfileClient({
+  account,
+  apiKey,
+  cardInfo,
+  billingAddress,
+  usage,
+  billing,
+  sessions: initialSessions,
+}: Props) {
   const router = useRouter();
   const [newKey, setNewKey] = useState<string | null>(null);
   const [keyPrefix, setKeyPrefix] = useState(apiKey?.prefix || null);
@@ -117,8 +151,74 @@ export function ProfileClient({ account, apiKey, cardInfo, billingAddress, usage
   const [passkeyLoading, setPasskeyLoading] = useState(false);
   const [passkeyError, setPasskeyError] = useState("");
   const [canUsePasskeys, setCanUsePasskeys] = useState(false);
+  const [removeKeyConfirm, setRemoveKeyConfirm] = useState(false);
+  const [sessions, setSessions] = useState(initialSessions);
+  const [sessionBusy, setSessionBusy] = useState<string | null>(null);
+  const [sessionError, setSessionError] = useState("");
 
   useEffect(() => setCanUsePasskeys(passkeysSupported()), []);
+
+  async function refreshSessions() {
+    try {
+      const res = await fetch("/api/sessions");
+      if (res.ok) setSessions((await res.json()).sessions);
+    } catch {
+      /* the list is already rendered from the server; leave it */
+    }
+  }
+
+  async function endSession(id: string) {
+    setSessionBusy(id);
+    setSessionError("");
+    try {
+      const res = await fetch(`/api/sessions/${id}`, { method: "DELETE" });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || "Could not end that session");
+      // Ending your own session is a sign-out; anything else just updates the list.
+      if (data.ended_current) {
+        router.push("/login");
+        return;
+      }
+      setSessions((prev) => prev.filter((s) => s.id !== id));
+    } catch (err) {
+      setSessionError(err instanceof Error ? err.message : "Could not end that session");
+    } finally {
+      setSessionBusy(null);
+    }
+  }
+
+  async function endOtherSessions() {
+    setSessionBusy("others");
+    setSessionError("");
+    try {
+      const res = await fetch("/api/sessions", { method: "DELETE" });
+      if (!res.ok) throw new Error("Could not end the other sessions");
+      setSessions((prev) => prev.filter((s) => s.current));
+    } catch (err) {
+      setSessionError(err instanceof Error ? err.message : "Could not end the other sessions");
+    } finally {
+      setSessionBusy(null);
+    }
+  }
+
+  async function removePasskeys() {
+    setPasskeyLoading(true);
+    setPasskeyError("");
+    try {
+      const res = await fetch("/api/passkey", { method: "DELETE" });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || "Could not remove your passkeys");
+      setHasPasskey(false);
+      setRemoveKeyConfirm(false);
+      // Removal also ends other sessions server-side — reflect that here rather
+      // than leaving a stale list on screen.
+      await refreshSessions();
+    } catch (err) {
+      setPasskeyError(err instanceof Error ? err.message : "Could not remove your passkeys");
+    } finally {
+      setPasskeyLoading(false);
+    }
+  }
 
   // Same inline enrollment the signup page runs — for anyone who dismissed the
   // prompt then, or who signed up before passkeys existed.
@@ -356,12 +456,52 @@ export function ProfileClient({ account, apiKey, cardInfo, billingAddress, usage
                 <div className="w-8 h-8 rounded-lg bg-emerald-50 ring-1 ring-emerald-200/60 flex items-center justify-center shrink-0">
                   <Check className="w-4 h-4 text-emerald-600" />
                 </div>
-                <div className="min-w-0">
+                <div className="min-w-0 flex-1">
                   <p className="text-sm font-medium text-gray-900">Passkey active</p>
                   <p className="text-xs text-gray-500 mt-0.5">
                     You sign in with your device. Your password alone will no longer
                     get you in — it now asks for the passkey too.
                   </p>
+
+                  {!account.canRemovePasskey ? (
+                    <p className="text-xs text-gray-400 mt-3">
+                      This passkey is the only way into your account, so it can&apos;t be
+                      removed. Set a password first if you want to remove it.
+                    </p>
+                  ) : removeKeyConfirm ? (
+                    <div className="mt-3 rounded-lg bg-red-50 border border-red-200 p-3">
+                      <p className="text-xs text-red-700 mb-2.5">
+                        This removes <strong>every</strong> passkey on the account, on all
+                        your devices — Canner doesn&apos;t support removing just one. Other
+                        devices will also be signed out. You&apos;ll sign in with your
+                        password afterwards.
+                      </p>
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={removePasskeys}
+                          disabled={passkeyLoading}
+                          className="inline-flex items-center gap-1.5 bg-red-600 text-white text-xs font-semibold px-3 py-1.5 rounded-lg hover:bg-red-700 disabled:opacity-50 transition-colors"
+                        >
+                          {passkeyLoading && <Loader2 size={12} className="animate-spin" />}
+                          Remove all passkeys
+                        </button>
+                        <button
+                          onClick={() => setRemoveKeyConfirm(false)}
+                          disabled={passkeyLoading}
+                          className="text-xs font-medium text-gray-500 hover:text-gray-700 px-2 py-1.5"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => setRemoveKeyConfirm(true)}
+                      className="text-xs font-medium text-gray-500 hover:text-red-600 transition-colors mt-3"
+                    >
+                      Remove passkey
+                    </button>
+                  )}
                 </div>
               </div>
             ) : (
@@ -388,6 +528,66 @@ export function ProfileClient({ account, apiKey, cardInfo, billingAddress, usage
             )}
           </section>
         )}
+
+        {/* Active sessions */}
+        <section className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <Monitor size={18} className="text-gray-400" />
+              <h2 className="text-sm font-semibold text-gray-900">Where you&apos;re signed in</h2>
+            </div>
+            {sessions.filter((s) => !s.current).length > 0 && (
+              <button
+                onClick={endOtherSessions}
+                disabled={sessionBusy !== null}
+                className="text-xs font-medium text-gray-500 hover:text-red-600 disabled:opacity-50 transition-colors"
+              >
+                {sessionBusy === "others" ? "Ending…" : "End all others"}
+              </button>
+            )}
+          </div>
+
+          {sessionError && (
+            <p className="text-sm text-red-600 bg-red-50 rounded-lg px-3 py-2 mb-3">{sessionError}</p>
+          )}
+
+          {sessions.length === 0 ? (
+            <p className="text-xs text-gray-400">No recorded sessions.</p>
+          ) : (
+            <div className="divide-y divide-gray-100">
+              {sessions.map((s) => (
+                <div key={s.id} className="flex items-center justify-between gap-3 py-2.5 first:pt-0 last:pb-0">
+                  <div className="min-w-0">
+                    <p className="text-sm text-gray-900 flex items-center gap-2">
+                      {s.device}
+                      {s.current && (
+                        <span className="text-[10px] font-semibold uppercase tracking-wide text-emerald-700 bg-emerald-50 ring-1 ring-emerald-200/60 rounded px-1.5 py-0.5">
+                          This device
+                        </span>
+                      )}
+                    </p>
+                    <p className="text-xs text-gray-400 mt-0.5">
+                      {relativeTime(s.lastSeenAt)} · signed in{" "}
+                      {new Date(s.createdAt).toLocaleDateString("en-CA")}
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => endSession(s.id)}
+                    disabled={sessionBusy !== null}
+                    className="text-xs font-medium text-gray-500 hover:text-red-600 disabled:opacity-50 transition-colors shrink-0"
+                  >
+                    {sessionBusy === s.id ? "…" : s.current ? "Sign out" : "End"}
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+
+          <p className="text-[11px] text-gray-400 mt-3">
+            We record the browser and a one-way hash of the IP address — enough to tell
+            your sessions apart, not enough to track where you are.
+          </p>
+        </section>
 
         {/* API Key */}
         <section className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm">

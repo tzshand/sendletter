@@ -1,7 +1,8 @@
-import { getSession } from "@/lib/auth";
+import { getSession, listSessions } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { getDb } from "@/lib/db";
 import { getStripe } from "@/lib/stripe";
+import { describeDevice } from "@/lib/device";
 import { ProfileClient } from "./ProfileClient";
 
 export default async function ProfilePage() {
@@ -13,11 +14,15 @@ export default async function ProfilePage() {
   // Fetch account
   const { data: account } = await db
     .from("sendletter_accounts")
-    .select("id, email, stripe_customer_id, has_payment_method, created_at, passkey_enrolled_at")
+    .select(
+      "id, email, stripe_customer_id, has_payment_method, created_at, passkey_enrolled_at, password_hash, google_id",
+    )
     .eq("id", session.accountId)
     .single();
 
   if (!account) redirect("/login");
+
+  const sessions = await listSessions(session.accountId);
 
   // Fetch active API key info
   const { data: apiKey } = await db
@@ -94,7 +99,17 @@ export default async function ProfilePage() {
         hasPaymentMethod: account.has_payment_method,
         createdAt: account.created_at,
         hasPasskey: account.passkey_enrolled_at != null,
+        // Drives the lockout guard's copy: with no password and no Google
+        // link, the passkey is the only way in and cannot be removed.
+        canRemovePasskey: Boolean(account.password_hash || account.google_id),
       }}
+      sessions={sessions.map((s) => ({
+        id: s.id,
+        device: describeDevice(s.user_agent),
+        createdAt: s.created_at,
+        lastSeenAt: s.last_seen_at,
+        current: s.id === session.sessionId,
+      }))}
       apiKey={apiKey ? { prefix: apiKey.key_prefix, createdAt: apiKey.created_at } : null}
       cardInfo={cardInfo}
       billingAddress={billingAddress}

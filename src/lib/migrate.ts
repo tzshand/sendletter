@@ -115,6 +115,28 @@ create index if not exists idx_sendletter_billing_runs_account
 alter table sendletter_accounts add column if not exists canner_auth_user_id text unique;
 alter table sendletter_accounts add column if not exists passkey_enrolled_at timestamptz;
 
+-- Sessions. The sl_session cookie used to be a bare stateless JWT, which meant
+-- there was no way to enumerate a user's sign-ins or end one: the only lever
+-- was rotating JWT_SECRET, which signs everybody out everywhere. Each sign-in
+-- now writes a row, and the cookie carries its id, so a session can be listed
+-- and revoked individually.
+--
+-- ip_hash rather than the address itself: it is enough to distinguish devices
+-- and spot an unfamiliar sign-in, without keeping a log of where someone lives.
+create table if not exists sendletter_sessions (
+  id uuid primary key default gen_random_uuid(),
+  account_id uuid not null references sendletter_accounts(id) on delete cascade,
+  user_agent text,
+  ip_hash text,
+  created_at timestamptz not null default now(),
+  last_seen_at timestamptz not null default now(),
+  revoked_at timestamptz
+);
+create index if not exists idx_sendletter_sessions_account
+  on sendletter_sessions(account_id, last_seen_at desc);
+create index if not exists idx_sendletter_sessions_active
+  on sendletter_sessions(account_id) where revoked_at is null;
+
 do $do$
 begin
   if not exists (select 1 from pg_constraint where conname = 'fk_api_usage_billing_run') then
