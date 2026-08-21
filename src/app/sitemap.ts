@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { POSTS, postPath, SITE } from "@/lib/blog";
+import { ORIGINS, originUrl } from "@/lib/origins";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const postDates = POSTS.map((p) => p.updated ?? p.published).sort();
@@ -57,6 +58,20 @@ export default function sitemap(): MetadataRoute.Sitemap {
       alternates: blogIndexAlternates,
     },
     ...posts,
+    {
+      url: `${SITE}/mail-to-canada`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+    // Each origin page stands alone — they cover different countries, so they
+    // are deliberately NOT declared as language alternates of one another.
+    ...ORIGINS.map((o) => ({
+      url: originUrl(o),
+      lastModified: new Date(),
+      changeFrequency: "yearly" as const,
+      priority: 0.6,
+    })),
     {
       url: `${SITE}/terms`,
       lastModified: new Date(),

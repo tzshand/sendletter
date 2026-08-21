@@ -724,6 +724,10 @@ export default function Home() {
             <span>·</span>
             <a href="/blog" className="hover:text-gray-600 transition-colors">{isFr ? "Blogue" : "Blog"}</a>
             <span>·</span>
+            <a href="/mail-to-canada" className="hover:text-gray-600 transition-colors">
+              {isFr ? "Poster au Canada" : "Mail to Canada"}
+            </a>
+            <span>·</span>
             <a href="/terms" className="hover:text-gray-600 transition-colors">{isFr ? "Conditions" : "Terms"}</a>
             <span>·</span>
             <a href="mailto:support@sendletter.app" className="hover:text-gray-600 transition-colors">support@sendletter.app</a>

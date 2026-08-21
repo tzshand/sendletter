@@ -63,7 +63,7 @@ export const POSTS: PostMeta[] = [
     id: "cost-to-mail",
     published: "2026-08-02",
     cta: "home",
-    related: ["send-a-letter-online", "from-abroad"],
+    related: ["send-a-letter-online", "legal-notice"],
     en: {
       slug: "what-it-costs-to-mail-a-letter-in-canada",
       title: "What It Actually Costs to Mail a Letter in Canada in 2026",
@@ -147,36 +147,6 @@ export const POSTS: PostMeta[] = [
         "api envoi de lettres",
         "api courrier papier canada",
         "publipostage programmable",
-      ],
-    },
-  },
-  {
-    id: "from-abroad",
-    published: "2026-08-02",
-    cta: "home",
-    related: ["cost-to-mail", "send-a-letter-online"],
-    en: {
-      slug: "mail-a-letter-to-canada-from-abroad",
-      title: "How to Mail a Letter to Canada From Abroad",
-      description:
-        "Canadian addresses have a strict format, and getting it wrong is the most common reason inbound mail goes astray. Here is the format, plus what international postage costs.",
-      keywords: [
-        "mail a letter to canada",
-        "canadian address format",
-        "how to write a canadian address",
-        "send mail to canada from usa",
-      ],
-    },
-    fr: {
-      slug: "envoyer-une-lettre-au-canada-depuis-l-etranger",
-      title: "Comment envoyer une lettre au Canada depuis l'étranger",
-      description:
-        "Les adresses canadiennes suivent un format strict, et s'y tromper est la première cause de courrier égaré. Voici le format, et ce que coûte l'affranchissement.",
-      keywords: [
-        "envoyer une lettre au canada",
-        "format adresse canadienne",
-        "écrire une adresse au canada",
-        "envoyer du courrier au canada",
       ],
     },
   },
