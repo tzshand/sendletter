@@ -22,7 +22,6 @@ const EN_SLUGS = [
   "what-it-costs-to-mail-a-letter-in-canada",
   "can-you-mail-a-legal-notice-online",
   "send-physical-mail-from-your-app",
-  "mail-a-letter-to-canada-from-abroad",
 ];
 
 const FR_SLUGS = [
@@ -30,7 +29,40 @@ const FR_SLUGS = [
   "combien-coute-une-lettre-au-canada",
   "envoyer-une-mise-en-demeure-par-la-poste",
   "envoyer-du-courrier-depuis-votre-application",
-  "envoyer-une-lettre-au-canada-depuis-l-etranger",
+];
+
+// Origin pages under /mail-to-canada. Mirrors src/lib/origins/index.ts.
+// English lives at the section root; every other language is prefixed.
+const ORIGIN_PATHS = [
+  "/mail-to-canada/mail-a-letter-to-canada-from-nigeria",
+  "/hi/mail-to-canada/bharat-se-canada-patra-kaise-bhejen",
+  "/pa/mail-to-canada/canada-nu-chithi-kive-bhejni",
+  "/ur/mail-to-canada/pakistan-se-canada-khat-kaise-bhejen",
+  "/bn/mail-to-canada/bangladesh-theke-canada-chithi",
+  "/ta/mail-to-canada/canada-kadithatm-anuppuvathu-eppadi",
+  "/gu/mail-to-canada/canada-patra-kevi-rite-mokalvo",
+  "/zh/mail-to-canada/ru-he-cong-zhongguo-ji-xin-dao-jianada",
+  "/zh-hant/mail-to-canada/ru-he-ji-xin-dao-jianada",
+  "/ja/mail-to-canada/nihon-kara-canada-e-tegami",
+  "/ko/mail-to-canada/hanguk-eseo-canada-pyeonji",
+  "/tl/mail-to-canada/paano-magpadala-ng-sulat-sa-canada",
+  "/vi/mail-to-canada/gui-thu-di-canada-tu-viet-nam",
+  "/ar/mail-to-canada/kayfa-tursil-risala-ila-kanada",
+  "/fa/mail-to-canada/ersal-name-be-canada",
+  "/tr/mail-to-canada/turkiyeden-kanadaya-mektup-gonderme",
+  "/de/mail-to-canada/brief-nach-kanada-senden",
+  "/fr/mail-to-canada/envoyer-une-lettre-au-canada",
+  "/it/mail-to-canada/spedire-una-lettera-in-canada",
+  "/nl/mail-to-canada/brief-naar-canada-sturen",
+  "/ru/mail-to-canada/kak-otpravit-pismo-v-kanadu",
+  "/uk/mail-to-canada/yak-nadislaty-lyst-do-kanady",
+  "/pl/mail-to-canada/jak-wyslac-list-do-kanady",
+  "/ro/mail-to-canada/cum-trimiti-o-scrisoare-in-canada",
+  "/es/mail-to-canada/como-enviar-una-carta-a-canada",
+  "/pt/mail-to-canada/como-enviar-uma-carta-para-o-canada",
+  "/am/mail-to-canada/wede-canada-debdabe-melakit",
+  "/ti/mail-to-canada/nab-canada-debdabe-milak",
+  "/so/mail-to-canada/sida-loo-diro-warqad-canada",
 ];
 
 const DEFAULT_PATHS = [
@@ -38,9 +70,22 @@ const DEFAULT_PATHS = [
   ...EN_SLUGS.map((s) => `/blog/${s}`),
   "/fr/blog",
   ...FR_SLUGS.map((s) => `/fr/blog/${s}`),
+  "/mail-to-canada",
+  ...ORIGIN_PATHS,
 ];
 
-const args = process.argv.slice(2);
+// Guard against a real mistake made once: on Git Bash a bare `/foo` argument
+// is rewritten to a Windows path before node ever sees it, and the result was
+// submitted to IndexNow as a nonsense URL. Anything that is not a clean
+// site-relative path is refused rather than published.
+const args = process.argv.slice(2).map((a) => {
+  if (!a.startsWith("/") || /^\/[A-Za-z]:/.test(a) || a.includes("\\") || a.includes(" ")) {
+    console.error(`Refusing suspicious path argument: ${a}`);
+    console.error("Pass site-relative paths only, e.g. //blog/foo on Git Bash, or run with no arguments.");
+    process.exit(1);
+  }
+  return a;
+});
 const paths = args.length > 0 ? args : DEFAULT_PATHS;
 
 const urlList = paths.map((p) => `https://${HOST}${p.startsWith("/") ? p : `/${p}`}`);
