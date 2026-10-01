@@ -4,6 +4,7 @@ import { getDb, DbConnectionError } from "@/lib/db";
 import { PRICES } from "@/lib/pricing";
 import { Resend } from "resend";
 import { escapeHtml, stripControl, sanitizeCss } from "@/lib/sanitize";
+import { saveOrderFiles } from "@/lib/order-files";
 
 const INTERNAL_EMAIL = "colinh.shand@gmail.com";
 
@@ -392,6 +393,15 @@ export async function POST(req: Request) {
       console.error("Usage insert failed:", usageError);
     }
 
+    // Keep an uploaded file BEFORE emailing it: the attachment is skipped when
+    // over the size cap and the email was the only copy. Never throws.
+    const savedFiles = pdfBase64
+      ? await saveOrderFiles(order.id, [{ name: originalFileName || "letter.pdf", base64: pdfBase64 }])
+      : { key: order.id, dir: null, files: [] as string[] };
+    if (pdfBase64 && savedFiles.files.length === 0) {
+      console.error(`API send: NOTHING SAVED for order ${order.id} (upload present); the email is the only copy`);
+    }
+
     // Send internal fulfillment email
     try {
       const resendKey = process.env.RESEND_API_KEY;
@@ -399,6 +409,9 @@ export async function POST(req: Request) {
         const resend = new Resend(resendKey);
         const attachments: { filename: string; content: string }[] = [];
 
+        if (pdfBase64 && pdfBase64.length >= 10_000_000) {
+          console.warn(`API send: upload for order ${order.id} is over the email size cap; not attached (saved: ${savedFiles.files.join(", ") || "no"})`);
+        }
         if (pdfBase64 && pdfBase64.length < 10_000_000) {
           attachments.push({ filename: originalFileName || "letter.pdf", content: pdfBase64 });
         } else if (letterHtml) {
@@ -419,7 +432,8 @@ export async function POST(req: Request) {
 <p><strong>Size:</strong> ${eh(String(letter_size))}</p>
 <p><strong>Amount:</strong> $${(amountCents / 100).toFixed(2)} CAD</p>
 <p><strong>From:</strong> ${eh(fromAddr.name)}, ${eh(fromAddr.line1)}, ${eh(fromAddr.city)} ${eh(fromAddr.province || "")} ${eh(fromAddr.postal_code || "")} ${eh(fromAddr.country || "CA")}</p>
-<p><strong>To:</strong> ${eh(toAddr.name)}, ${eh(toAddr.line1)}, ${eh(toAddr.city)} ${eh(toAddr.province || "")} ${eh(toAddr.postal_code || "")} ${eh(toAddr.country || "CA")}</p>`,
+<p><strong>To:</strong> ${eh(toAddr.name)}, ${eh(toAddr.line1)}, ${eh(toAddr.city)} ${eh(toAddr.province || "")} ${eh(toAddr.postal_code || "")} ${eh(toAddr.country || "CA")}</p>
+<p><strong>Saved copy:</strong> ${savedFiles.files.length > 0 ? `orders/${order.id}/ &mdash; ${savedFiles.files.map(eh).join(", ")}` : "none saved"}</p>`,
           attachments: attachments.length > 0 ? attachments : undefined,
         });
       }

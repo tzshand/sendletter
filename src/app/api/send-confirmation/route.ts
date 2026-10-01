@@ -4,6 +4,7 @@ import { getDb, DbConnectionError, type OrderInsert } from "@/lib/db";
 import { getStripe } from "@/lib/stripe";
 import { SIZE_LABELS_BILINGUAL } from "@/lib/pricing";
 import { escapeHtml, stripControl } from "@/lib/sanitize";
+import { saveOrderFiles, safeFileName } from "@/lib/order-files";
 
 function getResend() {
   const key = process.env.RESEND_API_KEY;
@@ -122,6 +123,8 @@ function buildInternalEmailHtml(
   letterMode: string,
   hasPdf: boolean,
   hasHtml: boolean,
+  saved: string[],
+  savedKey: string,
 ): string {
   const eh = escapeHtml;
   const size = SIZE_LABELS[meta.letterSize] || SIZE_LABELS.standard;
@@ -158,7 +161,8 @@ function buildInternalEmailHtml(
 </p>
 
 <div style="background:#f0f9f0;border-radius:8px;padding:12px 16px;font-size:12px;color:#666;margin:20px 0;">
-  <strong>Attachment:</strong> ${hasPdf ? 'PDF attached' : hasHtml ? 'HTML letter content attached' : 'No attachment available'}
+  <strong>Attachment:</strong> ${hasPdf ? 'PDF attached' : hasHtml ? 'HTML letter content attached' : 'No attachment available'}<br/>
+  <strong>Saved copy:</strong> ${saved.length > 0 ? `orders/${eh(savedKey)}/ &mdash; ${saved.map(eh).join(", ")}` : "none saved"}
 </div>
 
 </body></html>`;
@@ -226,6 +230,17 @@ export async function POST(req: Request) {
     const hasHtml = !!(htmlContent && typeof htmlContent === "string");
     const hasAttachment = hasOriginal || hasPdf;
 
+    // Keep what was uploaded BEFORE anything is emailed. The attachments below
+    // are skipped when over the size cap, and the email was the only copy; this
+    // is the one that can't be lost that way. Never throws (see order-files.ts).
+    const savedFiles = await saveOrderFiles(session.id, [
+      ...(hasOriginal ? [{ name: `original-${safeFileName(originalFile.name, "letter")}`, base64: originalFile.base64 as string }] : []),
+      ...(hasPdf ? [{ name: "letter.pdf", base64: pdfBase64 as string }] : []),
+    ]);
+    if (hasAttachment && savedFiles.files.length === 0) {
+      console.error(`send-confirmation: NOTHING SAVED for ${session.id} (upload present); the emails are the only copy`);
+    }
+
     // Build customer confirmation email
     const customerHtml = buildEmailHtml(meta, amount, date, hasAttachment);
 
@@ -239,6 +254,10 @@ export async function POST(req: Request) {
       customerAttachments.push({ filename: "letter.pdf", content: pdfBase64 });
     }
 
+    if (hasAttachment && customerAttachments.length === 0) {
+      console.warn(`send-confirmation: upload for ${session.id} is over the email size cap; not attached to the customer email (saved: ${savedFiles.files.join(", ") || "no"})`);
+    }
+
     // Send customer confirmation email
     await resend.emails.send({
       from: "sendletter <noreply@sendletter.app>",
@@ -250,7 +269,7 @@ export async function POST(req: Request) {
 
     // Build internal order email
     const mode = letterMode || meta.letterMode || "unknown";
-    const internalHtml = buildInternalEmailHtml(meta, amount, date, email, sessionId, mode, hasAttachment, hasHtml);
+    const internalHtml = buildInternalEmailHtml(meta, amount, date, email, sessionId, mode, hasAttachment, hasHtml, savedFiles.files, session.id);
 
     // Prepare attachments for internal email (original + generated PDF)
     const internalAttachments: { filename: string; content: string }[] = [];
@@ -273,6 +292,10 @@ export async function POST(req: Request) {
         filename: "letter.html",
         content: Buffer.from(simpleHtml).toString("base64"),
       });
+    }
+
+    if (hasAttachment && !internalAttachments.some((a) => a.filename !== "letter.html")) {
+      console.warn(`send-confirmation: upload for ${session.id} is over the email size cap; not attached to the internal email (saved: ${savedFiles.files.join(", ") || "no"})`);
     }
 
     // Send internal order email
