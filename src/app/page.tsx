@@ -247,15 +247,39 @@ export default function Home() {
     try {
       // Generate print-quality PDF for all modes
       let generatedPdf: string | null = null;
+      let letterPages = mode === "upload" ? pageCount : 1;
       try {
-        const { generateLetterPdf } = await import("@/lib/generatePdf");
-        generatedPdf = await generateLetterPdf({
+        const { generateLetterPdf, MAX_PDF_PAGES } = await import("@/lib/generatePdf");
+        const generated = await generateLetterPdf({
           mode,
           letterData,
           htmlContent,
           settings,
           letterSize,
         });
+        if (generated?.pageCount) letterPages = generated.pageCount;
+
+        // The letter may be longer than the PDF we'd print for this envelope
+        // size. Never charge for (or mail) a truncated letter: stop and tell
+        // the customer instead.
+        if (letterPages > MAX_PDF_PAGES) {
+          setErrorMsg(
+            isFr ? `Votre lettre fait ${letterPages} pages; le maximum est ${MAX_PDF_PAGES}. Veuillez la raccourcir.`
+                  : `Your letter is ${letterPages} pages; the maximum is ${MAX_PDF_PAGES}. Please shorten it.`
+          );
+          setSending(false);
+          return;
+        }
+        if (letterPages > LETTER_SIZE_CONFIG[letterSize].maxPages) {
+          setLetterSize("large");
+          setErrorMsg(
+            isFr ? `Votre lettre fait ${letterPages} pages, ce qui dépasse la limite du format ${LETTER_SIZE_CONFIG[letterSize].labelFr}. Nous avons choisi le format Lettre (+$${LETTER_SIZE_CONFIG.large.priceAdd}). Vérifiez le prix puis cliquez à nouveau.`
+                  : `Your letter is ${letterPages} pages, which is over the ${LETTER_SIZE_CONFIG[letterSize].label} envelope limit. We've switched you to Letter size (+$${LETTER_SIZE_CONFIG.large.priceAdd}). Check the price, then click again.`
+          );
+          setSending(false);
+          return;
+        }
+        generatedPdf = generated?.base64 || null;
         if (generatedPdf) {
           try {
             const db = await openDB();
@@ -285,7 +309,7 @@ export default function Home() {
           mode,
           letterData: mode === "simple" ? letterData : undefined,
           letterSize,
-          pageCount,
+          pageCount: letterPages,
           language: settings.language,
         }),
       });

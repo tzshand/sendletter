@@ -83,6 +83,14 @@ export default function SuccessPage() {
                 htmlContent = draft.htmlContent;
               }
             }
+            // Keep the letter text alongside the PDF. The PDF is only ever
+            // emailed, never stored, so this is the only durable copy of what
+            // the customer wrote. Custom-mode HTML only: upload HTML can be a
+            // whole converted document and already has originalFile.
+            if (!htmlContent && letterMode === "custom" && typeof draft.htmlContent === "string"
+                && draft.htmlContent.length < 500_000) {
+              htmlContent = draft.htmlContent;
+            }
           }
         } catch { /* IndexedDB unavailable */ }
 
@@ -93,8 +101,8 @@ export default function SuccessPage() {
           body: JSON.stringify({
             sessionId,
             pdfBase64,
-            htmlContent: letterMode !== "simple" && !pdfBase64 && !originalFile ? htmlContent : undefined,
-            letterData: letterMode === "simple" && !pdfBase64 ? letterData : undefined,
+            htmlContent: letterMode !== "simple" ? htmlContent : undefined,
+            letterData: letterMode === "simple" ? letterData : undefined,
             letterMode,
             originalFile,
           }),

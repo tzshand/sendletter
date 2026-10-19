@@ -280,7 +280,11 @@ export async function POST(req: Request) {
     // Also attach generated PDF (for all modes)
     if (hasPdf && pdfBase64.length < 10_000_000) {
       internalAttachments.push({ filename: "letter.pdf", content: pdfBase64 });
-    } else if (hasHtml) {
+    }
+    // Always include the letter text when we have it, even alongside a PDF: the
+    // PDF is rendered in the customer's browser, so if it came out wrong this
+    // is the copy we can re-render from.
+    if (hasHtml) {
       const printHtml = buildPrintHtml(htmlContent, meta.letterSize || "standard");
       internalAttachments.push({
         filename: "letter.html",
@@ -364,7 +368,9 @@ function printPageCss(letterSize: string): string {
   return `
     @page { size: 8.5in ${h === 1008 ? "14in" : "11in"}; margin: 0; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body { width: 612px; height: ${h}px; }
+    /* min-height, not height, and no clipping: a letter longer than one page
+       must flow onto the next. This file is the recovery copy of the text. */
+    html, body { width: 612px; min-height: ${h}px; }
     body {
       font-family: "Times New Roman", serif;
       font-size: 12pt;
@@ -372,9 +378,6 @@ function printPageCss(letterSize: string): string {
       color: #000;
       background: #fff;
       padding: 72px;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
     }
   `;
 }

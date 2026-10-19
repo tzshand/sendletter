@@ -7,8 +7,14 @@ import type { LetterSize } from "@/components/LetterSizeSelector";
  * - Simple mode: vector PDF with real text (sharp at any resolution)
  * - Custom mode: high-DPI rasterized capture
  * - Upload mode: returns existing PDF
- * Returns base64-encoded PDF string (without data URI prefix).
+ * Returns the base64-encoded PDF (without data URI prefix) and its page count.
+ * pageCount is null when it can't be known without parsing an uploaded PDF.
  */
+export type GeneratedPdf = { base64: string; pageCount: number | null };
+
+/** Hard cap shared with checkout, which clamps page count to 15. */
+export const MAX_PDF_PAGES = 15;
+
 export async function generateLetterPdf({
   mode,
   letterData,
@@ -21,11 +27,11 @@ export async function generateLetterPdf({
   htmlContent: string;
   settings: Settings;
   letterSize?: LetterSize;
-}): Promise<string | null> {
+}): Promise<GeneratedPdf | null> {
   // Upload mode: return existing PDF, or generate from docx HTML
   if (mode === "upload") {
     const match = htmlContent.match(/data-pdf="([^"]+)"/);
-    if (match) return match[1];
+    if (match) return { base64: match[1], pageCount: null };
     if (htmlContent) return await generateDocxHtmlPdf(htmlContent, settings, letterSize);
     return null;
   }
@@ -56,7 +62,7 @@ async function generateSimpleLetterPdf(
   data: SimpleLetterData,
   settings: Settings,
   letterSize: LetterSize,
-): Promise<string> {
+): Promise<GeneratedPdf> {
   const { jsPDF } = await import("jspdf");
 
   const isLegal = letterSize === "legal";
@@ -83,11 +89,15 @@ async function generateSimpleLetterPdf(
 
   const isFr = settings.language === "fr";
 
-  // Helper: write wrapped text, returns new y
+  // Helper: write wrapped text, returns new y. Flows onto a new page when the
+  // current one is full — it must never drop text.
   function writeText(text: string, x: number, startY: number, maxWidth: number, align?: "left" | "right"): number {
     const lines = doc.splitTextToSize(text, maxWidth);
     for (const line of lines) {
-      if (startY > maxY) break;
+      if (startY > maxY) {
+        doc.addPage([pageW, pageH]);
+        startY = margin;
+      }
       if (align === "right") {
         const textW = doc.getTextWidth(line);
         doc.text(line, x + maxWidth - textW, startY);
@@ -151,7 +161,10 @@ async function generateSimpleLetterPdf(
   // Render blocks
   for (const block of blocks) {
     y += block.spaceBefore || 0;
-    if (y > maxY) break;
+    if (y > maxY) {
+      doc.addPage([pageW, pageH]);
+      y = margin;
+    }
 
     if (block.type === "bold") {
       doc.setFont(font, "bold");
@@ -166,7 +179,7 @@ async function generateSimpleLetterPdf(
   doc.setFont(font, "normal");
 
   const output = doc.output("datauristring");
-  return output.split(",")[1];
+  return { base64: output.split(",")[1], pageCount: doc.getNumberOfPages() };
 }
 
 // ── Custom HTML: High-DPI rasterized capture ──
@@ -175,7 +188,7 @@ async function generateCustomLetterPdf(
   htmlContent: string,
   settings: Settings,
   letterSize: LetterSize,
-): Promise<string> {
+): Promise<GeneratedPdf> {
   const [{ default: html2canvas }, { jsPDF }] = await Promise.all([
     import("html2canvas"),
     import("jspdf"),
@@ -184,6 +197,79 @@ async function generateCustomLetterPdf(
   const pageW = 612; // 8.5in at 72dpi
   const pageH = letterSize === "legal" ? 1008 : 792;
   const padding = 72;
+
+  // Measure the content inside the page margins. A single capture of a fixed
+  // box clips anything past the first page, so overflowing content takes the
+  // paged path below instead.
+  const fontCss = `
+    font-family: "${settings.fontFamily}", serif;
+    font-size: ${settings.fontSize}pt;
+    line-height: 1.5; color: #000;
+  `;
+  const measureDiv = document.createElement("div");
+  measureDiv.style.cssText = `
+    position: fixed; left: -9999px; top: 0;
+    width: ${pageW}px; padding: 0 ${padding}px;
+    ${fontCss}
+    background: #fff; box-sizing: border-box;
+  `;
+  measureDiv.innerHTML = htmlContent;
+  document.body.appendChild(measureDiv);
+  const contentTotal = measureDiv.scrollHeight;
+  document.body.removeChild(measureDiv);
+
+  const contentH = pageH - padding * 2;
+  if (contentTotal > contentH) {
+    // Snap page breaks to whole lines so text isn't sliced mid-line.
+    const lineHpx = settings.fontSize * (96 / 72) * 1.5;
+    const sliceH = Math.max(lineHpx, Math.floor(contentH / lineHpx) * lineHpx);
+    const numPages = Math.ceil(contentTotal / sliceH);
+    // Over the limit: report the true count so checkout can refuse, rather than
+    // silently truncating. Nothing is rendered for a letter we won't accept.
+    if (numPages > MAX_PDF_PAGES) return { base64: "", pageCount: numPages };
+    const pdfWp = 8.5;
+    const pdfHp = letterSize === "legal" ? 14 : 11;
+    const pagedDoc = new jsPDF({ orientation: "portrait", unit: "in", format: [pdfWp, pdfHp] });
+
+    for (let i = 0; i < numPages; i++) {
+      if (i > 0) pagedDoc.addPage([pdfWp, pdfHp]);
+
+      const wrapper = document.createElement("div");
+      wrapper.style.cssText = `
+        position: fixed; left: -9999px; top: 0;
+        width: ${pageW}px; height: ${pageH}px;
+        overflow: hidden; background: #fff;
+      `;
+      const clip = document.createElement("div");
+      clip.style.cssText = `
+        position: absolute; left: 0; top: ${padding}px;
+        width: ${pageW}px; height: ${sliceH}px; overflow: hidden;
+      `;
+      const inner = document.createElement("div");
+      inner.style.cssText = `
+        position: absolute; left: 0; top: ${-i * sliceH}px;
+        width: ${pageW}px; padding: 0 ${padding}px;
+        ${fontCss}
+        box-sizing: border-box;
+      `;
+      inner.innerHTML = htmlContent;
+      clip.appendChild(inner);
+      wrapper.appendChild(clip);
+      document.body.appendChild(wrapper);
+
+      const pageCanvas = await html2canvas(wrapper, {
+        width: pageW,
+        height: pageH,
+        scale: 3,
+        useCORS: true,
+        backgroundColor: "#ffffff",
+      });
+      document.body.removeChild(wrapper);
+      pagedDoc.addImage(pageCanvas.toDataURL("image/png"), "PNG", 0, 0, pdfWp, pdfHp);
+    }
+
+    return { base64: pagedDoc.output("datauristring").split(",")[1], pageCount: numPages };
+  }
 
   // Create offscreen container matching the preview layout exactly
   const container = document.createElement("div");
@@ -228,7 +314,7 @@ async function generateCustomLetterPdf(
   doc.addImage(imgData, "PNG", 0, 0, pdfW, pdfH);
 
   const output = doc.output("datauristring");
-  return output.split(",")[1];
+  return { base64: output.split(",")[1], pageCount: 1 };
 }
 
 // ── Docx HTML: Multi-page rasterized capture ──
@@ -237,7 +323,7 @@ async function generateDocxHtmlPdf(
   htmlContent: string,
   settings: Settings,
   letterSize: LetterSize,
-): Promise<string> {
+): Promise<GeneratedPdf> {
   const [{ default: html2canvas }, { jsPDF }] = await Promise.all([
     import("html2canvas"),
     import("jspdf"),
@@ -262,7 +348,7 @@ async function generateDocxHtmlPdf(
   const totalHeight = measureDiv.scrollHeight;
   document.body.removeChild(measureDiv);
 
-  const numPages = Math.min(15, Math.max(1, Math.ceil(totalHeight / pageH)));
+  const numPages = Math.min(MAX_PDF_PAGES, Math.max(1, Math.ceil(totalHeight / pageH)));
   const isLegal = letterSize === "legal";
   const pdfW = 8.5;
   const pdfH = isLegal ? 14 : 11;
@@ -311,7 +397,7 @@ async function generateDocxHtmlPdf(
   }
 
   const output = doc.output("datauristring");
-  return output.split(",")[1];
+  return { base64: output.split(",")[1], pageCount: numPages };
 }
 
 function formatDate(dateStr: string, language: string): string {
