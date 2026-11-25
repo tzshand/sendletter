@@ -402,6 +402,8 @@ async function generateDocxHtmlPdf(
 
 function formatDate(dateStr: string, language: string): string {
   if (!dateStr) return "";
+  // The API takes a free-text date ("March 5, 2026"); only ISO dates are reformatted.
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return dateStr;
   const d = new Date(dateStr + "T00:00:00");
   return d.toLocaleDateString(language === "fr" ? "fr-CA" : "en-CA", {
     year: "numeric",

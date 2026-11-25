@@ -372,6 +372,16 @@ export type OrderInsert = {
   to_country?: string | null;
   has_pdf_attachment: boolean;
   letter_html?: string | null;
+  colour?: boolean;
+  duplex?: boolean;
+  mailings?: number;
+  sheets?: number;
+  stamps?: number;
+  est_weight_g?: number;
+  price_breakdown?: unknown;
+  pricing_version?: string;
+  from_lines?: string | null;
+  print_files?: string | null;
   api_account_id?: string | null;
   api_usage_id?: string | null;
 };

@@ -4,7 +4,11 @@ import { getDb, DbConnectionError, type OrderInsert } from "@/lib/db";
 import { getStripe } from "@/lib/stripe";
 import { SIZE_LABELS_BILINGUAL } from "@/lib/pricing";
 import { escapeHtml, stripControl } from "@/lib/sanitize";
-import { DraftStoreError, isCompleteDraft, isDraftId, loadDraft } from "@/lib/draft-store";
+import { DraftStoreError, isCompleteDraft, isDraftId, loadDraft, putDraftFile } from "@/lib/draft-store";
+import { quote, type LetterSize, type Quote } from "@/lib/pricing";
+import { buildPrintFiles, countPdfPages, type PrintFile } from "@/lib/print-pdf";
+import { fromLinesFromMetadata, toLinesFromMetadata } from "@/lib/address";
+import { fulfilmentHtml, receiptHtml } from "@/lib/fulfilment";
 
 function getResend() {
   const key = process.env.RESEND_API_KEY;
@@ -29,7 +33,7 @@ function formatAddress(name: string, line1: string, line2: string, city: string,
   return lines.join("<br/>");
 }
 
-function buildEmailHtml(meta: Record<string, string>, amount: string, date: string, pdfAttached: boolean): string {
+function buildEmailHtml(meta: Record<string, string>, amount: string, date: string, pdfAttached: boolean, q?: Quote): string {
   const eh = escapeHtml;
   const size = SIZE_LABELS[meta.letterSize] || SIZE_LABELS.standard;
   const pages = eh(meta.pageCount || "1");
@@ -55,6 +59,7 @@ function buildEmailHtml(meta: Record<string, string>, amount: string, date: stri
   <tr><td style="padding:6px 0;color:#888;">Format</td><td style="padding:6px 0;text-align:right;">${size.en}</td></tr>
   <tr><td style="padding:6px 0;color:#888;">Pages</td><td style="padding:6px 0;text-align:right;">${pages}</td></tr>
 </table>
+${q ? receiptHtml(q, "en") : ""}
 
 <table style="width:100%;font-size:13px;border-collapse:collapse;margin-bottom:16px;">
   <tr>
@@ -89,6 +94,7 @@ ${pdfAttached ? '<p style="font-size:12px;color:#888;">Your letter is attached t
   <tr><td style="padding:6px 0;color:#888;">Format</td><td style="padding:6px 0;text-align:right;">${size.fr}</td></tr>
   <tr><td style="padding:6px 0;color:#888;">Pages</td><td style="padding:6px 0;text-align:right;">${pages}</td></tr>
 </table>
+${q ? receiptHtml(q, "fr") : ""}
 
 <table style="width:100%;font-size:13px;border-collapse:collapse;margin-bottom:16px;">
   <tr>
@@ -124,6 +130,7 @@ function buildInternalEmailHtml(
   hasPdf: boolean,
   hasHtml: boolean,
   draftId: string | undefined,
+  fulfilment?: string,
 ): string {
   const eh = escapeHtml;
   const size = SIZE_LABELS[meta.letterSize] || SIZE_LABELS.standard;
@@ -159,6 +166,7 @@ function buildInternalEmailHtml(
   ${meta.toLine2 ? eh(meta.toLine2) + "<br/>" : ""}${eh(meta.toCity || "")}, ${eh(meta.toProvince || "")} ${eh(meta.toPostal || "")}${meta.toCountry && meta.toCountry !== "CA" ? "<br/>" + eh(meta.toCountry) : ""}
 </p>
 
+${fulfilment ?? ""}
 <div style="background:#f0f9f0;border-radius:8px;padding:12px 16px;font-size:12px;color:#666;margin:20px 0;">
   <strong>Attachment:</strong> ${hasPdf ? 'PDF attached' : hasHtml ? 'HTML letter content attached' : 'No attachment available'}<br/>
   <strong>Saved copy:</strong> ${draftId ? `files store: drafts/${eh(draftId)}/ (canner files ls drafts/${eh(draftId)})` : "none saved"}
@@ -238,9 +246,11 @@ export async function POST(req: Request) {
     // Sessions created before staging existed have no draftId and still use
     // whatever the browser posted.
     const draftId = isDraftId(meta.draftId) ? meta.draftId : undefined;
+    let stagedPdf: Buffer | null = null;
     if (draftId) {
       try {
         const staged = await loadDraft(draftId);
+        stagedPdf = staged.pdf;
         if (isCompleteDraft(staged)) {
           pdfBase64 = staged.pdf?.toString("base64");
           originalFile = staged.original
@@ -267,6 +277,40 @@ export async function POST(req: Request) {
     const hasAttachment = hasOriginal || hasPdf;
     const mode = letterMode || meta.letterMode || "unknown";
 
+    // Price the order again from the staged PDF's real page count (the same
+    // quote checkout charged, see lib/pricing.ts) and build the print-ready PDFs.
+    // Best effort: the customer has paid, so a failure here is logged and the
+    // order still goes through with the plain letter attached.
+    let q: Quote | undefined;
+    const printFiles: PrintFile[] = [];
+    if (draftId && stagedPdf) {
+      try {
+        const pages = await countPdfPages(stagedPdf);
+        q = quote({
+          pages,
+          size: (meta.letterSize as LetterSize) || "standard",
+          colour: meta.colour !== "0",
+          duplex: meta.duplex !== "0",
+          channel: "web",
+        });
+        if (q.totalCents !== (session.amount_total ?? 0)) {
+          console.error(`send-confirmation: charged ${session.amount_total} but quote is ${q.totalCents} for ${sessionId} (rates ${meta.pricingVersion} -> ${q.version})`);
+        }
+        printFiles.push(
+          ...(await buildPrintFiles({
+            letterPdf: stagedPdf,
+            size: q.size,
+            mailings: q.mailings,
+            from: fromLinesFromMetadata(meta),
+            to: toLinesFromMetadata(meta),
+          })),
+        );
+        for (const f of printFiles) await putDraftFile(draftId, f.name, Buffer.from(f.bytes), "application/pdf");
+      } catch (e) {
+        console.error(`send-confirmation: could not build print files for ${sessionId}:`, e instanceof Error ? e.message : e);
+      }
+    }
+
     const saveOrder = async () => {
       try {
         const db = getDb();
@@ -276,7 +320,7 @@ export async function POST(req: Request) {
           customer_email: email,
           letter_mode: mode,
           letter_size: meta.letterSize || "standard",
-          page_count: parseInt(meta.pageCount || "1", 10),
+          page_count: q ? q.pages : parseInt(meta.pageCount || "1", 10),
           amount_cents: session.amount_total || 0,
           from_name: meta.fromName || "",
           from_line1: meta.fromLine1 || "",
@@ -292,6 +336,20 @@ export async function POST(req: Request) {
           to_country: meta.toCountry || "CA",
           has_pdf_attachment: hasPdf,
           letter_html: hasHtml ? htmlContent : letterData ? buildSimpleLetterHtml(letterData, meta.letterSize || "standard") : undefined,
+          ...(q
+            ? {
+                colour: q.colour,
+                duplex: q.duplex,
+                mailings: q.mailings.length,
+                sheets: q.mailings.reduce((n, m) => n + m.sheets, 0),
+                stamps: q.stamps,
+                est_weight_g: q.mailings.reduce((n, m) => n + m.weightGrams, 0),
+                price_breakdown: q,
+                pricing_version: q.version,
+                from_lines: meta.fromLines || null,
+                print_files: printFiles.length ? `drafts/${draftId}/` : null,
+              }
+            : {}),
         };
         const { error: dbError } = await db.from("sendletter_orders").insert(order);
         if (dbError) console.error("DB insert failed (non-blocking):", dbError);
@@ -301,7 +359,7 @@ export async function POST(req: Request) {
     };
 
     // Build customer confirmation email
-    const customerHtml = buildEmailHtml(meta, amount, date, hasAttachment);
+    const customerHtml = buildEmailHtml(meta, amount, date, hasAttachment, q);
 
     const resend = getResend();
 
@@ -327,16 +385,43 @@ export async function POST(req: Request) {
     });
 
     // Build internal order email
-    const internalHtml = buildInternalEmailHtml(meta, amount, date, email, sessionId, mode, hasAttachment, hasHtml, draftId);
+    let printAttachedBytes = 0;
+    const printAttached: string[] = [];
+    const printAttachments: { filename: string; content: string }[] = [];
+    for (const f of printFiles) {
+      const b64 = Buffer.from(f.bytes).toString("base64");
+      if (printAttachedBytes + b64.length > 8_000_000) {
+        console.warn(`send-confirmation: print PDFs for ${sessionId} are over the email size cap; not attached (staged: drafts/${draftId}/)`);
+        break;
+      }
+      printAttachedBytes += b64.length;
+      printAttachments.push({ filename: f.name, content: b64 });
+      printAttached.push(f.name);
+    }
+    const internalHtml = buildInternalEmailHtml(
+      meta, amount, date, email, sessionId, mode, hasAttachment, hasHtml, draftId,
+      q
+        ? fulfilmentHtml({
+            q,
+            from: fromLinesFromMetadata(meta),
+            to: toLinesFromMetadata(meta),
+            stagedPath: draftId ? `drafts/${draftId}/` : undefined,
+            printFiles: printFiles.map((f) => f.name),
+            attached: printAttached,
+          })
+        : undefined,
+    );
 
     // Prepare attachments for internal email (original + generated PDF)
     const internalAttachments: { filename: string; content: string }[] = [];
-    // Attach original file if available (docx/pdf as uploaded)
+    // Attach original file if available (docx as uploaded)
     if (originalFile?.base64 && originalFile.base64.length < 10_000_000) {
       internalAttachments.push({ filename: originalFile.name, content: originalFile.base64 });
     }
-    // Also attach generated PDF (for all modes)
-    if (pdfBase64 && pdfBase64.length < 10_000_000) {
+    // The print-ready PDFs when we built them; otherwise the plain letter.
+    if (printAttachments.length) {
+      internalAttachments.push(...printAttachments);
+    } else if (pdfBase64 && pdfBase64.length < 10_000_000) {
       internalAttachments.push({ filename: "letter.pdf", content: pdfBase64 });
     }
     // Always include the letter text when we have it, even alongside a PDF: the

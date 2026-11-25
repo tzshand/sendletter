@@ -153,6 +153,23 @@ begin
   end if;
 end
 $do$;
+
+-- Usage-based pricing (2026-11). What was priced and how, so an order can be
+-- fulfilled (colour, duplex, how many envelopes and stamps) and audited later.
+-- All nullable: orders placed before this carry none of it.
+alter table sendletter_orders add column if not exists colour boolean;
+alter table sendletter_orders add column if not exists duplex boolean;
+alter table sendletter_orders add column if not exists mailings integer;
+alter table sendletter_orders add column if not exists sheets integer;
+alter table sendletter_orders add column if not exists stamps integer;
+alter table sendletter_orders add column if not exists est_weight_g integer;
+alter table sendletter_orders add column if not exists price_breakdown jsonb;
+alter table sendletter_orders add column if not exists pricing_version text;
+-- Free-form FROM lines (the "international" return address), newline-separated.
+alter table sendletter_orders add column if not exists from_lines text;
+-- Where the print-ready PDFs for this order live in the project files store.
+alter table sendletter_orders add column if not exists print_files text;
+alter table sendletter_api_usage add column if not exists price_breakdown jsonb;
 `;
 
 let migrationPromise: Promise<void> | null = null;

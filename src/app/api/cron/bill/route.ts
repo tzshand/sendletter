@@ -14,6 +14,11 @@ function secretMatches(provided: string | null, expected: string | undefined): b
   return diff === 0;
 }
 
+// Bill an account once it owes at least this much, or once its oldest unbilled
+// usage is this old. The job still runs daily; most days most accounts defer.
+const BILL_MIN_CENTS = 1000;
+const BILL_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000;
+
 export async function POST(req: Request) {
   // Canner scheduled jobs send an arbitrary header set; `x-cron-key` is the
   // documented convention. The Authorization form is what the old Vercel cron
@@ -32,7 +37,7 @@ export async function POST(req: Request) {
   // billed update below must target exactly these rows — see the note there.
   const { data: unbilled } = await db
     .from("sendletter_api_usage")
-    .select("id, account_id, amount_cents")
+    .select("id, account_id, amount_cents, created_at")
     .eq("billed", false);
 
   if (!unbilled || unbilled.length === 0) {
@@ -40,18 +45,28 @@ export async function POST(req: Request) {
   }
 
   // Group by account, carrying row ids alongside the amounts.
-  const grouped: Record<string, { ids: string[]; amounts: number[] }> = {};
+  const grouped: Record<string, { ids: string[]; amounts: number[]; oldest: number }> = {};
   for (const row of unbilled) {
-    if (!grouped[row.account_id]) grouped[row.account_id] = { ids: [], amounts: [] };
+    const at = new Date(row.created_at).getTime();
+    if (!grouped[row.account_id]) grouped[row.account_id] = { ids: [], amounts: [], oldest: at };
     grouped[row.account_id].ids.push(row.id);
     grouped[row.account_id].amounts.push(row.amount_cents);
+    if (at < grouped[row.account_id].oldest) grouped[row.account_id].oldest = at;
   }
 
   const results: Array<{ accountId: string; status: string; amount?: number; error?: string }> = [];
 
-  for (const [accountId, { ids, amounts }] of Object.entries(grouped)) {
+  for (const [accountId, { ids, amounts, oldest }] of Object.entries(grouped)) {
     const totalCents = amounts.reduce((sum, a) => sum + a, 0);
     if (totalCents === 0) continue;
+
+    // Every charge costs Stripe's fixed $0.30 on top of 2.9%, which a single
+    // small letter can't absorb. Charge once an account owes enough, or once its
+    // oldest unbilled letter is a week old, whichever comes first.
+    if (totalCents < BILL_MIN_CENTS && Date.now() - oldest < BILL_MAX_AGE_MS) {
+      results.push({ accountId, status: "deferred", amount: totalCents });
+      continue;
+    }
 
     // Get Stripe customer ID
     const { data: account } = await db

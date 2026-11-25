@@ -1,10 +1,15 @@
 import { NextResponse } from "next/server";
 import { validateApiKey, ApiAuthError } from "@/lib/api-auth";
 import { getDb, DbConnectionError } from "@/lib/db";
-import { PRICES } from "@/lib/pricing";
+import { quote, PricingError, RATES, MAX_PAGES, MAX_FILE_BYTES, SIZE_LABELS, type LetterSize } from "@/lib/pricing";
 import { Resend } from "resend";
 import { escapeHtml, stripControl, sanitizeCss } from "@/lib/sanitize";
-import { saveOrderFiles } from "@/lib/order-files";
+import { safeFileName } from "@/lib/order-files";
+import { putDraftFile } from "@/lib/draft-store";
+import { buildPrintFiles, countPdfPages } from "@/lib/print-pdf";
+import { AddressError, fromLines as fromLinesOf, toLines as toLinesOf, parseFrom } from "@/lib/address";
+import { fulfilmentHtml } from "@/lib/fulfilment";
+import { generateLetterPdf } from "@/lib/generatePdf";
 
 const INTERNAL_EMAIL = "colinh.shand@gmail.com";
 
@@ -95,7 +100,8 @@ function pageStyle(letterSize: string, font: string, fontSize: number, verticalC
   return `
     @page { size: 8.5in ${h === 1008 ? "14in" : "11in"}; margin: 0; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body { width: ${PAGE.w}px; height: ${h}px; }
+    /* min-height and no clipping: a letter longer than one page flows onto the next. */
+    html, body { width: ${PAGE.w}px; min-height: ${h}px; }
     body {
       font-family: "${font}", serif;
       font-size: ${fontSize}pt;
@@ -106,7 +112,6 @@ function pageStyle(letterSize: string, font: string, fontSize: number, verticalC
       display: flex;
       flex-direction: column;
       ${verticalCenter ? "justify-content: center;" : ""}
-      overflow: hidden;
     }
   `;
 }
@@ -167,11 +172,32 @@ function buildFormattedHtml(
 }
 
 // Limits
-const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB base64
+const MAX_BASE64_FILE = Math.ceil((MAX_FILE_BYTES * 4) / 3);
 const MAX_HTML_SIZE = 500_000; // 500 KB
 const MAX_BODY_SIZE = 50_000; // 50 KB of text
-const MAX_PAGE_COUNT = 15;
 const ALLOWED_FONTS = ["Times New Roman", "Georgia", "Arial", "Helvetica", "Courier New", "Verdana"];
+// Largest set of print PDFs we will attach to the fulfilment email (base64 bytes).
+const MAX_EMAIL_ATTACH = 8_000_000;
+
+/**
+ * "formatted" HTML can't be laid out on the server, so its page count is an
+ * estimate (about 2,400 characters or 38 blocks per page at 12 pt, plus a
+ * quarter page per image). Integrators should send page_count; we use theirs
+ * when given.
+ */
+function estimateHtmlPages(html: string): number {
+  const text = html.replace(/<style[\s\S]*?<\/style>/gi, "").replace(/<[^>]+>/g, " ");
+  const chars = text.replace(/\s+/g, " ").trim().length;
+  const blocks = (html.match(/<(p|div|h[1-6]|li|tr|br)\b/gi) || []).length;
+  const imgs = (html.match(/<img\b/gi) || []).length;
+  return Math.max(1, Math.ceil(Math.max(chars / 2400, blocks / 38) + imgs * 0.25));
+}
+
+function pageCountFrom(v: unknown): number | undefined {
+  if (v === undefined || v === null) return undefined;
+  const n = Number(v);
+  return Number.isInteger(n) && n >= 1 && n <= MAX_PAGES ? n : NaN;
+}
 
 export async function POST(req: Request) {
   try {
@@ -191,6 +217,8 @@ export async function POST(req: Request) {
     }
 
     const { mode, letter_size = "standard", from, to } = body;
+    const colour = body.colour ?? body.color ?? true;
+    const duplex = body.duplex ?? true;
 
     // Validate mode
     if (!mode || typeof mode !== "string") {
@@ -206,12 +234,16 @@ export async function POST(req: Request) {
       );
     }
 
-    // Validate letter size
-    if (typeof letter_size !== "string" || !PRICES[letter_size]) {
+    // Validate letter size and print options
+    if (typeof letter_size !== "string" || !(letter_size in RATES.envelopeCents)) {
       return NextResponse.json(
         { error: `Invalid letter_size. Must be "standard", "large", or "legal".` },
         { status: 400 }
       );
+    }
+    const size = letter_size as LetterSize;
+    if (typeof colour !== "boolean" || typeof duplex !== "boolean") {
+      return NextResponse.json({ error: "colour (or color) and duplex must be booleans" }, { status: 400 });
     }
 
     // Validate addresses exist
@@ -223,11 +255,20 @@ export async function POST(req: Request) {
     }
 
     let fromAddr: Address, toAddr: Address;
+    let fromFree: string[] | null = null;
     try {
-      fromAddr = validateAddress(from, "from");
+      const rawFrom = from as Record<string, unknown>;
+      if (rawFrom && Array.isArray(rawFrom.lines)) {
+        // Free-form return address: a few unlabeled lines, for senders whose address doesn't fit our fields.
+        const parsed = parseFrom({ lines: rawFrom.lines });
+        fromFree = parsed.kind === "freeform" ? parsed.lines : null;
+        fromAddr = { name: fromFree![0], line1: fromFree![1] ?? "", city: "", country: "" };
+      } else {
+        fromAddr = validateAddress(from, "from");
+      }
       toAddr = validateAddress(to, "to");
     } catch (e) {
-      if (e instanceof ApiInputError) {
+      if (e instanceof ApiInputError || e instanceof AddressError) {
         return NextResponse.json({ error: e.message }, { status: 400 });
       }
       throw e;
@@ -265,28 +306,47 @@ export async function POST(req: Request) {
       }
     }
 
-    // Validate content based on mode
+    // Validate content based on mode, and work out the page count. The price
+    // depends on it, so wherever we can lay the letter out ourselves (PDFs and
+    // drafts) the count is ours, not the caller's.
     let letterHtml: string | undefined;
-    let hasPdf = false;
-    let pdfBase64: string | undefined;
+    let letterPdf: Buffer | undefined; // what we print
+    let originalDocx: Buffer | undefined;
     let originalFileName: string | undefined;
-    let pageCount = 1;
+    let pages = 1;
+
+    const givenPages = pageCountFrom(body.page_count);
+    if (Number.isNaN(givenPages)) {
+      return NextResponse.json({ error: `page_count must be a whole number from 1 to ${MAX_PAGES}` }, { status: 400 });
+    }
 
     if (mode === "upload") {
       if (!body.file || typeof body.file !== "string") {
         return NextResponse.json({ error: "file (base64 string) is required for upload mode" }, { status: 400 });
       }
-      if ((body.file as string).length > MAX_FILE_SIZE) {
-        return NextResponse.json({ error: `file exceeds maximum size of 10 MB` }, { status: 400 });
+      if ((body.file as string).length > MAX_BASE64_FILE) {
+        return NextResponse.json({ error: `file exceeds maximum size of ${MAX_FILE_BYTES / 1024 / 1024} MB` }, { status: 400 });
       }
       if (!body.file_type || !["pdf", "docx"].includes(body.file_type as string)) {
         return NextResponse.json({ error: 'file_type is required and must be "pdf" or "docx"' }, { status: 400 });
       }
-      hasPdf = body.file_type === "pdf";
-      pdfBase64 = body.file as string;
+      const bytes = Buffer.from(body.file as string, "base64");
       originalFileName = `letter.${body.file_type}`;
-      const rawPageCount = Number(body.page_count) || 1;
-      pageCount = Math.max(1, Math.min(rawPageCount, MAX_PAGE_COUNT));
+      if (body.file_type === "pdf") {
+        try {
+          pages = await countPdfPages(bytes);
+        } catch {
+          return NextResponse.json({ error: "file could not be read as a PDF" }, { status: 400 });
+        }
+        letterPdf = bytes;
+      } else {
+        // A .docx can't be paginated here, so the caller must say how long it is.
+        if (givenPages === undefined) {
+          return NextResponse.json({ error: "page_count is required for docx uploads" }, { status: 400 });
+        }
+        pages = givenPages;
+        originalDocx = bytes;
+      }
     } else if (mode === "draft") {
       if (!body.letter || typeof body.letter !== "object") {
         return NextResponse.json({ error: "letter object is required for draft mode" }, { status: 400 });
@@ -316,6 +376,29 @@ export async function POST(req: Request) {
         font_size: body.font_size as number,
         vertical_center: body.vertical_center as boolean,
       });
+      // Render the real PDF: its page count prices the order and it is what we print.
+      const l = letter as Record<string, string>;
+      const rendered = await generateLetterPdf({
+        mode: "simple",
+        letterData: {
+          date: l.date ?? "", reference: l.reference ?? "", subject: l.subject ?? "", greeting: l.salutation ?? "",
+          body: l.body, closing: l.closing ?? "", senderName: l.signature ?? "", cc: l.cc ?? "",
+          enclosures: l.enclosures ?? "", ps: l.ps ?? "",
+        },
+        htmlContent: "",
+        settings: {
+          language: "en",
+          fontFamily: (body.font as string | undefined) ?? "Times New Roman",
+          fontSize: (body.font_size as number | undefined) ?? 12,
+          verticalCenter: (body.vertical_center as boolean | undefined) ?? false,
+        } as never,
+        letterSize: size,
+      });
+      if (!rendered) {
+        return NextResponse.json({ error: "Could not render the letter" }, { status: 500 });
+      }
+      letterPdf = Buffer.from(rendered.base64, "base64");
+      pages = rendered.pageCount ?? (await countPdfPages(letterPdf));
     } else if (mode === "formatted") {
       if (!body.html || typeof body.html !== "string") {
         return NextResponse.json({ error: "html (string) is required for formatted mode" }, { status: 400 });
@@ -335,10 +418,30 @@ export async function POST(req: Request) {
         font_size: body.font_size as number,
         vertical_center: body.vertical_center as boolean,
       });
+      pages = givenPages ?? estimateHtmlPages(body.html as string);
     }
 
-    const amountCents = PRICES[letter_size];
+    let q;
+    try {
+      q = quote({ pages, size, colour, duplex, channel: "api" });
+    } catch (e) {
+      if (e instanceof PricingError) return NextResponse.json({ error: e.message }, { status: 400 });
+      throw e;
+    }
+
+    const toL = toLinesOf({
+      name: toAddr.name, line1: toAddr.line1, line2: toAddr.line2 ?? "", city: toAddr.city,
+      province: toAddr.province ?? "", postalCode: toAddr.postal_code ?? "",
+    });
+    const fromL =
+      fromFree ??
+      fromLinesOf({
+        kind: "structured", name: fromAddr.name, line1: fromAddr.line1, line2: fromAddr.line2 ?? "", city: fromAddr.city,
+        province: fromAddr.province ?? "", postalCode: fromAddr.postal_code ?? "", country: fromAddr.country ?? "CA",
+      });
+
     const db = getDb();
+    const amountCents = q.totalCents;
 
     // Insert order into sendletter_orders
     const { data: order, error: orderError } = await db
@@ -349,7 +452,7 @@ export async function POST(req: Request) {
         customer_email: "",
         letter_mode: mode,
         letter_size,
-        page_count: pageCount,
+        page_count: pages,
         amount_cents: amountCents,
         from_name: fromAddr.name,
         from_line1: fromAddr.line1,
@@ -365,8 +468,17 @@ export async function POST(req: Request) {
         to_province: toAddr.province || "",
         to_postal: toAddr.postal_code || "",
         to_country: toAddr.country || "CA",
-        has_pdf_attachment: hasPdf,
+        has_pdf_attachment: !!letterPdf,
         letter_html: letterHtml || null,
+        colour,
+        duplex,
+        mailings: q.mailings.length,
+        sheets: q.mailings.reduce((s, m) => s + m.sheets, 0),
+        stamps: q.stamps,
+        est_weight_g: q.mailings.reduce((s, m) => s + m.weightGrams, 0),
+        price_breakdown: q,
+        pricing_version: q.version,
+        from_lines: fromFree ? fromFree.join("\n") : null,
         api_account_id: accountId,
       })
       .select("id")
@@ -387,19 +499,33 @@ export async function POST(req: Request) {
         letter_mode: mode,
         letter_size,
         amount_cents: amountCents,
+        price_breakdown: q,
       });
 
     if (usageError) {
       console.error("Usage insert failed:", usageError);
     }
 
-    // Keep an uploaded file BEFORE emailing it: the attachment is skipped when
-    // over the size cap and the email was the only copy. Never throws.
-    const savedFiles = pdfBase64
-      ? await saveOrderFiles(order.id, [{ name: originalFileName || "letter.pdf", base64: pdfBase64 }])
-      : { key: order.id, dir: null, files: [] as string[] };
-    if (pdfBase64 && savedFiles.files.length === 0) {
-      console.error(`API send: NOTHING SAVED for order ${order.id} (upload present); the email is the only copy`);
+    // Build the print-ready PDFs and keep everything in the project files store
+    // (drafts/<order id>/) before emailing: the email attachment is skipped when
+    // over the size cap, and the store is where it can always be fetched from.
+    // Best effort: the order is already recorded and billed, so a failure here
+    // is logged and the email still goes out with whatever we have.
+    const printFiles: { name: string; bytes: Uint8Array }[] = [];
+    try {
+      if (letterPdf) {
+        printFiles.push(...(await buildPrintFiles({ letterPdf, size, mailings: q.mailings, from: fromL, to: toL })));
+        await putDraftFile(order.id, "letter.pdf", letterPdf, "application/pdf");
+        for (const f of printFiles) await putDraftFile(order.id, f.name, Buffer.from(f.bytes), "application/pdf");
+      }
+      if (originalDocx) {
+        await putDraftFile(order.id, `original-${safeFileName(originalFileName, "letter.docx")}`, originalDocx, "application/octet-stream");
+      }
+      if (printFiles.length || originalDocx) {
+        await db.from("sendletter_orders").update({ print_files: `drafts/${order.id}/` }).eq("id", order.id);
+      }
+    } catch (e) {
+      console.error(`API send: could not stage files for order ${order.id} (emailing what we have):`, e instanceof Error ? e.message : e);
     }
 
     // Send internal fulfillment email
@@ -408,17 +534,24 @@ export async function POST(req: Request) {
       if (resendKey) {
         const resend = new Resend(resendKey);
         const attachments: { filename: string; content: string }[] = [];
+        let attachedBytes = 0;
+        const attachedNames: string[] = [];
 
-        if (pdfBase64 && pdfBase64.length >= 10_000_000) {
-          console.warn(`API send: upload for order ${order.id} is over the email size cap; not attached (saved: ${savedFiles.files.join(", ") || "no"})`);
+        for (const f of printFiles) {
+          const b64 = Buffer.from(f.bytes).toString("base64");
+          if (attachedBytes + b64.length > MAX_EMAIL_ATTACH) {
+            console.warn(`API send: print PDFs for order ${order.id} are over the email size cap; not attached (staged: drafts/${order.id}/)`);
+            break;
+          }
+          attachedBytes += b64.length;
+          attachments.push({ filename: f.name, content: b64 });
+          attachedNames.push(f.name);
         }
-        if (pdfBase64 && pdfBase64.length < 10_000_000) {
-          attachments.push({ filename: originalFileName || "letter.pdf", content: pdfBase64 });
-        } else if (letterHtml) {
-          attachments.push({
-            filename: "letter.html",
-            content: Buffer.from(letterHtml).toString("base64"),
-          });
+        if (originalDocx && originalDocx.length * 1.34 < MAX_EMAIL_ATTACH) {
+          attachments.push({ filename: originalFileName || "letter.docx", content: originalDocx.toString("base64") });
+        }
+        if (letterHtml && mode === "formatted") {
+          attachments.push({ filename: "letter.html", content: Buffer.from(letterHtml).toString("base64") });
         }
 
         const eh = escapeHtml;
@@ -428,12 +561,18 @@ export async function POST(req: Request) {
           subject: `API Order: ${toAddr.name} in ${toAddr.city}, ${toAddr.province} — $${(amountCents / 100).toFixed(2)}`,
           html: `<h2>New API Order</h2>
 <p><strong>Order ID:</strong> ${order.id}</p>
-<p><strong>Mode:</strong> ${eh(mode)}</p>
-<p><strong>Size:</strong> ${eh(String(letter_size))}</p>
-<p><strong>Amount:</strong> $${(amountCents / 100).toFixed(2)} CAD</p>
-<p><strong>From:</strong> ${eh(fromAddr.name)}, ${eh(fromAddr.line1)}, ${eh(fromAddr.city)} ${eh(fromAddr.province || "")} ${eh(fromAddr.postal_code || "")} ${eh(fromAddr.country || "CA")}</p>
-<p><strong>To:</strong> ${eh(toAddr.name)}, ${eh(toAddr.line1)}, ${eh(toAddr.city)} ${eh(toAddr.province || "")} ${eh(toAddr.postal_code || "")} ${eh(toAddr.country || "CA")}</p>
-<p><strong>Saved copy:</strong> ${savedFiles.files.length > 0 ? `orders/${order.id}/ &mdash; ${savedFiles.files.map(eh).join(", ")}` : "none saved"}</p>`,
+<p><strong>Mode:</strong> ${eh(mode)}${mode === "formatted" && givenPages === undefined ? " &mdash; page count is an ESTIMATE (no page_count sent): check it when printing" : ""}</p>
+<p><strong>Size:</strong> ${eh(SIZE_LABELS[size])}</p>
+<p><strong>From:</strong> ${eh(fromL.join(", "))}</p>
+<p><strong>To:</strong> ${eh(toL.join(", "))}</p>
+${fulfilmentHtml({
+  q,
+  from: fromL,
+  to: toL,
+  stagedPath: printFiles.length || originalDocx ? `drafts/${order.id}/` : undefined,
+  printFiles: printFiles.map((f) => f.name),
+  attached: attachedNames,
+})}`,
           attachments: attachments.length > 0 ? attachments : undefined,
         });
       }
@@ -445,7 +584,16 @@ export async function POST(req: Request) {
       id: order.id,
       status: "queued",
       letter_size,
+      pages,
+      mailings: q.mailings.length,
+      stamps: q.stamps,
+      colour,
+      duplex,
       amount_cents: amountCents,
+      price: {
+        version: q.version,
+        lines: q.lines.map((l) => ({ item: l.key, qty: l.qty, unit_cents: l.unitCents, total_cents: l.totalCents })),
+      },
     });
   } catch (error) {
     if (error instanceof ApiAuthError) {
