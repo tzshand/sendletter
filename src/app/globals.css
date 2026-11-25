@@ -106,3 +106,27 @@ textarea.input {
 .goose-preen {
   animation: preen 2.8s ease-in-out;
 }
+
+/* Hard page break marker in the letter editor. Invisible everywhere else. */
+.tiptap [data-page-break] {
+  position: relative;
+  height: 0;
+  margin: 18px 0;
+  border-top: 1.5px dashed #cbd5e1;
+}
+.tiptap [data-page-break]::after {
+  content: "Page break";
+  position: absolute;
+  top: -9px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 0 8px;
+  background: #fff;
+  color: #94a3b8;
+  font: 600 10px system-ui, sans-serif;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.tiptap [data-page-break].ProseMirror-selectednode {
+  border-top-color: #64748b;
+}

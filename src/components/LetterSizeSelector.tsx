@@ -1,129 +1,97 @@
 "use client";
 
-import { useState } from "react";
 import { Mail, FileText, ScrollText } from "lucide-react";
 import type { Language } from "./LetterSettings";
+import { quote, formatCents, type LetterSize } from "@/lib/pricing";
 
-export type LetterSize = "standard" | "legal" | "large";
+export type { LetterSize };
 
-export const LETTER_SIZE_CONFIG: Record<
-  LetterSize,
-  { maxPages: number; priceAdd: number; label: string; labelFr: string; desc: string; descFr: string }
-> = {
-  standard: {
-    maxPages: 5,
-    priceAdd: 0,
+const OPTIONS: {
+  size: LetterSize;
+  label: string;
+  labelFr: string;
+  desc: string;
+  descFr: string;
+  icon: React.ReactNode;
+}[] = [
+  {
+    size: "standard",
     label: "Standard",
     labelFr: "Standard",
-    desc: "8.5×11 tri-fold, #10 envelope",
-    descFr: "8,5×11 pli en trois, enveloppe #10",
+    desc: "#10 window envelope, folded",
+    descFr: "Enveloppe #10 à fenêtre, pliée",
+    icon: <Mail className="w-4 h-4" />,
   },
-  large: {
-    maxPages: 15,
-    priceAdd: 1.99,
+  {
+    size: "large",
     label: "Letter",
     labelFr: "Lettre",
     desc: "8.5×11 flat, 9×12 envelope",
     descFr: "8,5×11 à plat, enveloppe 9×12",
+    icon: <FileText className="w-4 h-4" />,
   },
-  legal: {
-    maxPages: 15,
-    priceAdd: 1.99,
+  {
+    size: "legal",
     label: "Legal",
     labelFr: "Légal",
     desc: "8.5×14 flat, 10×15 envelope",
     descFr: "8,5×14 à plat, enveloppe 10×15",
+    icon: <ScrollText className="w-4 h-4" />,
   },
-};
+];
 
-const BASE_PRICE = 3.79;
-
-const ICONS: Record<LetterSize, React.ReactNode> = {
-  standard: <Mail className="w-4 h-4" />,
-  large: <FileText className="w-4 h-4" />,
-  legal: <ScrollText className="w-4 h-4" />,
-};
-
-export function getPrice(size: LetterSize): number {
-  return BASE_PRICE + LETTER_SIZE_CONFIG[size].priceAdd;
-}
-
-export function formatPrice(size: LetterSize): string {
-  const p = getPrice(size);
-  return p % 1 === 0 ? `$${p}` : `$${p.toFixed(2)}`;
-}
-
+/** Envelope choice. Each option shows what your letter would cost in it, live. */
 export function LetterSizeSelector({
   value,
   onChange,
   language,
-  pageCount = 1,
+  pages,
+  colour,
+  duplex,
 }: {
   value: LetterSize;
   onChange: (s: LetterSize) => void;
   language: Language;
-  pageCount?: number;
+  pages: number;
+  colour: boolean;
+  duplex: boolean;
 }) {
   const isFr = language === "fr";
-  const sizes: LetterSize[] = ["standard", "large", "legal"];
-  const [tooltip, setTooltip] = useState<string | null>(null);
 
   return (
     <div className="grid grid-cols-3 gap-2">
-      {sizes.map((size) => {
-        const cfg = LETTER_SIZE_CONFIG[size];
-        const active = value === size;
-        const disabled = pageCount > cfg.maxPages;
+      {OPTIONS.map((o) => {
+        const active = value === o.size;
+        let price: string | null = null;
+        let note: string | null = null;
+        try {
+          const q = quote({ pages, size: o.size, colour, duplex, channel: "web" });
+          price = formatCents(q.totalCents, language);
+          note =
+            q.mailings.length > 1
+              ? isFr ? `${q.mailings.length} enveloppes` : `${q.mailings.length} envelopes`
+              : isFr ? `${q.stamps} timbre${q.stamps > 1 ? "s" : ""}` : `${q.stamps} stamp${q.stamps > 1 ? "s" : ""}`;
+        } catch {
+          /* page count out of range: shown by the page-limit message instead */
+        }
         return (
           <button
-            key={size}
+            key={o.size}
             type="button"
-            onClick={() => {
-              if (disabled) {
-                setTooltip(
-                  isFr
-                    ? `${cfg.labelFr} supporte jusqu'à ${cfg.maxPages} pages (votre document : ${pageCount})`
-                    : `${cfg.label} supports up to ${cfg.maxPages} pages (your document: ${pageCount})`
-                );
-                setTimeout(() => setTooltip(null), 3000);
-                return;
-              }
-              setTooltip(null);
-              onChange(size);
-            }}
+            onClick={() => onChange(o.size)}
+            aria-pressed={active}
             className={`relative flex flex-col items-center gap-1 px-3 py-3 rounded-xl border-2 transition-all text-center ${
-              disabled
-                ? "border-gray-100 bg-gray-50 text-gray-300 cursor-not-allowed"
-                : active
-                  ? "border-brand bg-brand/5 text-gray-900"
-                  : "border-gray-200 hover:border-gray-300 text-gray-500"
+              active ? "border-brand bg-brand/5 text-gray-900" : "border-gray-200 hover:border-gray-300 text-gray-500"
             }`}
           >
-            <div className={disabled ? "text-gray-300" : active ? "text-brand" : "text-gray-400"}>
-              {ICONS[size]}
-            </div>
-            <span className="text-xs font-semibold">
-              {isFr ? cfg.labelFr : cfg.label}
-            </span>
-            <span className="text-[10px] text-gray-400 leading-tight">
-              {isFr ? cfg.descFr : cfg.desc}
-            </span>
-            <span className="text-[10px] font-medium mt-0.5">
-              {cfg.priceAdd > 0 ? (
-                <span className={disabled ? "text-gray-300" : "text-amber-600"}>+${cfg.priceAdd % 1 === 0 ? cfg.priceAdd : cfg.priceAdd.toFixed(2)}</span>
-              ) : (
-                <span className={disabled ? "text-gray-300" : "text-brand"}>${BASE_PRICE}</span>
-              )}
-            </span>
-            <span className="text-[9px] text-gray-400">
-              {isFr ? "jusqu'à" : "up to"} {cfg.maxPages} pages
-            </span>
+            <div className={active ? "text-brand" : "text-gray-400"}>{o.icon}</div>
+            <span className="text-xs font-semibold">{isFr ? o.labelFr : o.label}</span>
+            <span className="text-[10px] text-gray-400 leading-tight">{isFr ? o.descFr : o.desc}</span>
+            {price && <span className={`text-xs font-bold mt-0.5 ${active ? "text-brand" : "text-gray-600"}`}>{price}</span>}
+            {note && <span className="text-[9px] text-gray-400">{note}</span>}
           </button>
         );
       })}
-      {tooltip && (
-        <p className="col-span-3 text-xs text-amber-600 text-center mt-1">{tooltip}</p>
-      )}
     </div>
   );
 }

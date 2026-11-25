@@ -10,7 +10,18 @@ export type Address = {
   province: string;
   postalCode: string;
   country: string;
+  /** "International" return address: free-text lines instead of labeled fields. */
+  freeform?: boolean;
+  lines?: string[];
 };
+
+export const FREEFORM_LINES = 5;
+
+/** The lines of a free-form address, padded to the number of inputs shown. */
+export function freeformLines(a: Address): string[] {
+  const l = a.lines ?? [];
+  return Array.from({ length: FREEFORM_LINES }, (_, i) => l[i] ?? "");
+}
 
 const CA_PROVINCES: { code: string; name: string }[] = [
   { code: "AB", name: "Alberta" },
@@ -162,6 +173,7 @@ function AddressBlock({
   hasError,
   language = "en",
   lockCountry,
+  allowFreeform,
 }: {
   label: string;
   prefix: string;
@@ -170,6 +182,8 @@ function AddressBlock({
   hasError?: boolean;
   language?: "en" | "fr";
   lockCountry?: string;
+  /** Offer the Canada | International switch (return address only). */
+  allowFreeform?: boolean;
 }) {
   const [postalError, setPostalError] = useState(false);
   const country = value.country || "CA";
@@ -218,12 +232,68 @@ function AddressBlock({
   };
 
   const isFr = language === "fr";
+  const freeform = !!(allowFreeform && value.freeform);
+
+  const header = (
+    <div className="flex items-center justify-between mb-2.5">
+      <span className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider block">
+        {label}
+      </span>
+      {allowFreeform && (
+        <div className="flex gap-0.5 p-0.5 bg-gray-100 rounded-md" role="group" aria-label={isFr ? "Format de l'adresse" : "Address format"}>
+          {([
+            [false, "Canada", "Canada"],
+            [true, "International", "International"],
+          ] as const).map(([isFree, en, fr]) => (
+            <button
+              key={String(isFree)}
+              type="button"
+              onClick={() => onChange({ ...value, freeform: isFree })}
+              className={`px-2 py-0.5 text-[11px] font-medium rounded transition-all ${
+                freeform === isFree ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700"
+              }`}
+            >
+              {isFr ? fr : en}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+
+  if (freeform) {
+    const lines = freeformLines(value);
+    return (
+      <div>
+        {header}
+        <div className={`space-y-2 rounded-xl p-3 -m-3 transition-all ${hasError ? "ring-2 ring-red-400 bg-red-50/40" : ""}`}>
+          {lines.map((line, i) => (
+            <input
+              key={i}
+              name={`${prefix}-line-${i + 1}`}
+              autoComplete={i === 0 ? "name" : "off"}
+              value={line}
+              onChange={(e) => {
+                const next = [...lines];
+                next[i] = e.target.value;
+                onChange({ ...value, freeform: true, lines: next });
+              }}
+              className="input input-sm"
+            />
+          ))}
+          <p className="text-[11px] text-gray-400 pt-0.5">
+            {isFr
+              ? "Écrivez l'adresse comme elle doit apparaître. Un courrier non livrable ne pourra pas vous être retourné."
+              : "Write the address exactly as it should appear. Undeliverable mail can't be returned to an address outside Canada."}
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div>
-      <span className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-2.5 block">
-        {label}
-      </span>
+      {header}
       <div className={`space-y-2 rounded-xl p-3 -m-3 transition-all ${hasError ? "ring-2 ring-red-400 bg-red-50/40" : ""}`}>
         <input
           name={`${prefix}-name`}
@@ -373,6 +443,8 @@ export function AddressSection({
         onChange={onFromChange}
         hasError={errors?.from}
         language={language}
+        lockCountry="CA"
+        allowFreeform
       />
       <AddressBlock
         label={isFr ? "\u00C0 \u2013 Adresse postale" : "To \u2013 Mailing Address"}

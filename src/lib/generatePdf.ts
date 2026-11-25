@@ -1,6 +1,7 @@
 import type { SimpleLetterData } from "@/components/SimpleLetterForm";
 import type { Settings } from "@/components/LetterSettings";
-import type { LetterSize } from "@/components/LetterSizeSelector";
+import type { LetterSize } from "./pricing";
+import { RASTER_MAX_PAGES } from "./pricing";
 
 /**
  * Generates a print-quality PDF from letter content.
@@ -12,8 +13,6 @@ import type { LetterSize } from "@/components/LetterSizeSelector";
  */
 export type GeneratedPdf = { base64: string; pageCount: number | null };
 
-/** Hard cap shared with checkout, which clamps page count to 15. */
-export const MAX_PDF_PAGES = 15;
 
 export async function generateLetterPdf({
   mode,
@@ -182,7 +181,103 @@ async function generateSimpleLetterPdf(
   return { base64: output.split(",")[1], pageCount: doc.getNumberOfPages() };
 }
 
-// ── Custom HTML: High-DPI rasterized capture ──
+// ── Paged HTML layout (custom editor and .docx) ──
+//
+// One layout drives the live page count, the preview and the PDF, so what you
+// see, what you are charged for and what is printed always agree.
+
+const PAGE_W = 612; // 8.5in at 72dpi
+const PAGE_PAD = 72; // 1in margins
+
+function pageMetrics(settings: Settings, letterSize: LetterSize) {
+  const pageH = letterSize === "legal" ? 1008 : 792;
+  const contentH = pageH - PAGE_PAD * 2;
+  // Snap page breaks to whole lines so text isn't sliced mid-line.
+  const lineHpx = settings.fontSize * (96 / 72) * 1.5;
+  const sliceH = Math.max(lineHpx, Math.floor(contentH / lineHpx) * lineHpx);
+  return { pageH, contentH, sliceH };
+}
+
+function fontCss(settings: Settings): string {
+  return `
+    font-family: "${settings.fontFamily}", serif;
+    font-size: ${settings.fontSize}pt;
+    line-height: 1.5; color: #000;
+  `;
+}
+
+export type HtmlLayout = {
+  /** The HTML with hard page breaks sized to land on a page boundary. */
+  html: string;
+  pages: number;
+  /** True when it all fits one page (so it can be vertically centred). */
+  fits: boolean;
+  pageH: number;
+  contentH: number;
+  sliceH: number;
+};
+
+function hasContentAfter(node: HTMLElement, root: HTMLElement): boolean {
+  let n: Node | null = node;
+  while (n && n !== root) {
+    for (let sib = n.nextSibling; sib; sib = sib.nextSibling) {
+      if (sib.nodeType === Node.TEXT_NODE && (sib.textContent ?? "").trim()) return true;
+      if (sib.nodeType === Node.ELEMENT_NODE) {
+        const el = sib as HTMLElement;
+        if (el.matches("img, hr") || (el.textContent ?? "").trim()) return true;
+      }
+    }
+    n = n.parentNode;
+  }
+  return false;
+}
+
+/**
+ * Lay HTML out inside the page margins. Hard page breaks
+ * (`<div data-page-break>`) are sized so the next block starts on a fresh page.
+ * Browser only.
+ */
+export function layoutHtml(html: string, settings: Settings, letterSize: LetterSize): HtmlLayout {
+  const { pageH, contentH, sliceH } = pageMetrics(settings, letterSize);
+  const el = document.createElement("div");
+  el.style.cssText = `
+    position: fixed; left: -9999px; top: 0;
+    width: ${PAGE_W}px; padding: 0 ${PAGE_PAD}px;
+    ${fontCss(settings)}
+    background: #fff; box-sizing: border-box;
+  `;
+  el.innerHTML = html;
+  document.body.appendChild(el);
+  try {
+    let forced = false;
+    for (const br of Array.from(el.querySelectorAll<HTMLElement>("[data-page-break]"))) {
+      br.style.height = "0px";
+      if (!hasContentAfter(br, el)) continue;
+      const rem = br.offsetTop % sliceH;
+      if (rem !== 0) {
+        br.style.height = `${sliceH - rem}px`;
+        forced = true;
+      }
+    }
+    const total = el.scrollHeight;
+    const fits = !forced && total <= contentH;
+    return {
+      html: el.innerHTML,
+      pages: fits ? 1 : Math.max(2, Math.ceil(total / sliceH)),
+      fits,
+      pageH,
+      contentH,
+      sliceH,
+    };
+  } finally {
+    document.body.removeChild(el);
+  }
+}
+
+/** How many pages this HTML will print as. Browser only. */
+export function measureHtmlPages(html: string, settings: Settings, letterSize: LetterSize): number {
+  return layoutHtml(html, settings, letterSize).pages;
+}
 
 async function generateCustomLetterPdf(
   htmlContent: string,
@@ -194,210 +289,82 @@ async function generateCustomLetterPdf(
     import("jspdf"),
   ]);
 
-  const pageW = 612; // 8.5in at 72dpi
-  const pageH = letterSize === "legal" ? 1008 : 792;
-  const padding = 72;
+  const layout = layoutHtml(htmlContent, settings, letterSize);
+  const { pageH, sliceH } = layout;
+  const pdfW = 8.5;
+  const pdfH = letterSize === "legal" ? 14 : 11;
 
-  // Measure the content inside the page margins. A single capture of a fixed
-  // box clips anything past the first page, so overflowing content takes the
-  // paged path below instead.
-  const fontCss = `
-    font-family: "${settings.fontFamily}", serif;
-    font-size: ${settings.fontSize}pt;
-    line-height: 1.5; color: #000;
-  `;
-  const measureDiv = document.createElement("div");
-  measureDiv.style.cssText = `
-    position: fixed; left: -9999px; top: 0;
-    width: ${pageW}px; padding: 0 ${padding}px;
-    ${fontCss}
-    background: #fff; box-sizing: border-box;
-  `;
-  measureDiv.innerHTML = htmlContent;
-  document.body.appendChild(measureDiv);
-  const contentTotal = measureDiv.scrollHeight;
-  document.body.removeChild(measureDiv);
+  // Over the limit: report the true count so the caller can refuse, rather than
+  // silently truncating. Nothing is rendered for a letter we won't accept.
+  if (layout.pages > RASTER_MAX_PAGES) return { base64: "", pageCount: layout.pages };
 
-  const contentH = pageH - padding * 2;
-  if (contentTotal > contentH) {
-    // Snap page breaks to whole lines so text isn't sliced mid-line.
-    const lineHpx = settings.fontSize * (96 / 72) * 1.5;
-    const sliceH = Math.max(lineHpx, Math.floor(contentH / lineHpx) * lineHpx);
-    const numPages = Math.ceil(contentTotal / sliceH);
-    // Over the limit: report the true count so checkout can refuse, rather than
-    // silently truncating. Nothing is rendered for a letter we won't accept.
-    if (numPages > MAX_PDF_PAGES) return { base64: "", pageCount: numPages };
-    const pdfWp = 8.5;
-    const pdfHp = letterSize === "legal" ? 14 : 11;
-    const pagedDoc = new jsPDF({ orientation: "portrait", unit: "in", format: [pdfWp, pdfHp] });
+  const doc = new jsPDF({ orientation: "portrait", unit: "in", format: [pdfW, pdfH] });
 
-    for (let i = 0; i < numPages; i++) {
-      if (i > 0) pagedDoc.addPage([pdfWp, pdfHp]);
-
-      const wrapper = document.createElement("div");
-      wrapper.style.cssText = `
-        position: fixed; left: -9999px; top: 0;
-        width: ${pageW}px; height: ${pageH}px;
-        overflow: hidden; background: #fff;
-      `;
-      const clip = document.createElement("div");
-      clip.style.cssText = `
-        position: absolute; left: 0; top: ${padding}px;
-        width: ${pageW}px; height: ${sliceH}px; overflow: hidden;
-      `;
-      const inner = document.createElement("div");
-      inner.style.cssText = `
-        position: absolute; left: 0; top: ${-i * sliceH}px;
-        width: ${pageW}px; padding: 0 ${padding}px;
-        ${fontCss}
-        box-sizing: border-box;
-      `;
-      inner.innerHTML = htmlContent;
-      clip.appendChild(inner);
-      wrapper.appendChild(clip);
-      document.body.appendChild(wrapper);
-
-      const pageCanvas = await html2canvas(wrapper, {
-        width: pageW,
-        height: pageH,
-        scale: 3,
-        useCORS: true,
-        backgroundColor: "#ffffff",
-      });
-      document.body.removeChild(wrapper);
-      pagedDoc.addImage(pageCanvas.toDataURL("image/png"), "PNG", 0, 0, pdfWp, pdfHp);
-    }
-
-    return { base64: pagedDoc.output("datauristring").split(",")[1], pageCount: numPages };
+  if (layout.fits) {
+    // One page: matches the preview exactly, including vertical centring.
+    const container = document.createElement("div");
+    container.style.cssText = `
+      position: fixed; left: -9999px; top: 0;
+      width: ${PAGE_W}px; height: ${pageH}px;
+      background: #fff; overflow: hidden;
+      ${fontCss(settings)}
+      padding: ${PAGE_PAD}px;
+      display: flex; flex-direction: column;
+      ${settings.verticalCenter ? "justify-content: center;" : ""}
+      box-sizing: border-box;
+    `;
+    container.innerHTML = layout.html;
+    document.body.appendChild(container);
+    // 3x for print quality (~216 DPI)
+    const canvas = await html2canvas(container, { width: PAGE_W, height: pageH, scale: 3, useCORS: true, backgroundColor: "#ffffff" });
+    document.body.removeChild(container);
+    doc.addImage(canvas.toDataURL("image/png"), "PNG", 0, 0, pdfW, pdfH);
+    return { base64: doc.output("datauristring").split(",")[1], pageCount: 1 };
   }
 
-  // Create offscreen container matching the preview layout exactly
-  const container = document.createElement("div");
-  container.style.cssText = `
-    position: fixed; left: -9999px; top: 0;
-    width: ${pageW}px; height: ${pageH}px;
-    background: #fff; overflow: hidden;
-    font-family: "${settings.fontFamily}", serif;
-    font-size: ${settings.fontSize}pt;
-    line-height: 1.5; color: #000;
-    padding: ${padding}px;
-    display: flex; flex-direction: column;
-    ${settings.verticalCenter ? "justify-content: center;" : ""}
-    box-sizing: border-box;
-  `;
-  container.innerHTML = htmlContent;
-  document.body.appendChild(container);
+  // Many pages go lighter on memory: 2x past ten pages.
+  const scale = layout.pages > 10 ? 2 : 3;
+  for (let i = 0; i < layout.pages; i++) {
+    if (i > 0) doc.addPage([pdfW, pdfH]);
 
-  // Capture at 3x for print quality (~216 DPI)
-  const canvas = await html2canvas(container, {
-    width: pageW,
-    height: pageH,
-    scale: 3,
-    useCORS: true,
-    backgroundColor: "#ffffff",
-  });
+    const wrapper = document.createElement("div");
+    wrapper.style.cssText = `
+      position: fixed; left: -9999px; top: 0;
+      width: ${PAGE_W}px; height: ${pageH}px;
+      overflow: hidden; background: #fff;
+    `;
+    const clip = document.createElement("div");
+    clip.style.cssText = `
+      position: absolute; left: 0; top: ${PAGE_PAD}px;
+      width: ${PAGE_W}px; height: ${sliceH}px; overflow: hidden;
+    `;
+    const inner = document.createElement("div");
+    inner.style.cssText = `
+      position: absolute; left: 0; top: ${-i * sliceH}px;
+      width: ${PAGE_W}px; padding: 0 ${PAGE_PAD}px;
+      ${fontCss(settings)}
+      box-sizing: border-box;
+    `;
+    inner.innerHTML = layout.html;
+    clip.appendChild(inner);
+    wrapper.appendChild(clip);
+    document.body.appendChild(wrapper);
 
-  document.body.removeChild(container);
+    const canvas = await html2canvas(wrapper, { width: PAGE_W, height: pageH, scale, useCORS: true, backgroundColor: "#ffffff" });
+    document.body.removeChild(wrapper);
+    doc.addImage(canvas.toDataURL("image/png"), "PNG", 0, 0, pdfW, pdfH);
+  }
 
-  const isLegal = letterSize === "legal";
-  const pdfW = 8.5;
-  const pdfH = isLegal ? 14 : 11;
-
-  const doc = new jsPDF({
-    orientation: "portrait",
-    unit: "in",
-    format: [pdfW, pdfH],
-  });
-
-  // Use PNG for better quality (no JPEG artifacts on text)
-  const imgData = canvas.toDataURL("image/png");
-  doc.addImage(imgData, "PNG", 0, 0, pdfW, pdfH);
-
-  const output = doc.output("datauristring");
-  return { base64: output.split(",")[1], pageCount: 1 };
+  return { base64: doc.output("datauristring").split(",")[1], pageCount: layout.pages };
 }
 
-// ── Docx HTML: Multi-page rasterized capture ──
-
+// Docx HTML takes the same paged path, just never vertically centred.
 async function generateDocxHtmlPdf(
   htmlContent: string,
   settings: Settings,
   letterSize: LetterSize,
 ): Promise<GeneratedPdf> {
-  const [{ default: html2canvas }, { jsPDF }] = await Promise.all([
-    import("html2canvas"),
-    import("jspdf"),
-  ]);
-
-  const pageW = 612;
-  const pageH = letterSize === "legal" ? 1008 : 792;
-  const padding = 72;
-
-  // Measure total content height
-  const measureDiv = document.createElement("div");
-  measureDiv.style.cssText = `
-    position: fixed; left: -9999px; top: 0;
-    width: ${pageW}px; padding: ${padding}px;
-    font-family: "${settings.fontFamily}", serif;
-    font-size: ${settings.fontSize}pt;
-    line-height: 1.5; color: #000;
-    background: #fff; box-sizing: border-box;
-  `;
-  measureDiv.innerHTML = htmlContent;
-  document.body.appendChild(measureDiv);
-  const totalHeight = measureDiv.scrollHeight;
-  document.body.removeChild(measureDiv);
-
-  const numPages = Math.min(MAX_PDF_PAGES, Math.max(1, Math.ceil(totalHeight / pageH)));
-  const isLegal = letterSize === "legal";
-  const pdfW = 8.5;
-  const pdfH = isLegal ? 14 : 11;
-
-  const doc = new jsPDF({
-    orientation: "portrait",
-    unit: "in",
-    format: [pdfW, pdfH],
-  });
-
-  for (let i = 0; i < numPages; i++) {
-    if (i > 0) doc.addPage([pdfW, pdfH]);
-
-    // Create a clipped window for this page
-    const wrapper = document.createElement("div");
-    wrapper.style.cssText = `
-      position: fixed; left: -9999px; top: 0;
-      width: ${pageW}px; height: ${pageH}px;
-      overflow: hidden; background: #fff;
-    `;
-    const inner = document.createElement("div");
-    inner.style.cssText = `
-      position: absolute;
-      top: ${-i * pageH}px; left: 0;
-      width: ${pageW}px; padding: ${padding}px;
-      font-family: "${settings.fontFamily}", serif;
-      font-size: ${settings.fontSize}pt;
-      line-height: 1.5; color: #000;
-      box-sizing: border-box;
-    `;
-    inner.innerHTML = htmlContent;
-    wrapper.appendChild(inner);
-    document.body.appendChild(wrapper);
-
-    const canvas = await html2canvas(wrapper, {
-      width: pageW,
-      height: pageH,
-      scale: 3,
-      useCORS: true,
-      backgroundColor: "#ffffff",
-    });
-
-    document.body.removeChild(wrapper);
-    const imgData = canvas.toDataURL("image/png");
-    doc.addImage(imgData, "PNG", 0, 0, pdfW, pdfH);
-  }
-
-  const output = doc.output("datauristring");
-  return { base64: output.split(",")[1], pageCount: numPages };
+  return generateCustomLetterPdf(htmlContent, { ...settings, verticalCenter: false }, letterSize);
 }
 
 function formatDate(dateStr: string, language: string): string {

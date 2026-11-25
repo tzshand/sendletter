@@ -1,24 +1,31 @@
 "use client";
 
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import {
   SimpleLetterForm,
   type SimpleLetterData,
 } from "@/components/SimpleLetterForm";
 import { LetterEditor } from "@/components/LetterEditor";
 import { FileUpload } from "@/components/FileUpload";
-import { AddressSection, type Address } from "@/components/AddressForm";
+import { AddressSection, freeformLines, type Address } from "@/components/AddressForm";
 import {
   LetterPreviewScaled,
   EnvelopePreviewScaled,
+  AddressPagePreviewScaled,
 } from "@/components/LivePreview";
 import { LetterSettingsBar, type Settings } from "@/components/LetterSettings";
+import { LetterSizeSelector, type LetterSize } from "@/components/LetterSizeSelector";
+import { PrintOptions } from "@/components/PrintOptions";
 import {
-  LetterSizeSelector,
-  LETTER_SIZE_CONFIG,
-  type LetterSize,
-  formatPrice,
-} from "@/components/LetterSizeSelector";
+  quote,
+  formatCents,
+  MAX_PAGES,
+  RASTER_MAX_PAGES,
+  RATES,
+  FROM_EXCL_POSTAGE_CENTS,
+  FROM_ALL_IN_CENTS,
+  DEFAULT_SINGLE_CENTS,
+} from "@/lib/pricing";
 import { SnowGoose } from "@/components/SnowGoose";
 import {
   Mail,
@@ -57,7 +64,14 @@ export default function Home() {
   const [letterSize, setLetterSize] = useState<LetterSize>("standard");
   const [sessionUser, setSessionUser] = useState<{ firstName: string } | null>(null);
 
-  const [pageCount, setPageCount] = useState(1);
+  // Live size of the letter. The price depends on it, so it is measured as you
+  // type with the same layout engine that makes the PDF.
+  const [pdfPages, setPdfPages] = useState(1); // pages of an uploaded PDF
+  const [pages, setPages] = useState(1);
+  const [previewPdf, setPreviewPdf] = useState<string | null>(null); // classic letters: the real PDF
+  const [colour, setColour] = useState(true);
+  const [duplex, setDuplex] = useState(true);
+  const [flatNote, setFlatNote] = useState(false);
 
   const [settings, setSettings] = useState<Settings>(() => {
     const defaults: Settings = { language: "en", fontFamily: "Times New Roman", fontSize: 12, verticalCenter: true };
@@ -197,7 +211,75 @@ export default function Home() {
     return () => window.removeEventListener("popstate", onPopState);
   }, []);
 
+  const isPdfUpload = mode === "upload" && /data-pdf="/.test(htmlContent);
+
+  useEffect(() => {
+    let cancelled = false;
+    const t = setTimeout(async () => {
+      try {
+        if (mode === "upload") {
+          if (!htmlContent) return setPages(1);
+          if (isPdfUpload) return setPages(pdfPages);
+          const { measureHtmlPages } = await import("@/lib/generatePdf");
+          if (!cancelled) setPages(measureHtmlPages(htmlContent, { ...settings, verticalCenter: false }, letterSize));
+        } else if (mode === "custom") {
+          if (!htmlContent) return setPages(1);
+          const { measureHtmlPages } = await import("@/lib/generatePdf");
+          if (!cancelled) setPages(measureHtmlPages(htmlContent, settings, letterSize));
+        } else {
+          // Classic letter: build the real (vector) PDF; it is both the preview and the count.
+          const { generateLetterPdf } = await import("@/lib/generatePdf");
+          const r = await generateLetterPdf({ mode: "simple", letterData, htmlContent: "", settings, letterSize });
+          if (!cancelled && r) {
+            setPreviewPdf(r.base64);
+            setPages(r.pageCount ?? 1);
+          }
+        }
+      } catch {
+        /* keep the last good count */
+      }
+    }, mode === "simple" ? 350 : 150);
+    return () => {
+      cancelled = true;
+      clearTimeout(t);
+    };
+  }, [mode, htmlContent, letterData, settings, letterSize, pdfPages, isPdfUpload]);
+
+  const pageLimit = mode === "simple" || isPdfUpload ? MAX_PAGES : RASTER_MAX_PAGES;
+  const overLimit = pages > pageLimit;
+
+  const q = useMemo(() => {
+    try {
+      return quote({ pages, size: letterSize, colour, duplex, channel: "web" });
+    } catch {
+      return null;
+    }
+  }, [pages, letterSize, colour, duplex]);
+
+  // A #10 only holds so many sheets. When a letter outgrows it, move to a flat
+  // envelope (cheaper than splitting across several #10s) and say so. The
+  // customer can still pick the #10 again and get a split.
+  const prevPages = useRef(1);
+  useEffect(() => {
+    const was = prevPages.current;
+    prevPages.current = pages;
+    if (letterSize !== "standard" || pages <= was) return;
+    try {
+      const now = quote({ pages, size: "standard", colour, duplex, channel: "web" }).mailings.length;
+      const before = quote({ pages: was, size: "standard", colour, duplex, channel: "web" }).mailings.length;
+      if (now > 1 && before === 1) {
+        setLetterSize("large");
+        setFlatNote(true);
+      }
+    } catch {
+      /* out of range: the page-limit message covers it */
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pages]);
+
   const isAddressValid = (a: Address) => {
+    // Free-form return address: at least two lines (a name and somewhere to find them).
+    if (a.freeform) return freeformLines(a).filter((l) => l.trim()).length >= 2;
     const base = !!(a.name && a.line1 && a.city);
     if (a.country === "CA" || a.country === "US") {
       return base && !!a.province && !!a.postalCode;
@@ -223,7 +305,7 @@ export default function Home() {
   }, [hasContent, from, to]);
 
   const isFr = settings.language === "fr";
-  const price = formatPrice(letterSize);
+  const price = q ? formatCents(q.totalCents, settings.language) : "—";
 
   const handleCheckout = async () => {
     // Validate and highlight errors
@@ -245,50 +327,39 @@ export default function Home() {
 
     setSending(true);
     try {
-      // Generate print-quality PDF for all modes
-      let generatedPdf: string | null = null;
-      let letterPages = mode === "upload" ? pageCount : 1;
+      // Generate the print-quality PDF. Its page count must match what the
+      // price was built on; if the letter changed length, show the new price.
+      const { generateLetterPdf } = await import("@/lib/generatePdf");
+      let generated: Awaited<ReturnType<typeof generateLetterPdf>> = null;
       try {
-        const { generateLetterPdf, MAX_PDF_PAGES } = await import("@/lib/generatePdf");
-        const generated = await generateLetterPdf({
-          mode,
-          letterData,
-          htmlContent,
-          settings,
-          letterSize,
-        });
-        if (generated?.pageCount) letterPages = generated.pageCount;
-
-        // The letter may be longer than the PDF we'd print for this envelope
-        // size. Never charge for (or mail) a truncated letter: stop and tell
-        // the customer instead.
-        if (letterPages > MAX_PDF_PAGES) {
-          setErrorMsg(
-            isFr ? `Votre lettre fait ${letterPages} pages; le maximum est ${MAX_PDF_PAGES}. Veuillez la raccourcir.`
-                  : `Your letter is ${letterPages} pages; the maximum is ${MAX_PDF_PAGES}. Please shorten it.`
-          );
-          setSending(false);
-          return;
-        }
-        if (letterPages > LETTER_SIZE_CONFIG[letterSize].maxPages) {
-          setLetterSize("large");
-          setErrorMsg(
-            isFr ? `Votre lettre fait ${letterPages} pages, ce qui dépasse la limite du format ${LETTER_SIZE_CONFIG[letterSize].labelFr}. Nous avons choisi le format Lettre (+$${LETTER_SIZE_CONFIG.large.priceAdd}). Vérifiez le prix puis cliquez à nouveau.`
-                  : `Your letter is ${letterPages} pages, which is over the ${LETTER_SIZE_CONFIG[letterSize].label} envelope limit. We've switched you to Letter size (+$${LETTER_SIZE_CONFIG.large.priceAdd}). Check the price, then click again.`
-          );
-          setSending(false);
-          return;
-        }
-        generatedPdf = generated?.base64 || null;
+        generated = await generateLetterPdf({ mode, letterData, htmlContent, settings, letterSize });
       } catch (e) {
-        console.error("PDF generation failed (continuing):", e);
+        console.error("PDF generation failed:", e);
       }
+      if (!generated?.base64) {
+        setErrorMsg(
+          isFr ? "Nous n'avons pas pu préparer votre lettre. Veuillez réessayer. Vous n'avez pas été facturé."
+                : "We couldn't prepare your letter. Please try again. You have not been charged."
+        );
+        setSending(false);
+        return;
+      }
+      if (generated.pageCount && generated.pageCount !== pages) {
+        setPages(generated.pageCount);
+        setErrorMsg(
+          isFr ? `Votre lettre fait ${generated.pageCount} pages; le prix a été mis à jour. Vérifiez-le puis cliquez à nouveau.`
+                : `Your letter is ${generated.pageCount} pages, so the price has been updated. Check it, then click again.`
+        );
+        setSending(false);
+        return;
+      }
+      const generatedPdf = generated.base64;
 
       // Put the document on the server BEFORE payment. The browser draft can't
       // be trusted to survive the Stripe redirect, and an order must never be
       // paid for with nothing to print: checkout is refused without this.
       const toBlob = (b64: string, type: string) => new Blob([Uint8Array.from(atob(b64), (c) => c.charCodeAt(0))], { type });
-      const pdfBlob = generatedPdf ? toBlob(generatedPdf, "application/pdf") : null;
+      const pdfBlob = toBlob(generatedPdf, "application/pdf");
       const originalBlob = mode === "upload" && originalFile ? toBlob(originalFile.base64, originalFile.type || "application/octet-stream") : null;
       const stageForm = new FormData();
       stageForm.append("meta", JSON.stringify({
@@ -296,10 +367,10 @@ export default function Home() {
         letterSize,
         letterData: mode === "simple" ? letterData : undefined,
         htmlContent: mode === "custom" ? htmlContent : undefined,
-        pdfSize: pdfBlob?.size,
+        pdfSize: pdfBlob.size,
         originalSize: originalBlob?.size,
       }));
-      if (pdfBlob) stageForm.append("pdf", pdfBlob, "letter.pdf");
+      stageForm.append("pdf", pdfBlob, "letter.pdf");
       if (originalBlob && originalFile) {
         stageForm.append("original", originalBlob, originalFile.name);
         stageForm.append("originalName", originalFile.name);
@@ -321,9 +392,9 @@ export default function Home() {
         body: JSON.stringify({
           from,
           to,
-          mode,
           letterSize,
-          pageCount: letterPages,
+          colour,
+          duplex,
           language: settings.language,
           draftId: staged.draftId,
         }),
@@ -358,6 +429,8 @@ export default function Home() {
     { id: "custom", label: "Custom", labelFr: "Personnalisé", icon: <FileText className="w-4 h-4" /> },
   ];
 
+  const bwStyle = colour ? undefined : { filter: "grayscale(1)" };
+  const sheetsTotal = q ? q.mailings.reduce((n, m) => n + m.sheets, 0) : 1;
   const previewContent = (
     <div className="space-y-5">
       {/* Envelope first */}
@@ -371,31 +444,85 @@ export default function Home() {
             to={to}
             settings={settings}
             letterSize={letterSize}
+            stamps={q?.mailings[0]?.stamps ?? 1}
           />
         </div>
       </div>
+      {q && q.mailings.length > 1 && (
+        <div className="rounded-lg bg-amber-50 ring-1 ring-amber-200 px-3 py-2 text-xs text-amber-800">
+          {isFr
+            ? `Votre lettre sera postée dans ${q.mailings.length} enveloppes : ${q.mailings.map((m) => `pages ${m.pageStart}–${m.pageEnd}`).join(", ")}.`
+            : `Your letter will go in ${q.mailings.length} envelopes: ${q.mailings.map((m) => `pages ${m.pageStart}–${m.pageEnd}`).join(", ")}.`}
+        </div>
+      )}
+      {/* Sheet 1 of a #10 window mailing */}
+      {letterSize === "standard" && (
+        <div>
+          <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-2">
+            {isFr ? "Feuille d'adresse" : "Address page"}
+            {duplex && (
+              <span className="normal-case tracking-normal font-normal">
+                {isFr ? " (la page 1 est imprimée au verso)" : " (page 1 is printed on its back)"}
+              </span>
+            )}
+          </p>
+          <div className="rounded-lg shadow-sm ring-1 ring-gray-200/60 overflow-hidden" style={bwStyle}>
+            <AddressPagePreviewScaled from={from} to={to} settings={settings} />
+          </div>
+        </div>
+      )}
       {/* Letter pages */}
       <div>
         <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-2">
           {isFr ? "Page 1" : "Page 1"}
         </p>
-        <div className="rounded-lg shadow-sm ring-1 ring-gray-200/60 overflow-hidden">
+        <div className="rounded-lg shadow-sm ring-1 ring-gray-200/60 overflow-hidden" style={bwStyle}>
           <LetterPreviewScaled
             mode={mode}
             letterData={letterData}
             htmlContent={htmlContent}
             settings={settings}
             letterSize={letterSize}
+            previewPdf={previewPdf}
           />
         </div>
       </div>
     </div>
   );
 
+  // What you're paying for, line by line. Postage is at cost: one stamp is $1.24.
+  const priceSummary = q && (
+    <div className="mb-3 text-xs">
+      <div className="space-y-1 text-gray-500">
+        {q.lines.map((l) => (
+          <div key={l.key} className="flex justify-between gap-3">
+            <span>
+              {l.key === "base" && (isFr ? "Frais d'envoi" : "Mailing fee")}
+              {l.key === "envelope" && (isFr ? "Enveloppe" : "Envelope")}
+              {l.key === "pages" &&
+                (isFr
+                  ? `${l.qty} page${l.qty > 1 ? "s" : ""} (${colour ? "couleur" : "noir et blanc"})`
+                  : `${l.qty} page${l.qty > 1 ? "s" : ""} (${colour ? "colour" : "black & white"})`)}
+              {l.key === "postage" &&
+                (isFr ? `Affranchissement, ${l.qty} timbre${l.qty > 1 ? "s" : ""}` : `Postage, ${l.qty} stamp${l.qty > 1 ? "s" : ""}`)}
+              {l.qty > 1 && (l.key === "base" || l.key === "envelope") ? ` × ${l.qty}` : ""}
+            </span>
+            <span>{formatCents(l.totalCents, settings.language)}</span>
+          </div>
+        ))}
+      </div>
+      <p className="mt-1.5 text-[11px] text-gray-400">
+        {isFr
+          ? `${q.pages} page${q.pages > 1 ? "s" : ""} · ${sheetsTotal} feuille${sheetsTotal > 1 ? "s" : ""}. Taxes incluses. Affranchissement au prix coûtant.`
+          : `${q.pages} page${q.pages > 1 ? "s" : ""} · ${sheetsTotal} sheet${sheetsTotal > 1 ? "s" : ""}. Tax included. Postage at cost.`}
+      </p>
+    </div>
+  );
+
   const mailButton = (opts?: { className?: string }) => (
     <button
       onClick={handleCheckout}
-      disabled={sending}
+      disabled={sending || !q || overLimit}
       className={`flex items-center justify-center gap-2 h-12 rounded-xl text-sm font-bold transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100 bg-brand text-white hover:bg-brand-dark ${opts?.className || "w-full"}`}
     >
       {sending ? (
@@ -412,20 +539,20 @@ export default function Home() {
 
   const faqItems = isFr ? [
     { q: "Peut-on vraiment envoyer une lettre en ligne?", a: "Oui. Vous écrivez ou téléchargez votre lettre, ajoutez les adresses, payez, et nous l'imprimons et la postons via Postes Canada dans un délai de 1 jour ouvrable." },
-    { q: "Combien ça coûte?", a: "À partir de 3,79 $ CAD pour une lettre standard pliée en trois. Les formats lettre et légal à plat sont à 5,78 $ CAD. Tout est inclus : impression, affranchissement et taxes." },
+    { q: "Combien ça coûte?", a: `À partir de ${formatCents(FROM_EXCL_POSTAGE_CENTS, "fr")} plus l'affranchissement, soit environ ${formatCents(FROM_ALL_IN_CENTS, "fr")} tout compris pour une lettre d'une page en noir et blanc (${formatCents(DEFAULT_SINGLE_CENTS, "fr")} en couleur). Vous payez des frais d'envoi, l'impression (${formatCents(RATES.pageCents.bw, "fr")} la page en noir et blanc, ${formatCents(RATES.pageCents.colour, "fr")} en couleur), l'enveloppe, et l'affranchissement Postes Canada au prix coûtant : un timbre (${formatCents(RATES.stampCents, "fr")}) suffit pour la plupart des lettres jusqu'à 5 pages. Taxes incluses.` },
     { q: "Quel est le délai de livraison?", a: "Les lettres sont imprimées et postées dans un délai de 1 jour ouvrable. La livraison via Postes Canada prend généralement de 3 à 7 jours ouvrables au Canada." },
     { q: "Ai-je besoin d'un compte?", a: "Non. Aucun compte, aucun abonnement, aucune commande minimale. Écrivez votre lettre, payez et c'est posté." },
-    { q: "Quels formats de fichier puis-je télécharger?", a: "PDF et documents Word (.docx), jusqu'à 15 pages et 10 Mo." },
+    { q: "Quels formats de fichier puis-je télécharger?", a: `PDF jusqu'à ${MAX_PAGES} pages et 40 Mo, ou documents Word (.docx) jusqu'à ${RASTER_MAX_PAGES} pages.` },
     { q: "Où livrez-vous?", a: "À toute adresse postale au Canada via Postes Canada." },
     { q: "Est-ce que j'envoie une seule lettre?", a: "Absolument. sendletter est conçu pour envoyer une lettre à la fois — pas de minimum, pas d'envoi en vrac." },
     { q: "Mes données sont-elles en sécurité?", a: "Nous ne conservons pas le contenu de votre lettre après l'envoi. Votre courriel sert uniquement pour la confirmation de commande." },
     { q: "Avez-vous une API?", a: "Oui. sendletter offre un accès API pour envoyer des lettres par programmation, automatiser les flux de courrier et intégrer les services postaux dans vos applications." },
   ] : [
     { q: "Can you actually send a letter online?", a: "Yes. Write or upload your letter, add addresses, pay, and we print and mail it via Canada Post within 1 business day." },
-    { q: "How much does it cost?", a: "Starting from $3.79 CAD for a standard tri-fold letter. Flat letter and legal sizes are $5.78 CAD. Printing, postage, and tax are all included." },
+    { q: "How much does it cost?", a: `From ${formatCents(FROM_EXCL_POSTAGE_CENTS)} plus postage, about ${formatCents(FROM_ALL_IN_CENTS)} all-in for a one-page black-and-white letter (${formatCents(DEFAULT_SINGLE_CENTS)} in colour). You pay a mailing fee, printing (${formatCents(RATES.pageCents.bw)} a page black & white, ${formatCents(RATES.pageCents.colour)} colour), the envelope, and Canada Post postage at cost: one stamp (${formatCents(RATES.stampCents)}) covers most letters up to 5 pages. Tax included.` },
     { q: "How long does delivery take?", a: "Letters are printed and mailed within 1 business day. Delivery via Canada Post typically takes 3–7 business days within Canada." },
     { q: "Do I need an account?", a: "No. No account, no subscription, no minimum order. Write your letter, pay, and it's in the mail." },
-    { q: "What file formats can I upload?", a: "PDF and Word documents (.docx), up to 15 pages and 10 MB." },
+    { q: "What file formats can I upload?", a: `PDFs up to ${MAX_PAGES} pages and 40 MB, or Word documents (.docx) up to ${RASTER_MAX_PAGES} pages.` },
     { q: "Where can you deliver?", a: "Any mailing address in Canada via Canada Post." },
     { q: "Can I send just one letter?", a: "Absolutely. sendletter is built for sending one letter at a time — no minimums, no bulk mail." },
     { q: "Is my information safe?", a: "We don't store your letter content after dispatch. Your email is only used for order confirmation." },
@@ -527,17 +654,12 @@ export default function Home() {
                     setHtmlContent(html);
                     setFileName(name);
                     if (!html) {
-                      setPageCount(1);
+                      setPdfPages(1);
                       setOriginalFile(null);
                     }
                   }}
                   fileName={fileName}
-                  onPageCount={(count) => {
-                    setPageCount(count);
-                    if (count > LETTER_SIZE_CONFIG.standard.maxPages && letterSize === "standard") {
-                      setLetterSize("large");
-                    }
-                  }}
+                  onPageCount={setPdfPages}
                   onOriginalFile={setOriginalFile}
                   language={settings.language}
                 />
@@ -549,6 +671,7 @@ export default function Home() {
                   onChange={setHtmlContent}
                   settings={settings}
                   onSettingsChange={setSettings}
+                  pageInfo={{ pages, sheets: sheetsTotal }}
                 />
               )}
 
@@ -562,6 +685,14 @@ export default function Home() {
                 />
               )}
             </div>
+
+            {overLimit && (
+              <div className="rounded-xl bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">
+                {isFr
+                  ? `Cette lettre fait ${pages} pages; le maximum est ${pageLimit}${pageLimit < MAX_PAGES ? ` pour l'éditeur et les documents Word (les PDF vont jusqu'à ${MAX_PAGES})` : ""}.`
+                  : `This letter is ${pages} pages; the maximum is ${pageLimit}${pageLimit < MAX_PAGES ? ` in the editor or for Word documents (PDFs go up to ${MAX_PAGES})` : ""}.`}
+              </div>
+            )}
 
             {/* Inline preview button */}
             <button
@@ -579,16 +710,35 @@ export default function Home() {
               </div>
               <div className="relative flex justify-center">
                 <span className="bg-[#fafafa] px-3 text-[11px] font-medium text-gray-400 uppercase tracking-wider">
-                  {isFr ? "Format d'enveloppe" : "Envelope size"}
+                  {isFr ? "Enveloppe et impression" : "Envelope & printing"}
                 </span>
               </div>
             </div>
 
             <LetterSizeSelector
               value={letterSize}
-              onChange={setLetterSize}
+              onChange={(v) => {
+                setFlatNote(false);
+                setLetterSize(v);
+              }}
               language={settings.language}
-              pageCount={mode === "upload" ? pageCount : undefined}
+              pages={Math.min(Math.max(pages, 1), MAX_PAGES)}
+              colour={colour}
+              duplex={duplex}
+            />
+            {flatNote && (
+              <p className="text-xs text-amber-700 -mt-2">
+                {isFr
+                  ? "Votre lettre est trop longue pour une enveloppe #10. Nous sommes passés à une enveloppe à plat, moins chère que plusieurs #10."
+                  : "Your letter is too long for a #10 envelope, so we've moved you to a flat envelope. It costs less than several #10s."}
+              </p>
+            )}
+            <PrintOptions
+              colour={colour}
+              duplex={duplex}
+              onColour={setColour}
+              onDuplex={setDuplex}
+              language={settings.language}
             />
 
             {/* Divider */}
@@ -656,6 +806,7 @@ export default function Home() {
           </div>
 
           <div className="border-t border-gray-200/80 px-5 py-4 bg-white">
+            {priceSummary}
             {mailButton()}
           </div>
         </div>
@@ -691,6 +842,7 @@ export default function Home() {
             <div className="max-w-md mx-auto">{previewContent}</div>
           </div>
           <div className="border-t border-gray-200/80 bg-white px-4 py-3 shrink-0">
+            {priceSummary}
             {mailButton()}
           </div>
         </div>
@@ -755,8 +907,8 @@ export default function Home() {
           </div>
           <p className="text-xs text-gray-400 text-center max-w-md">
             {isFr
-              ? "Envoyez une lettre par la poste au Canada depuis 3,79 $ CAD. Impression, affranchissement et taxes inclus. Aucun compte requis."
-              : "Mail a letter anywhere in Canada from $3.79 CAD. Printing, postage, and tax included. No account required."}
+              ? `Envoyez une lettre par la poste au Canada à partir de ${formatCents(FROM_EXCL_POSTAGE_CENTS, "fr")} plus l'affranchissement. Taxes incluses. Aucun compte requis.`
+              : `Mail a letter anywhere in Canada from ${formatCents(FROM_EXCL_POSTAGE_CENTS)} plus postage. Tax included. No account required.`}
           </p>
           <div className="flex items-center gap-4 text-xs text-gray-400">
             <a href="/docs" className="hover:text-gray-600 transition-colors">{isFr ? "Docs API" : "API Docs"}</a>

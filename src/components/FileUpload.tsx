@@ -4,6 +4,7 @@ import { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { Upload, FileText, Loader2, X } from "lucide-react";
 import mammoth from "mammoth";
+import { MAX_PAGES, RASTER_MAX_PAGES, MAX_FILE_BYTES } from "@/lib/pricing";
 
 /** Measure how many 8.5×11 pages the HTML content fills */
 function measurePages(html: string): number {
@@ -40,7 +41,6 @@ export function FileUpload({
   onOriginalFile?: (file: { base64: string; name: string; type: string } | null) => void;
   language?: "en" | "fr";
 }) {
-  const MAX_PAGES = 15;
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [warning, setWarning] = useState("");
@@ -67,14 +67,14 @@ export function FileUpload({
                 const data = Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
                 const pdf = await pdfjsLib.getDocument({ data }).promise;
                 const raw = pdf.numPages;
-                const capped = Math.min(raw, MAX_PAGES);
-                onPageCount(capped);
+                onPageCount(raw);
                 if (raw > MAX_PAGES) {
-                  setWarning(
+                  setError(
                     language === "fr"
-                      ? `Votre document fait ${raw} pages — seules les ${MAX_PAGES} premières seront imprimées.`
-                      : `Your document has ${raw} pages — only the first ${MAX_PAGES} will be printed.`
+                      ? `Votre document fait ${raw} pages; le maximum est ${MAX_PAGES}.`
+                      : `Your document has ${raw} pages; the maximum is ${MAX_PAGES}.`
                   );
+                  onContent("", "");
                 }
               } catch { /* ignore */ }
             }
@@ -101,16 +101,19 @@ export function FileUpload({
               onOriginalFile({ base64: btoa(binary), name: file.name, type: file.type });
             }
             const raw = measurePages(result.value);
-            const capped = Math.min(raw, MAX_PAGES);
-            onContent(result.value, file.name);
-            if (onPageCount) onPageCount(capped);
-            if (raw > MAX_PAGES) {
-              setWarning(
+            if (raw > RASTER_MAX_PAGES) {
+              // Word documents are laid out in the browser, which caps them below PDFs.
+              onOriginalFile?.(null);
+              setError(
                 language === "fr"
-                  ? `Votre document fait ${raw} pages — seules les ${MAX_PAGES} premières seront imprimées.`
-                  : `Your document has ${raw} pages — only the first ${MAX_PAGES} will be printed.`
+                  ? `Ce document Word fait environ ${raw} pages; le maximum est ${RASTER_MAX_PAGES}. Enregistrez-le en PDF pour envoyer jusqu'à ${MAX_PAGES} pages.`
+                  : `This Word document is about ${raw} pages; the maximum is ${RASTER_MAX_PAGES}. Save it as a PDF to send up to ${MAX_PAGES} pages.`
               );
+              setLoading(false);
+              return;
             }
+            onContent(result.value, file.name);
+            if (onPageCount) onPageCount(raw);
             setLoading(false);
           }
         } else {
@@ -135,7 +138,7 @@ export function FileUpload({
         [".docx"],
     },
     maxFiles: 1,
-    maxSize: 10 * 1024 * 1024,
+    maxSize: MAX_FILE_BYTES,
   });
 
   if (fileName) {
@@ -182,7 +185,9 @@ export function FileUpload({
                 : (language === "fr" ? "Déposez un fichier ou cliquez pour parcourir" : "Drop a file or click to browse")}
             </p>
             <p className="text-xs text-gray-400">
-              {language === "fr" ? "PDF ou Word (.docx) — jusqu'à 15 pages" : "PDF or Word (.docx) — up to 15 pages"}
+              {language === "fr"
+                ? `PDF ou Word (.docx) — jusqu'à ${MAX_PAGES} pages, ${MAX_FILE_BYTES / 1024 / 1024} Mo`
+                : `PDF or Word (.docx) — up to ${MAX_PAGES} pages, ${MAX_FILE_BYTES / 1024 / 1024} MB`}
             </p>
           </>
         )}

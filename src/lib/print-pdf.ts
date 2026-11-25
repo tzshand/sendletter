@@ -7,23 +7,11 @@
 // letter is one sheet. Flat mailers are hand-addressed and carry only their
 // pages.
 //
-// Address-page geometry follows the "with envelope page" samples: the return
-// address sits high on the page, where the folded panel is hidden by the
-// envelope; the recipient sits lower, in the window zone. Offsets are from the
-// top-left of a US Letter page. Calibrate with a test print and adjust here.
+// Address-page geometry lives in address-page.ts, shared with the preview.
 
 import { PDFDocument, StandardFonts, rgb, type PDFFont } from "pdf-lib";
 import type { Mailing, LetterSize } from "./pricing";
-
-export const ADDRESS_PAGE = {
-  width: 612,
-  height: 792,
-  left: 65,
-  fromTop: 68,
-  toTop: 163,
-  lineHeight: 15,
-  fontSize: 12,
-};
+import { ADDRESS_PAGE } from "./address-page";
 
 export type AddressLines = string[];
 

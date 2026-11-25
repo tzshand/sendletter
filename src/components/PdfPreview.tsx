@@ -10,7 +10,7 @@ import { useEffect, useRef, useState } from "react";
 export function PdfCanvasPreview({
   base64,
   width,
-  maxPages = 15,
+  maxPages = 40,
 }: {
   base64: string;
   width: number;
@@ -19,11 +19,10 @@ export function PdfCanvasPreview({
   const containerRef = useRef<HTMLDivElement>(null);
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(true);
-  const renderedRef = useRef(false);
 
   useEffect(() => {
-    if (renderedRef.current) return;
     let cancelled = false;
+    setLoading(true);
 
     async function render() {
       const container = containerRef.current;
@@ -77,10 +76,7 @@ export function PdfCanvasPreview({
           await page.render({ canvasContext: ctx, viewport, canvas }).promise;
         }
 
-        if (!cancelled) {
-          renderedRef.current = true;
-          setLoading(false);
-        }
+        if (!cancelled) setLoading(false);
       } catch {
         if (!cancelled) {
           setError(true);

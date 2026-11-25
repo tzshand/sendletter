@@ -6,6 +6,8 @@ import type { SimpleLetterData } from "./SimpleLetterForm";
 import type { Settings } from "./LetterSettings";
 import type { LetterSize } from "./LetterSizeSelector";
 import { PdfCanvasPreview } from "./PdfPreview";
+import { layoutHtml, type HtmlLayout } from "@/lib/generatePdf";
+import { ADDRESS_PAGE } from "@/lib/address-page";
 
 function formatDate(dateStr: string, language: string): string {
   if (!dateStr) return "";
@@ -23,6 +25,7 @@ const COUNTRY_NAMES: Record<string, string> = {
 };
 
 function formatAddressLines(a: Address): string[] {
+  if (a.freeform) return (a.lines ?? []).filter((l) => l.trim());
   const lines: string[] = [];
   if (a.name) lines.push(a.name);
   if (a.line1) lines.push(a.line1);
@@ -84,16 +87,20 @@ function ScaledFrame({
 
 /* ─── Envelope Preview ─────────────────────────────────── */
 
+const WINDOW = { left: 63, bottom: 45, width: 324, height: 81 }; // #10 window: 4.5 x 1.125in, 7/8in in, 5/8in up
+
 function EnvelopeContent({
   from,
   to,
   settings,
   letterSize,
+  stamps,
 }: {
   from: Address;
   to: Address;
   settings: Settings;
   letterSize: LetterSize;
+  stamps: number;
 }) {
   const fromLines = formatAddressLines(from);
   const toLines = formatAddressLines(to);
@@ -101,11 +108,35 @@ function EnvelopeContent({
   const hasTo = toLines.length > 0;
   const isFr = settings.language === "fr";
 
-  // Envelope dimensions at 72dpi
-  const isLargeEnvelope = letterSize === "large" || letterSize === "legal";
   // Envelope dimensions at 72dpi: #10 = 9.5x4.125", 9x12" for large, 10x15" for legal
+  const isLargeEnvelope = letterSize === "large" || letterSize === "legal";
   const envW = isLargeEnvelope ? (letterSize === "legal" ? 720 : 648) : 684;
   const envH = isLargeEnvelope ? (letterSize === "legal" ? 1080 : 864) : 297;
+  const ink = isLargeEnvelope ? "#8B7355" : "#bbb";
+  const stampLabel = isFr ? `${stamps} timbre${stamps > 1 ? "s" : ""}` : `${stamps} stamp${stamps > 1 ? "s" : ""}`;
+
+  const stampBox = (
+    <div
+      style={{
+        position: "absolute",
+        top: isLargeEnvelope ? 28 : 16,
+        right: 24,
+        width: 44,
+        height: 52,
+        border: `1px dashed ${ink}`,
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        fontSize: "7pt",
+        color: ink,
+        textAlign: "center",
+        lineHeight: 1.2,
+      }}
+    >
+      {stampLabel}
+    </div>
+  );
 
   if (!hasFrom && !hasTo) {
     return (
@@ -130,12 +161,58 @@ function EnvelopeContent({
     );
   }
 
+  // Standard: a #10 window envelope. Only the recipient shows through the
+  // window; the return address is printed higher on the address page and stays
+  // hidden until the envelope is opened.
+  if (!isLargeEnvelope) {
+    return (
+      <div
+        style={{
+          width: envW,
+          height: envH,
+          background: "#fff",
+          position: "relative",
+          fontFamily: `"${settings.fontFamily}", serif`,
+          lineHeight: 1.5,
+          color: "#000",
+          borderRadius: 2,
+        }}
+      >
+        {stampBox}
+        <div
+          style={{
+            position: "absolute",
+            left: WINDOW.left,
+            bottom: WINDOW.bottom,
+            width: WINDOW.width,
+            height: WINDOW.height,
+            border: "1px solid #d4d4d4",
+            background: "#fafafa",
+            padding: "8px 14px",
+            fontSize: "11pt",
+            overflow: "hidden",
+          }}
+        >
+          {toLines.map((l, i) => (
+            <div key={i}>{l}</div>
+          ))}
+        </div>
+        {hasFrom && (
+          <div style={{ position: "absolute", left: WINDOW.left, top: 20, fontSize: "7pt", color: "#bbb", fontStyle: "italic" }}>
+            {isFr ? "Adresse de retour : imprimée à l'intérieur" : "Return address: printed inside, seen when opened"}
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // Flat mailers are hand-addressed on the envelope.
   return (
     <div
       style={{
         width: envW,
         height: envH,
-        background: isLargeEnvelope ? "#D2B48C" : "#fff",
+        background: "#D2B48C",
         position: "relative",
         fontFamily: `"${settings.fontFamily}", serif`,
         fontSize: "10pt",
@@ -144,35 +221,14 @@ function EnvelopeContent({
         borderRadius: 2,
       }}
     >
-      {/* From: top-left */}
       {hasFrom && (
-        <div style={{ position: "absolute", top: isLargeEnvelope ? 36 : 20, left: 28 }}>
+        <div style={{ position: "absolute", top: 36, left: 28 }}>
           {fromLines.map((l, i) => (
             <div key={i} style={{ fontSize: "9pt" }}>{l}</div>
           ))}
         </div>
       )}
-
-      {/* Stamp */}
-      <div
-        style={{
-          position: "absolute",
-          top: isLargeEnvelope ? 28 : 16,
-          right: 24,
-          width: 44,
-          height: 52,
-          border: `1px dashed ${isLargeEnvelope ? "#8B7355" : "#ccc"}`,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          fontSize: "7pt",
-          color: isLargeEnvelope ? "#8B7355" : "#bbb",
-        }}
-      >
-        STAMP
-      </div>
-
-      {/* To: center */}
+      {stampBox}
       {hasTo && (
         <div
           style={{
@@ -188,6 +244,44 @@ function EnvelopeContent({
           ))}
         </div>
       )}
+    </div>
+  );
+}
+
+/* ─── Address page (sheet 1 of a #10 window mailing) ───── */
+
+function AddressPageContent({ from, to, settings }: { from: Address; to: Address; settings: Settings }) {
+  const g = ADDRESS_PAGE;
+  const isFr = settings.language === "fr";
+  const block = (lines: string[], top: number) => (
+    <div style={{ position: "absolute", left: g.left, top: top - g.fontSize, fontSize: g.fontSize, lineHeight: `${g.lineHeight}px` }}>
+      {lines.map((l, i) => (
+        <div key={i}>{l}</div>
+      ))}
+    </div>
+  );
+  const note = (text: string, top: number) => (
+    <div style={{ position: "absolute", left: g.left + 250, top: top - g.fontSize, fontSize: 9, color: "#b5b5b5", fontStyle: "italic" }}>
+      {text}
+    </div>
+  );
+  const fromLines = formatAddressLines(from);
+  const toLines = formatAddressLines(to);
+  return (
+    <div
+      style={{
+        width: g.width,
+        height: g.height,
+        background: "#fff",
+        position: "relative",
+        fontFamily: `"${settings.fontFamily}", serif`,
+        color: "#000",
+      }}
+    >
+      {block(fromLines, g.fromTop)}
+      {note(isFr ? "Cachée derrière l'enveloppe, visible à l'ouverture" : "Hidden behind the envelope, seen when opened", g.fromTop)}
+      {block(toLines, g.toTop)}
+      {note(isFr ? "Visible dans la fenêtre" : "Shows in the window", g.toTop)}
     </div>
   );
 }
@@ -337,11 +431,13 @@ export function EnvelopePreviewScaled({
   to,
   settings,
   letterSize,
+  stamps,
 }: {
   from: Address;
   to: Address;
   settings: Settings;
   letterSize: LetterSize;
+  stamps: number;
 }) {
   const isLarge = letterSize === "large" || letterSize === "legal";
   const w = isLarge ? (letterSize === "legal" ? 720 : 648) : 684;
@@ -349,7 +445,16 @@ export function EnvelopePreviewScaled({
 
   return (
     <ScaledFrame nativeWidth={w} nativeHeight={h}>
-      <EnvelopeContent from={from} to={to} settings={settings} letterSize={letterSize} />
+      <EnvelopeContent from={from} to={to} settings={settings} letterSize={letterSize} stamps={stamps} />
+    </ScaledFrame>
+  );
+}
+
+/** Sheet 1 of a #10 window mailing: where the addresses sit. */
+export function AddressPagePreviewScaled({ from, to, settings }: { from: Address; to: Address; settings: Settings }) {
+  return (
+    <ScaledFrame nativeWidth={ADDRESS_PAGE.width} nativeHeight={ADDRESS_PAGE.height}>
+      <AddressPageContent from={from} to={to} settings={settings} />
     </ScaledFrame>
   );
 }
@@ -360,12 +465,15 @@ export function LetterPreviewScaled({
   htmlContent,
   settings,
   letterSize = "standard",
+  previewPdf,
 }: {
   mode: "simple" | "custom" | "upload";
   letterData: SimpleLetterData;
   htmlContent: string;
   settings: Settings;
   letterSize?: LetterSize;
+  /** The real generated PDF for a classic letter, so the preview is exactly what prints. */
+  previewPdf?: string | null;
 }) {
   // PDF uploads: render with PdfCanvasPreview
   if (mode === "upload" && htmlContent) {
@@ -373,8 +481,15 @@ export function LetterPreviewScaled({
     if (pdfMatch) {
       return <PdfPagesScaled base64={pdfMatch[1]} />;
     }
-    // Docx HTML: multi-page CSS-clipped preview
-    return <HtmlPagesScaled html={htmlContent} settings={settings} />;
+    return <PaginatedHtmlPreview html={htmlContent} settings={{ ...settings, verticalCenter: false }} letterSize={letterSize} />;
+  }
+
+  if (mode === "custom" && htmlContent) {
+    return <PaginatedHtmlPreview html={htmlContent} settings={settings} letterSize={letterSize} />;
+  }
+
+  if (mode === "simple" && previewPdf && letterData.body.trim()) {
+    return <PdfPagesScaled base64={previewPdf} />;
   }
 
   const pageH = letterSize === "legal" ? 1008 : 792;
@@ -391,58 +506,79 @@ export function LetterPreviewScaled({
   );
 }
 
-/** Renders docx HTML as multiple CSS-clipped pages scaled to container width */
-function HtmlPagesScaled({ html, settings }: { html: string; settings: Settings }) {
-  const [pageCount, setPageCount] = useState(1);
-  const pageH = 792;
+/**
+ * Multi-page preview of HTML (the custom editor, or a converted .docx), laid out
+ * by the same engine that makes the PDF: same margins, same page breaks.
+ */
+function PaginatedHtmlPreview({ html, settings, letterSize }: { html: string; settings: Settings; letterSize: LetterSize }) {
+  const [layout, setLayout] = useState<HtmlLayout | null>(null);
 
   useEffect(() => {
-    const el = document.createElement("div");
-    el.style.cssText = `
-      position: fixed; left: -9999px; top: 0;
-      width: 612px; padding: 72px;
-      font-family: "${settings.fontFamily}", serif;
-      font-size: ${settings.fontSize}pt;
-      line-height: 1.5; color: #000;
-      box-sizing: border-box;
-    `;
-    el.innerHTML = html;
-    document.body.appendChild(el);
-    setPageCount(Math.min(15, Math.max(1, Math.ceil(el.scrollHeight / pageH))));
-    document.body.removeChild(el);
-  }, [html, settings.fontFamily, settings.fontSize]);
+    setLayout(layoutHtml(html, settings, letterSize));
+  }, [html, settings, letterSize]);
+
+  if (!layout) return null;
+  const { pageH, sliceH, pages } = layout;
+  const font = {
+    fontFamily: `"${settings.fontFamily}", serif`,
+    fontSize: `${settings.fontSize}pt`,
+    lineHeight: 1.5,
+    color: "#000",
+  };
+
+  // Everything fits one page: shown exactly as printed, including vertical centring.
+  if (layout.fits) {
+    return (
+      <ScaledFrame nativeWidth={612} nativeHeight={pageH}>
+        <div
+          style={{
+            width: 612,
+            height: pageH,
+            padding: 72,
+            background: "#fff",
+            display: "flex",
+            flexDirection: "column",
+            overflow: "hidden",
+            boxSizing: "border-box",
+            ...font,
+            ...(settings.verticalCenter ? { justifyContent: "center" } : {}),
+          }}
+        >
+          <div dangerouslySetInnerHTML={{ __html: layout.html }} />
+        </div>
+      </ScaledFrame>
+    );
+  }
 
   return (
     <div className="flex flex-col gap-4">
-      {Array.from({ length: pageCount }, (_, i) => (
-        <ScaledFrame key={i} nativeWidth={612} nativeHeight={pageH}>
-          <div
-            style={{
-              width: 612,
-              height: pageH,
-              overflow: "hidden",
-              background: "#fff",
-              position: "relative",
-            }}
-          >
-            <div
-              style={{
-                position: "absolute",
-                top: -i * pageH,
-                left: 0,
-                width: 612,
-                padding: 72,
-                fontFamily: `"${settings.fontFamily}", serif`,
-                fontSize: `${settings.fontSize}pt`,
-                lineHeight: 1.5,
-                color: "#000",
-                boxSizing: "border-box" as const,
-              }}
-            >
-              <div dangerouslySetInnerHTML={{ __html: html }} />
+      {Array.from({ length: pages }, (_, i) => (
+        <div key={i}>
+          {i > 0 && (
+            <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-2">
+              Page {i + 1}
+            </p>
+          )}
+          <ScaledFrame nativeWidth={612} nativeHeight={pageH}>
+            <div style={{ width: 612, height: pageH, overflow: "hidden", background: "#fff", position: "relative" }}>
+              <div style={{ position: "absolute", left: 0, top: 72, width: 612, height: sliceH, overflow: "hidden" }}>
+                <div
+                  style={{
+                    position: "absolute",
+                    left: 0,
+                    top: -i * sliceH,
+                    width: 612,
+                    padding: "0 72px",
+                    boxSizing: "border-box",
+                    ...font,
+                  }}
+                >
+                  <div dangerouslySetInnerHTML={{ __html: layout.html }} />
+                </div>
+              </div>
             </div>
-          </div>
-        </ScaledFrame>
+          </ScaledFrame>
+        </div>
       ))}
     </div>
   );
