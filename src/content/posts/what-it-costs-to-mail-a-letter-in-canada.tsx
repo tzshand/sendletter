@@ -50,7 +50,7 @@ export default function Post() {
       />
 
       <P>
-        So the honest comparison is not $1.44 against $3.14. It is about $1.60 in
+        So the honest comparison is not $1.44 against $3.49. It is about $1.60 in
         consumables — assuming you already own a working printer and have stamps in a
         drawer — against a service price that includes all of it.
       </P>
@@ -84,7 +84,7 @@ export default function Post() {
       <H2>Where online services land</H2>
 
       <P>
-        Canadian print-and-mail services currently run from about $3.14 to $6 per letter
+        Canadian print-and-mail services currently run from about $3.49 to $6 per letter
         for domestic delivery, with printing, envelope, postage, and tax included. That is
         a premium of roughly $2 to $4 over doing it yourself — the price of the printing
         and the errand.

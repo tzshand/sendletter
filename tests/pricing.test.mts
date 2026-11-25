@@ -3,16 +3,15 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import {
   quote, planMailings, maxSheetsPerMailing, weightGrams, requiredPostageCents, stampsFor,
-  FROM_EXCL_POSTAGE_CENTS, FROM_ALL_IN_CENTS, DEFAULT_SINGLE_CENTS, MAX_PAGES, RATES, PricingError,
+  FROM_ALL_IN_CENTS, DEFAULT_SINGLE_CENTS, MAX_PAGES, RATES, PricingError,
 } from "../src/lib/pricing.ts";
 
 const q = (pages: number, size: "standard" | "large" | "legal" = "standard", colour = true, duplex = true, channel: "web" | "api" = "web") =>
   quote({ pages, size, colour, duplex, channel });
 
 test("the agreed headline numbers", () => {
-  assert.equal(DEFAULT_SINGLE_CENTS, 349); // 1 page, colour, double-sided, #10
-  assert.equal(FROM_ALL_IN_CENTS, 314); // same, black and white
-  assert.equal(FROM_EXCL_POSTAGE_CENTS, 190); // "From $1.90 plus postage"
+  assert.equal(DEFAULT_SINGLE_CENTS, 384); // 1 page, colour, double-sided, #10
+  assert.equal(FROM_ALL_IN_CENTS, 349); // same, black and white: the advertised "From" price, postage included
 });
 
 test("single page is one sheet and one stamp: the address page is free", () => {
@@ -20,7 +19,7 @@ test("single page is one sheet and one stamp: the address page is free", () => {
   assert.equal(x.mailings.length, 1);
   assert.equal(x.mailings[0].sheets, 1);
   assert.equal(x.stamps, 1);
-  assert.deepEqual(x.lines.map((l) => l.totalCents), [165, 10, 50, 124]);
+  assert.deepEqual(x.lines.map((l) => l.totalCents), [200, 10, 50, 124]);
 });
 
 test("simplex: the address page is an extra sheet but still not billed", () => {
@@ -104,7 +103,7 @@ test("rounds weight up and applies the standard/other tiers", () => {
 
 test("API pricing: $0.99 base, everything else the same", () => {
   const web = q(1), api = q(1, "standard", true, true, "api");
-  assert.equal(web.totalCents - api.totalCents, 165 - 99);
+  assert.equal(web.totalCents - api.totalCents, 200 - 99);
   assert.equal(api.totalCents, 99 + 10 + 50 + 124);
 });
 

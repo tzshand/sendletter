@@ -81,7 +81,7 @@ export const ar: OriginPage = {
     faqHeading: "أسئلة شائعة",
     ctaTitle: "أرسل رسالة إلى كندا",
     ctaBody:
-      "اكتب رسالتك أو ارفعها، أضف العنوان الكندي، ونحن نطبعها في كندا ونرسلها عبر البريد الكندي. ابتداءً من 3.14 دولارًا كنديًا، شاملة الطباعة والضريبة.",
+      "اكتب رسالتك أو ارفعها، أضف العنوان الكندي، ونحن نطبعها في كندا ونرسلها عبر البريد الكندي. ابتداءً من 3.49 دولارًا كنديًا، شاملة الطباعة والضريبة.",
     ctaButton: "أرسل الرسالة",
     hubLink: "كل الدول",
     otherLanguages: "لغات أخرى",
@@ -242,7 +242,7 @@ export const tr: OriginPage = {
     faqHeading: "Sık sorulan sorular",
     ctaTitle: "Kanada'ya mektup gönderin",
     ctaBody:
-      "Mektubu yazın veya yükleyin, Kanada adresini girin; biz Kanada'da basıp Kanada Postası ile gönderelim. 3,14 CAD'den başlayan fiyatlarla, baskı ve vergi dahil.",
+      "Mektubu yazın veya yükleyin, Kanada adresini girin; biz Kanada'da basıp Kanada Postası ile gönderelim. 3,49 CAD'den başlayan fiyatlarla, baskı ve vergi dahil.",
     ctaButton: "Mektup gönder",
     hubLink: "Tüm ülkeler",
     otherLanguages: "Diğer diller",

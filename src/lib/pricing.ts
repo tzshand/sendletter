@@ -31,8 +31,11 @@ export const MAX_FILE_BYTES = 40 * 1024 * 1024;
 export const RATES = {
   /** One Permanent(TM) coil stamp: the standard 0-30 g letter rate. */
   stampCents: 124,
-  /** Per mailing. Web is lower-friction pricing; API orders have more of the work automated. */
-  baseCents: { web: 165, api: 99 } as Record<Channel, number>,
+  /**
+   * Per mailing. Web is set so the cheapest letter (one B&W page, one stamp) is
+   * $3.49 all in; API orders have more of the work automated.
+   */
+  baseCents: { web: 200, api: 99 } as Record<Channel, number>,
   /** Per printed page (a side). Double-sided does not change the page count. */
   pageCents: { colour: 50, bw: 15 },
   /** Per envelope or mailer. Flat mailers cost more than a #10. */
@@ -218,9 +221,12 @@ export function quote(input: {
 const cheapest = quote({ pages: 1, size: "standard", colour: false, duplex: true, channel: "web" });
 const dflt = quote({ pages: 1, size: "standard", colour: true, duplex: true, channel: "web" });
 
-/** "From $1.90 plus postage": base + one black-and-white page + a #10, without postage. */
-export const FROM_EXCL_POSTAGE_CENTS = cheapest.totalCents - cheapest.postageCents;
-/** All-in price of the cheapest possible letter (one B&W page, one stamp): $3.14. */
+/**
+ * The advertised "From" price: the cheapest letter anyone can actually buy, all
+ * in (one black-and-white page in a #10, one stamp): $3.49. It must stay
+ * attainable, so never advertise a figure that leaves out postage, which is
+ * mandatory (Competition Act drip-pricing rules).
+ */
 export const FROM_ALL_IN_CENTS = cheapest.totalCents;
 /** What the default single-page colour tri-fold costs: $3.49. */
 export const DEFAULT_SINGLE_CENTS = dflt.totalCents;

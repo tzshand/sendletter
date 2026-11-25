@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "node scripts/next-cli.mjs build",
     "start": "next start",
     "lint": "eslint",
     "test": "node --experimental-strip-types --import ./tests/register.mjs --test tests/*.test.mts"

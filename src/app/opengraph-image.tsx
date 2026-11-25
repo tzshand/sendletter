@@ -1,8 +1,8 @@
 import { ImageResponse } from "next/og";
-import { formatCents, FROM_EXCL_POSTAGE_CENTS, FROM_ALL_IN_CENTS } from "@/lib/pricing";
+import { formatCents, FROM_ALL_IN_CENTS } from "@/lib/pricing";
 
 export const runtime = "edge";
-export const alt = `sendletter — Mail a letter online from ${formatCents(FROM_EXCL_POSTAGE_CENTS)} plus postage — tax included`;
+export const alt = `sendletter — Mail a letter online from ${formatCents(FROM_ALL_IN_CENTS)} — printing, postage & tax included`;
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -83,7 +83,7 @@ export default async function Image() {
           }}
         >
           Write or upload your letter, add addresses, and we print and mail it
-          anywhere in Canada. From {formatCents(FROM_EXCL_POSTAGE_CENTS)} plus postage, about {formatCents(FROM_ALL_IN_CENTS)} all-in. Tax included.
+          anywhere in Canada. From {formatCents(FROM_ALL_IN_CENTS)} CAD. Printing, postage & tax included.
         </div>
 
         {/* Bottom bar */}

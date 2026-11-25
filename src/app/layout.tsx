@@ -2,11 +2,9 @@ import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 import { Analytics } from "@/components/Analytics";
 import "./globals.css";
-import { quote, formatCents, FROM_EXCL_POSTAGE_CENTS, FROM_ALL_IN_CENTS, DEFAULT_SINGLE_CENTS, RATES, MAX_PAGES } from "@/lib/pricing";
+import { quote, formatCents, FROM_ALL_IN_CENTS, DEFAULT_SINGLE_CENTS, RATES, MAX_PAGES } from "@/lib/pricing";
 
 // Every price on this page comes from the same rates the checkout charges.
-const FROM_EXCL = formatCents(FROM_EXCL_POSTAGE_CENTS);
-const FROM_EXCL_FR = formatCents(FROM_EXCL_POSTAGE_CENTS, "fr");
 const ALL_IN = formatCents(FROM_ALL_IN_CENTS);
 const ALL_IN_FR = formatCents(FROM_ALL_IN_CENTS, "fr");
 const MIN_ALL_IN = (size: "standard" | "large" | "legal") =>
@@ -15,9 +13,9 @@ const MIN_ALL_IN = (size: "standard" | "large" | "legal") =>
 const geist = Geist({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: `Send a Letter Online in Canada — From ${FROM_EXCL} + Postage | sendletter`,
+  title: `Send a Letter Online in Canada — From ${ALL_IN} (Postage & Tax Incl.) | sendletter`,
   description:
-    `Send a real letter in the mail from your computer. Write or upload, add addresses, and we print and mail it anywhere in Canada from ${FROM_EXCL} plus postage, about ${ALL_IN} all-in for a one-page letter. Tax included. No account, no subscription, no minimum.`,
+    `Send a real letter in the mail from your computer. Write or upload, add addresses, and we print and mail it anywhere in Canada from ${ALL_IN}: printing, postage and tax included. No account, no subscription, no minimum.`,
   metadataBase: new URL("https://sendletter.app"),
   icons: {
     icon: "/favicon.png",
@@ -43,7 +41,7 @@ export const metadata: Metadata = {
     },
   },
   openGraph: {
-    title: `Send a Letter Online in Canada — From ${FROM_EXCL} + Postage | sendletter`,
+    title: `Send a Letter Online in Canada — From ${ALL_IN} (Postage & Tax Incl.) | sendletter`,
     description:
       "Write or upload your letter, add addresses, and we print and mail it anywhere in Canada. No account needed.",
     url: "https://sendletter.app",
@@ -51,13 +49,13 @@ export const metadata: Metadata = {
     locale: "en_CA",
     alternateLocale: "fr_CA",
     type: "website",
-    images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: `Send a Letter Online in Canada — From ${FROM_EXCL} + Postage | sendletter` }],
+    images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: `Send a Letter Online in Canada — From ${ALL_IN} (Postage & Tax Incl.) | sendletter` }],
   },
   twitter: {
     card: "summary_large_image",
-    title: `Send a Letter Online in Canada — From ${FROM_EXCL} + Postage | sendletter`,
+    title: `Send a Letter Online in Canada — From ${ALL_IN} (Postage & Tax Incl.) | sendletter`,
     description:
-      `Upload or write your letter, we print and mail it via Canada Post from ${FROM_EXCL} plus postage, about ${ALL_IN} all-in. Tax included.`,
+      `Upload or write your letter, we print and mail it via Canada Post from ${ALL_IN}: printing, postage and tax included.`,
   },
   robots: {
     index: true,
@@ -76,7 +74,7 @@ const jsonLd = [
     url: "https://sendletter.app",
     logo: "https://sendletter.app/favicon.png",
     description:
-      `Send physical letters online from ${FROM_EXCL} CAD plus postage, about ${ALL_IN} all-in for a one-page letter, tax included. Write or upload, we print and mail via Canada Post. API accessible for automated workflows. No account, no subscription, no minimum.`,
+      `Send physical letters online from ${ALL_IN} CAD, printing, postage and tax included. Write or upload, we print and mail via Canada Post. API accessible for automated workflows. No account, no subscription, no minimum.`,
     address: {
       "@type": "PostalAddress",
       addressLocality: "Montréal",
@@ -198,7 +196,7 @@ const jsonLd = [
         "@type": "HowToStep",
         position: 3,
         name: "Pay and send",
-        text: `Choose your envelope, pay securely from ${FROM_EXCL} CAD plus postage (about ${ALL_IN} all-in, tax included), and we print and mail your letter within 1 business day via Canada Post.`,
+        text: `Choose your envelope, pay securely from ${ALL_IN} CAD (printing, postage and tax included), and we print and mail your letter within 1 business day via Canada Post.`,
       },
     ],
   },
@@ -211,7 +209,7 @@ const jsonLd = [
         name: "How much does it cost to send a letter online?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: `From ${FROM_EXCL} plus postage, about ${ALL_IN} all-in for a one-page black-and-white letter (${formatCents(DEFAULT_SINGLE_CENTS)} in colour). You pay a mailing fee, printing (${formatCents(RATES.pageCents.bw)} a page black & white, ${formatCents(RATES.pageCents.colour)} colour), the envelope, and Canada Post postage at cost: one stamp (${formatCents(RATES.stampCents)}) covers most letters up to 5 pages. Tax included. No subscription.`,
+          text: `From ${ALL_IN} for a one-page black-and-white letter (${formatCents(DEFAULT_SINGLE_CENTS)} in colour), with printing, postage and tax included. Longer letters cost more: you pay a mailing fee, printing (${formatCents(RATES.pageCents.bw)} a page black & white, ${formatCents(RATES.pageCents.colour)} colour), the envelope, and Canada Post postage at cost: one stamp (${formatCents(RATES.stampCents)}) covers most letters up to 5 pages. Tax included. No subscription.`,
         },
       },
       {
@@ -219,7 +217,7 @@ const jsonLd = [
         name: "Combien coûte l'envoi d'une lettre en ligne?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: `À partir de ${FROM_EXCL_FR} plus l'affranchissement, soit environ ${ALL_IN_FR} tout compris pour une lettre d'une page en noir et blanc (${formatCents(DEFAULT_SINGLE_CENTS, "fr")} en couleur). Vous payez des frais d'envoi, l'impression (${formatCents(RATES.pageCents.bw, "fr")} la page en noir et blanc, ${formatCents(RATES.pageCents.colour, "fr")} en couleur), l'enveloppe, et l'affranchissement Postes Canada au prix coûtant : un timbre (${formatCents(RATES.stampCents, "fr")}) suffit pour la plupart des lettres jusqu'à 5 pages. Taxes incluses. Aucun abonnement.`,
+          text: `À partir de ${ALL_IN_FR} pour une lettre d'une page en noir et blanc (${formatCents(DEFAULT_SINGLE_CENTS, "fr")} en couleur), impression, affranchissement et taxes compris. Les lettres plus longues coûtent plus cher : vous payez des frais d'envoi, l'impression (${formatCents(RATES.pageCents.bw, "fr")} la page en noir et blanc, ${formatCents(RATES.pageCents.colour, "fr")} en couleur), l'enveloppe, et l'affranchissement Postes Canada au prix coûtant : un timbre (${formatCents(RATES.stampCents, "fr")}) suffit pour la plupart des lettres jusqu'à 5 pages. Taxes incluses. Aucun abonnement.`,
         },
       },
       {
