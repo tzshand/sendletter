@@ -15,7 +15,7 @@ function useSessionId() {
 
 export default function SuccessPage() {
   const sessionId = useSessionId();
-  const [emailStatus, setEmailStatus] = useState<"sending" | "sent" | "error" | "needs_file" | "idle">("idle");
+  const [emailStatus, setEmailStatus] = useState<"sending" | "sent" | "error" | "idle">("idle");
   const sentRef = useRef(false);
 
   // Fire Google Ads conversion event (retry briefly if gtag not ready)
@@ -60,8 +60,7 @@ export default function SuccessPage() {
         }
 
         if (res?.ok) {
-          const data = await res.json().catch(() => ({}));
-          setEmailStatus(data.needsFile ? "needs_file" : "sent");
+          setEmailStatus("sent");
           // Clear the form draft after a completed order
           try {
             const db = await new Promise<IDBDatabase>((resolve, reject) => {
@@ -90,21 +89,11 @@ export default function SuccessPage() {
         <div className="w-12 h-12 bg-emerald-50 rounded-2xl flex items-center justify-center mx-auto mb-5 ring-1 ring-emerald-200/60">
           <Check className="w-6 h-6 text-emerald-600" />
         </div>
-        <h1 className="text-xl font-semibold mb-2">
-          {emailStatus === "needs_file" ? "We need your document" : "Letter sent!"}
-        </h1>
-        {emailStatus === "needs_file" ? (
-          <p className="text-sm text-gray-500 leading-relaxed mb-2">
-            Your payment went through, but your document didn&apos;t reach us, so
-            your letter has not been queued. We&apos;ll email you shortly to get
-            it. You can also write to support@sendletter.app.
-          </p>
-        ) : (
-          <p className="text-sm text-gray-500 leading-relaxed mb-2">
-            Your letter is being printed and will be in the mail within 1 business
-            day. Expect delivery in 3–7 business days.
-          </p>
-        )}
+        <h1 className="text-xl font-semibold mb-2">Letter sent!</h1>
+        <p className="text-sm text-gray-500 leading-relaxed mb-2">
+          Your letter is being printed and will be in the mail within 1 business
+          day. Expect delivery in 3–7 business days.
+        </p>
 
         {emailStatus === "sending" && (
           <p className="text-xs text-gray-400 flex items-center justify-center gap-1.5 mb-6">

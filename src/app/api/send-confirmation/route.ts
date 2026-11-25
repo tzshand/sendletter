@@ -124,7 +124,6 @@ function buildInternalEmailHtml(
   hasPdf: boolean,
   hasHtml: boolean,
   draftId: string | undefined,
-  missingFile: boolean,
 ): string {
   const eh = escapeHtml;
   const size = SIZE_LABELS[meta.letterSize] || SIZE_LABELS.standard;
@@ -134,8 +133,8 @@ function buildInternalEmailHtml(
 <html><head><meta charset="utf-8"/></head>
 <body style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#111;max-width:600px;margin:0 auto;padding:24px;">
 
-<h2 style="font-size:18px;margin:0 0 16px;color:#F0513C;">${missingFile ? "ACTION NEEDED: order paid but NO DOCUMENT" : "New sendletter Order"}</h2>
-${missingFile ? `<div style="background:#fdecea;border-radius:8px;padding:12px 16px;font-size:13px;color:#b3261e;margin:0 0 16px;"><strong>Do not print or mail.</strong> The customer paid but no document reached the server, so no confirmation was sent to them. Email ${eh(customerEmail)} and ask them to reply with the file (order status: needs_file).</div>` : ""}
+<h2 style="font-size:18px;margin:0 0 16px;color:#F0513C;">New sendletter Order</h2>
+
 <table style="width:100%;font-size:13px;border-collapse:collapse;margin-bottom:16px;">
   <tr><td style="padding:6px 0;color:#888;width:140px;">Date</td><td style="padding:6px 0;">${eh(date)}</td></tr>
   <tr><td style="padding:6px 0;color:#888;">Stripe Session</td><td style="padding:6px 0;font-family:monospace;font-size:11px;">${eh(sessionId)}</td></tr>
@@ -161,8 +160,8 @@ ${missingFile ? `<div style="background:#fdecea;border-radius:8px;padding:12px 1
 </p>
 
 <div style="background:#f0f9f0;border-radius:8px;padding:12px 16px;font-size:12px;color:#666;margin:20px 0;">
-  <strong>Attachment:</strong> ${missingFile ? '<span style="color:#b3261e;">MISSING</span>' : hasPdf ? 'PDF attached' : hasHtml ? 'HTML letter content attached' : 'No attachment available'}<br/>
-  <strong>Saved copy:</strong> ${draftId && !missingFile ? `files store: drafts/${eh(draftId)}/ (canner files ls drafts/${eh(draftId)})` : "none saved"}
+  <strong>Attachment:</strong> ${hasPdf ? 'PDF attached' : hasHtml ? 'HTML letter content attached' : 'No attachment available'}<br/>
+  <strong>Saved copy:</strong> ${draftId ? `files store: drafts/${eh(draftId)}/ (canner files ls drafts/${eh(draftId)})` : "none saved"}
 </div>
 
 </body></html>`;
@@ -268,7 +267,7 @@ export async function POST(req: Request) {
     const hasAttachment = hasOriginal || hasPdf;
     const mode = letterMode || meta.letterMode || "unknown";
 
-    const saveOrder = async (status: string) => {
+    const saveOrder = async () => {
       try {
         const db = getDb();
         const order: OrderInsert = {
@@ -293,7 +292,6 @@ export async function POST(req: Request) {
           to_country: meta.toCountry || "CA",
           has_pdf_attachment: hasPdf,
           letter_html: hasHtml ? htmlContent : letterData ? buildSimpleLetterHtml(letterData, meta.letterSize || "standard") : undefined,
-          status,
         };
         const { error: dbError } = await db.from("sendletter_orders").insert(order);
         if (dbError) console.error("DB insert failed (non-blocking):", dbError);
@@ -301,27 +299,6 @@ export async function POST(req: Request) {
         console.error("DB connection failed (non-blocking):", e);
       }
     };
-
-    // No document means no order. The customer has already paid by now, so
-    // don't tell them it's queued: record it as needs_file (which also makes a
-    // reload a no-op), alert the owner, and leave the customer unemailed.
-    const hasDocument = mode === "upload" ? hasAttachment : hasAttachment || hasHtml || !!letterData;
-    if (!hasDocument) {
-      console.error(`send-confirmation: NO DOCUMENT for paid session ${sessionId} (draft ${draftId ?? "none"}); order held as needs_file`);
-      const resend = getResend();
-      try {
-        await resend.emails.send({
-          from: "sendletter <noreply@sendletter.app>",
-          to: INTERNAL_EMAIL,
-          subject: `MISSING FILE — do not mail: ${stripControl(meta.toName || "")} — $${amount}`,
-          html: buildInternalEmailHtml(meta, amount, date, email, sessionId, mode, false, false, draftId, true),
-        });
-      } catch (e) {
-        console.error("Missing-file alert email failed:", e);
-      }
-      await saveOrder("needs_file");
-      return NextResponse.json({ ok: true, needsFile: true });
-    }
 
     // Build customer confirmation email
     const customerHtml = buildEmailHtml(meta, amount, date, hasAttachment);
@@ -350,7 +327,7 @@ export async function POST(req: Request) {
     });
 
     // Build internal order email
-    const internalHtml = buildInternalEmailHtml(meta, amount, date, email, sessionId, mode, hasAttachment, hasHtml, draftId, false);
+    const internalHtml = buildInternalEmailHtml(meta, amount, date, email, sessionId, mode, hasAttachment, hasHtml, draftId);
 
     // Prepare attachments for internal email (original + generated PDF)
     const internalAttachments: { filename: string; content: string }[] = [];
@@ -397,7 +374,7 @@ export async function POST(req: Request) {
     }
 
     // Save order to database
-    await saveOrder("pending");
+    await saveOrder();
 
     return NextResponse.json({ ok: true });
   } catch (error) {
