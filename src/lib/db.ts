@@ -112,7 +112,7 @@ function identList(cols: string): string {
     .join(", ");
 }
 
-type Filter = { col: string; op: "eq" | "in"; val: unknown };
+type Filter = { col: string; op: "eq" | "in" | "lt" | "notnull"; val: unknown };
 type Op = "select" | "insert" | "update";
 
 // The default thenable resolves a list result (`data: any[]`), matching the
@@ -163,6 +163,17 @@ class QueryBuilder implements PromiseLike<DbResult<any[]>> {
     return this;
   }
 
+  lt(col: string, val: unknown): this {
+    this.filters.push({ col, op: "lt", val });
+    return this;
+  }
+
+  /** col IS NOT NULL */
+  notNull(col: string): this {
+    this.filters.push({ col, op: "notnull", val: null });
+    return this;
+  }
+
   order(col: string, opts?: { ascending?: boolean }): this {
     this.orderBy = { col, ascending: opts?.ascending !== false };
     return this;
@@ -193,8 +204,10 @@ class QueryBuilder implements PromiseLike<DbResult<any[]>> {
   private buildWhere(params: unknown[]): string {
     if (this.filters.length === 0) return "";
     const clauses = this.filters.map((f) => {
+      if (f.op === "notnull") return `${ident(f.col)} IS NOT NULL`;
       params.push(f.val);
       if (f.op === "in") return `${ident(f.col)} = ANY($${params.length})`;
+      if (f.op === "lt") return `${ident(f.col)} < $${params.length}`;
       return `${ident(f.col)} = $${params.length}`;
     });
     return ` WHERE ${clauses.join(" AND ")}`;

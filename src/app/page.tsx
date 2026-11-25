@@ -545,7 +545,7 @@ export default function Home() {
     { q: "Quels formats de fichier puis-je télécharger?", a: `PDF jusqu'à ${MAX_PAGES} pages et 40 Mo, ou documents Word (.docx) jusqu'à ${RASTER_MAX_PAGES} pages.` },
     { q: "Où livrez-vous?", a: "À toute adresse postale au Canada via Postes Canada." },
     { q: "Est-ce que j'envoie une seule lettre?", a: "Absolument. sendletter est conçu pour envoyer une lettre à la fois — pas de minimum, pas d'envoi en vrac." },
-    { q: "Mes données sont-elles en sécurité?", a: "Nous ne conservons pas le contenu de votre lettre après l'envoi. Votre courriel sert uniquement pour la confirmation de commande." },
+    { q: "Mes données sont-elles en sécurité?", a: "Nous conservons votre document 30 jours afin de régler tout problème d'envoi, puis nous le supprimons. Votre courriel sert uniquement pour la confirmation de commande." },
     { q: "Avez-vous une API?", a: "Oui. sendletter offre un accès API pour envoyer des lettres par programmation, automatiser les flux de courrier et intégrer les services postaux dans vos applications." },
   ] : [
     { q: "Can you actually send a letter online?", a: "Yes. Write or upload your letter, add addresses, pay, and we print and mail it via Canada Post within 1 business day." },
@@ -555,7 +555,7 @@ export default function Home() {
     { q: "What file formats can I upload?", a: `PDFs up to ${MAX_PAGES} pages and 40 MB, or Word documents (.docx) up to ${RASTER_MAX_PAGES} pages.` },
     { q: "Where can you deliver?", a: "Any mailing address in Canada via Canada Post." },
     { q: "Can I send just one letter?", a: "Absolutely. sendletter is built for sending one letter at a time — no minimums, no bulk mail." },
-    { q: "Is my information safe?", a: "We don't store your letter content after dispatch. Your email is only used for order confirmation." },
+    { q: "Is my information safe?", a: "We keep your document for 30 days so we can sort out any mailing problem, then delete it. Your email is only used for order confirmation." },
     { q: "Do you have an API?", a: "Yes. sendletter offers API access for developers and AI agents to programmatically send physical letters, automate mailing workflows, and integrate postal services into applications." },
   ];
 

@@ -24,7 +24,7 @@ export default function Post() {
           ],
           [
             "Service en ligne",
-            "3,79 $ à 6 $",
+            "3,14 $ à 6 $",
             "Un navigateur et l'adresse du destinataire",
             "Pas d'imprimante, ou vous ne sortez pas",
           ],
@@ -70,7 +70,7 @@ export default function Post() {
       </P>
 
       <P>
-        Au Canada, les prix vont actuellement de 3,79 $ pour une lettre standard pliée en
+        Au Canada, les prix vont actuellement de 3,14 $ pour une lettre standard pliée en
         trois à environ 6 $ pour les offres les plus chères. Tout ce qui est annoncé
         nettement sous le prix d&apos;un timbre ne poste pas une lettre physique.
       </P>

@@ -80,7 +80,7 @@ export const ru: OriginPage = {
     faqHeading: "Частые вопросы",
     ctaTitle: "Отправить письмо в Канаду",
     ctaBody:
-      "Напишите или загрузите письмо, укажите канадский адрес — мы напечатаем его в Канаде и отправим через Canada Post. От 3,79 CAD, печать и налог включены.",
+      "Напишите или загрузите письмо, укажите канадский адрес — мы напечатаем его в Канаде и отправим через Canada Post. От 3,14 CAD, печать и налог включены.",
     ctaButton: "Отправить письмо",
     hubLink: "Все страны",
     otherLanguages: "Другие языки",
@@ -160,7 +160,7 @@ export const uk: OriginPage = {
     faqHeading: "Часті запитання",
     ctaTitle: "Надіслати лист до Канади",
     ctaBody:
-      "Напишіть або завантажте лист, вкажіть канадську адресу — ми надрукуємо його в Канаді й надішлемо через Canada Post. Від 3,79 CAD, друк і податок включені.",
+      "Напишіть або завантажте лист, вкажіть канадську адресу — ми надрукуємо його в Канаді й надішлемо через Canada Post. Від 3,14 CAD, друк і податок включені.",
     ctaButton: "Надіслати лист",
     hubLink: "Усі країни",
     otherLanguages: "Інші мови",
@@ -240,7 +240,7 @@ export const pl: OriginPage = {
     faqHeading: "Częste pytania",
     ctaTitle: "Wyślij list do Kanady",
     ctaBody:
-      "Napisz lub wgraj list, podaj adres w Kanadzie — wydrukujemy go w Kanadzie i nadamy przez Canada Post. Od 3,79 CAD, druk i podatek w cenie.",
+      "Napisz lub wgraj list, podaj adres w Kanadzie — wydrukujemy go w Kanadzie i nadamy przez Canada Post. Od 3,14 CAD, druk i podatek w cenie.",
     ctaButton: "Wyślij list",
     hubLink: "Wszystkie kraje",
     otherLanguages: "Inne języki",
@@ -320,7 +320,7 @@ export const ro: OriginPage = {
     faqHeading: "Întrebări frecvente",
     ctaTitle: "Trimite o scrisoare în Canada",
     ctaBody:
-      "Scrie sau încarcă scrisoarea, adaugă adresa canadiană — o tipărim în Canada și o expediem prin Canada Post. De la 3,79 CAD, tipar și taxe incluse.",
+      "Scrie sau încarcă scrisoarea, adaugă adresa canadiană — o tipărim în Canada și o expediem prin Canada Post. De la 3,14 CAD, tipar și taxe incluse.",
     ctaButton: "Trimite scrisoarea",
     hubLink: "Toate țările",
     otherLanguages: "Alte limbi",

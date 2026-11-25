@@ -123,7 +123,7 @@ const CTA_COPY = {
     apiButton: "Read the API reference",
     homeTitle: "Send a letter without leaving your desk",
     homeBody:
-      "Write or upload it, add the addresses, and we print and mail it via Canada Post. From $3.79, printing and tax included.",
+      "Write or upload it, add the addresses, and we print and mail it via Canada Post. From $3.14, printing and tax included.",
     homeButton: "Send a letter",
   },
   fr: {
@@ -133,7 +133,7 @@ const CTA_COPY = {
     apiButton: "Consulter la référence de l'API",
     homeTitle: "Envoyez une lettre sans quitter votre bureau",
     homeBody:
-      "Rédigez-la ou téléversez-la, ajoutez les adresses, et nous l'imprimons et la postons via Postes Canada. Dès 3,79 $, impression et taxes comprises.",
+      "Rédigez-la ou téléversez-la, ajoutez les adresses, et nous l'imprimons et la postons via Postes Canada. Dès 3,14 $, impression et taxes comprises.",
     homeButton: "Envoyer une lettre",
   },
 } as const;

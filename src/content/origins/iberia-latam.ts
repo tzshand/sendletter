@@ -79,7 +79,7 @@ export const es: OriginPage = {
     faqHeading: "Preguntas frecuentes",
     ctaTitle: "Envía una carta a Canadá",
     ctaBody:
-      "Escribe o sube tu carta, añade la dirección canadiense: la imprimimos en Canadá y la enviamos por Canada Post. Desde 3,79 CAD, impresión e impuestos incluidos.",
+      "Escribe o sube tu carta, añade la dirección canadiense: la imprimimos en Canadá y la enviamos por Canada Post. Desde 3,14 CAD, impresión e impuestos incluidos.",
     ctaButton: "Enviar carta",
     hubLink: "Todos los países",
     otherLanguages: "Otros idiomas",
@@ -159,7 +159,7 @@ export const pt: OriginPage = {
     faqHeading: "Perguntas frequentes",
     ctaTitle: "Envie uma carta para o Canadá",
     ctaBody:
-      "Escreva ou envie sua carta, informe o endereço canadense: imprimimos no Canadá e postamos pelo Canada Post. A partir de 3,79 CAD, impressão e impostos incluídos.",
+      "Escreva ou envie sua carta, informe o endereço canadense: imprimimos no Canadá e postamos pelo Canada Post. A partir de 3,14 CAD, impressão e impostos incluídos.",
     ctaButton: "Enviar carta",
     hubLink: "Todos os países",
     otherLanguages: "Outros idiomas",

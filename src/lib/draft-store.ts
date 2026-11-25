@@ -125,3 +125,50 @@ export function isCompleteDraft(d: StagedDraft): boolean {
   if (mode === "custom") return !!(d.pdf || (d.meta?.htmlContent && d.meta.htmlContent.trim()));
   return false;
 }
+
+// ── Retention ──
+
+/** How long a staged document is kept after its last activity, so a mailing problem can still be fixed. */
+export const DRAFT_RETENTION_DAYS = 30;
+
+const DRAFTS_PREFIX = `${SLUG}/drafts/`;
+
+/**
+ * Delete staged documents whose newest file is older than the retention window.
+ * A draft is only removed whole, and only keys under drafts/ are ever touched.
+ * Deleted files go to Canner's recoverable bin first. Returns how many drafts
+ * and files were removed.
+ */
+export async function purgeExpiredDrafts(
+  days: number = DRAFT_RETENTION_DAYS,
+  now: number = Date.now(),
+): Promise<{ drafts: number; files: number }> {
+  const res = await call(`/storage/objects?prefix=${encodeURIComponent(DRAFTS_PREFIX)}`);
+  if (!res.ok) throw new DraftStoreError(`could not list drafts: ${res.status}`);
+  const body = (await res.json()) as { objects?: { key: string; last_modified: string }[] };
+
+  const byDraft = new Map<string, { keys: string[]; newest: number }>();
+  for (const o of body.objects ?? []) {
+    if (!o.key.startsWith(DRAFTS_PREFIX)) continue;
+    const id = o.key.slice(DRAFTS_PREFIX.length).split("/")[0];
+    if (!isDraftId(id)) continue;
+    const t = new Date(o.last_modified).getTime();
+    const d = byDraft.get(id) ?? { keys: [], newest: 0 };
+    d.keys.push(o.key);
+    d.newest = Math.max(d.newest, Number.isFinite(t) ? t : now); // an unreadable date counts as new: never delete on a guess
+    byDraft.set(id, d);
+  }
+
+  const cutoff = now - days * 24 * 60 * 60 * 1000;
+  let drafts = 0;
+  let files = 0;
+  for (const d of byDraft.values()) {
+    if (d.newest >= cutoff) continue;
+    for (const key of d.keys) {
+      const del = await call(`/storage/objects?key=${encodeURIComponent(key)}`, { method: "DELETE" });
+      if (del.ok) files++;
+    }
+    drafts++;
+  }
+  return { drafts, files };
+}

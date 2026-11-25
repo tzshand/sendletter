@@ -51,7 +51,7 @@ export default function Post() {
       />
 
       <P>
-        La vraie comparaison n&apos;est donc pas 1,44 $ contre 3,79 $. C&apos;est environ
+        La vraie comparaison n&apos;est donc pas 1,44 $ contre 3,14 $. C&apos;est environ
         1,60 $ de fournitures — en supposant que vous ayez déjà une imprimante qui
         fonctionne et des timbres dans un tiroir — contre un prix de service qui comprend
         tout.
@@ -89,7 +89,7 @@ export default function Post() {
 
       <P>
         Les services canadiens d&apos;impression et de postage vont actuellement d&apos;environ
-        3,79 $ à 6 $ par lettre pour une livraison au Canada, impression, enveloppe,
+        3,14 $ à 6 $ par lettre pour une livraison au Canada, impression, enveloppe,
         affranchissement et taxes compris. C&apos;est une prime de 2 $ à 4 $ sur le
         « faites-le vous-même » : le prix de l&apos;impression et de la course.
       </P>

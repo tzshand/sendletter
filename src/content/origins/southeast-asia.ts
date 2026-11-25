@@ -83,7 +83,7 @@ export const tl: OriginPage = {
     faqHeading: "Mga madalas itanong",
     ctaTitle: "Magpadala ng sulat sa Canada",
     ctaBody:
-      "Isulat o i-upload ang sulat, ilagay ang address sa Canada, at ipi-print namin ito sa Canada at ipapadala sa pamamagitan ng Canada Post. Mula 3.79 CAD, kasama na ang print at buwis.",
+      "Isulat o i-upload ang sulat, ilagay ang address sa Canada, at ipi-print namin ito sa Canada at ipapadala sa pamamagitan ng Canada Post. Mula 3.14 CAD, kasama na ang print at buwis.",
     ctaButton: "Magpadala ng sulat",
     hubLink: "Lahat ng bansa",
     otherLanguages: "Ibang wika",
@@ -163,7 +163,7 @@ export const vi: OriginPage = {
     faqHeading: "Câu hỏi thường gặp",
     ctaTitle: "Gửi thư đi Canada",
     ctaBody:
-      "Viết hoặc tải lên lá thư, nhập địa chỉ Canada, chúng tôi in tại Canada và gửi qua Canada Post. Từ 3,79 CAD, đã gồm in ấn và thuế.",
+      "Viết hoặc tải lên lá thư, nhập địa chỉ Canada, chúng tôi in tại Canada và gửi qua Canada Post. Từ 3,14 CAD, đã gồm in ấn và thuế.",
     ctaButton: "Gửi thư",
     hubLink: "Tất cả quốc gia",
     otherLanguages: "Ngôn ngữ khác",

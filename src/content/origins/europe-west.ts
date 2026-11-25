@@ -81,7 +81,7 @@ export const de: OriginPage = {
     faqHeading: "Häufige Fragen",
     ctaTitle: "Brief nach Kanada senden",
     ctaBody:
-      "Brief schreiben oder hochladen, kanadische Adresse eingeben — wir drucken in Kanada und geben bei Canada Post auf. Ab 3,79 CAD, Druck und Steuern inklusive.",
+      "Brief schreiben oder hochladen, kanadische Adresse eingeben — wir drucken in Kanada und geben bei Canada Post auf. Ab 3,14 CAD, Druck und Steuern inklusive.",
     ctaButton: "Brief senden",
     hubLink: "Alle Länder",
     otherLanguages: "Andere Sprachen",
@@ -158,7 +158,7 @@ export const fr: OriginPage = {
     faqHeading: "Questions fréquentes",
     ctaTitle: "Envoyer une lettre au Canada",
     ctaBody:
-      "Rédigez ou téléversez votre lettre, ajoutez l'adresse canadienne : nous l'imprimons au Canada et la postons via Postes Canada. À partir de 3,79 $ CA, impression et taxes comprises.",
+      "Rédigez ou téléversez votre lettre, ajoutez l'adresse canadienne : nous l'imprimons au Canada et la postons via Postes Canada. À partir de 3,14 $ CA, impression et taxes comprises.",
     ctaButton: "Envoyer une lettre",
     hubLink: "Tous les pays",
     otherLanguages: "Autres langues",
@@ -235,7 +235,7 @@ export const it: OriginPage = {
     faqHeading: "Domande frequenti",
     ctaTitle: "Spedisci una lettera in Canada",
     ctaBody:
-      "Scrivi o carica la lettera, inserisci l'indirizzo canadese: la stampiamo in Canada e la spediamo con Canada Post. Da 3,79 CAD, stampa e tasse incluse.",
+      "Scrivi o carica la lettera, inserisci l'indirizzo canadese: la stampiamo in Canada e la spediamo con Canada Post. Da 3,14 CAD, stampa e tasse incluse.",
     ctaButton: "Spedisci la lettera",
     hubLink: "Tutti i paesi",
     otherLanguages: "Altre lingue",
@@ -312,7 +312,7 @@ export const nl: OriginPage = {
     faqHeading: "Veelgestelde vragen",
     ctaTitle: "Stuur een brief naar Canada",
     ctaBody:
-      "Schrijf of upload je brief, vul het Canadese adres in — wij printen in Canada en versturen via Canada Post. Vanaf 3,79 CAD, print en belasting inbegrepen.",
+      "Schrijf of upload je brief, vul het Canadese adres in — wij printen in Canada en versturen via Canada Post. Vanaf 3,14 CAD, print en belasting inbegrepen.",
     ctaButton: "Brief versturen",
     hubLink: "Alle landen",
     otherLanguages: "Andere talen",

@@ -24,7 +24,7 @@ export default function Post() {
           ],
           [
             "Online service",
-            "$3.79–$6",
+            "$3.14–$6",
             "A browser and the recipient's address",
             "No printer, or you're not going out",
           ],
@@ -69,7 +69,7 @@ export default function Post() {
       </P>
 
       <P>
-        Prices in Canada currently run from $3.79 for a standard tri-fold letter up to
+        Prices in Canada currently run from $3.14 for a standard tri-fold letter up to
         about $6 at the higher end. Anything advertised well below the price of a stamp is
         not mailing a physical letter.
       </P>

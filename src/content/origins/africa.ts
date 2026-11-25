@@ -86,7 +86,7 @@ export const am: OriginPage = {
     faqHeading: "ተደጋጋሚ ጥያቄዎች",
     ctaTitle: "ወደ ካናዳ ደብዳቤ ይላኩ",
     ctaBody:
-      "ደብዳቤዎን ይጻፉ ወይም ይስቀሉ፣ የካናዳ አድራሻ ያስገቡ — በካናዳ አትመን በካናዳ ፖስት እንልካለን። ከ3.79 CAD ጀምሮ፣ ኅትመትና ግብር ተካትቷል።",
+      "ደብዳቤዎን ይጻፉ ወይም ይስቀሉ፣ የካናዳ አድራሻ ያስገቡ — በካናዳ አትመን በካናዳ ፖስት እንልካለን። ከ3.14 CAD ጀምሮ፣ ኅትመትና ግብር ተካትቷል።",
     ctaButton: "ደብዳቤ ላክ",
     hubLink: "ሁሉም አገሮች",
     otherLanguages: "ሌሎች ቋንቋዎች",
@@ -166,7 +166,7 @@ export const ti: OriginPage = {
     faqHeading: "ተደጋገምቲ ሕቶታት",
     ctaTitle: "ናብ ካናዳ ደብዳበ ልኣኽ",
     ctaBody:
-      "ደብዳበኹም ጽሓፉ ወይ ስቐሉ፣ ናይ ካናዳ ኣድራሻ ኣእትዉ — ኣብ ካናዳ ሓቲምና ብካናዳ ፖስት ንልእኾ። ካብ 3.79 CAD ጀሚሩ።",
+      "ደብዳበኹም ጽሓፉ ወይ ስቐሉ፣ ናይ ካናዳ ኣድራሻ ኣእትዉ — ኣብ ካናዳ ሓቲምና ብካናዳ ፖስት ንልእኾ። ካብ 3.14 CAD ጀሚሩ።",
     ctaButton: "ደብዳበ ልኣኽ",
     hubLink: "ኩለን ሃገራት",
     otherLanguages: "ካልኦት ቋንቋታት",
@@ -244,7 +244,7 @@ export const so: OriginPage = {
     faqHeading: "Su'aalaha inta badan la weydiiyo",
     ctaTitle: "Dir warqad Canada",
     ctaBody:
-      "Qor ama soo geli warqaddaada, ku dar cinwaanka Canada — waxaan ku daabacaynaa Canada oo aan ku dirnaa Canada Post. Laga bilaabo 3.79 CAD.",
+      "Qor ama soo geli warqaddaada, ku dar cinwaanka Canada — waxaan ku daabacaynaa Canada oo aan ku dirnaa Canada Post. Laga bilaabo 3.14 CAD.",
     ctaButton: "Dir warqadda",
     hubLink: "Dhammaan wadamada",
     otherLanguages: "Luqado kale",
@@ -329,7 +329,7 @@ export const enNg: OriginPage = {
     faqHeading: "Frequently asked questions",
     ctaTitle: "Send a letter to Canada",
     ctaBody:
-      "Write or upload your letter, add the Canadian address, and we print it in Canada and mail it via Canada Post. From $3.79 CAD, printing and tax included.",
+      "Write or upload your letter, add the Canadian address, and we print it in Canada and mail it via Canada Post. From $3.14 CAD, printing and tax included.",
     ctaButton: "Send a letter",
     hubLink: "All countries",
     otherLanguages: "Other languages",

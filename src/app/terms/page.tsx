@@ -80,8 +80,9 @@ export default function TermsPage() {
             <p className="text-sm text-gray-600 leading-relaxed">
               We collect only the information necessary to fulfill your order:
               letter content, mailing addresses, and payment information
-              (processed securely by Stripe). We do not store your letter
-              content after dispatch. Your email address, collected during
+              (processed securely by Stripe). We keep your letter for 30 days
+              after your order so we can resolve any mailing problem, then
+              delete it. Your email address, collected during
               checkout, is used solely for order confirmation.
             </p>
 
@@ -174,8 +175,9 @@ export default function TermsPage() {
               &agrave; l&rsquo;ex&eacute;cution de votre commande : contenu de
               la lettre, adresses postales et informations de paiement
               (trait&eacute;es de mani&egrave;re s&eacute;curis&eacute;e par
-              Stripe). Nous ne conservons pas le contenu de votre lettre
-              apr&egrave;s l&rsquo;exp&eacute;dition. Votre adresse courriel,
+              Stripe). Nous conservons votre lettre 30 jours apr&egrave;s votre
+              commande afin de r&eacute;gler tout probl&egrave;me d&rsquo;envoi,
+              puis nous la supprimons. Votre adresse courriel,
               recueillie lors du paiement, est utilis&eacute;e uniquement pour
               la confirmation de commande.
             </p>
