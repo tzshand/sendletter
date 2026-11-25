@@ -280,37 +280,52 @@ export default function Home() {
           return;
         }
         generatedPdf = generated?.base64 || null;
-        if (generatedPdf) {
-          try {
-            const db = await openDB();
-            const tx = db.transaction(STORE, "readwrite");
-            const store = tx.objectStore(STORE);
-            const req = store.get(DB_KEY);
-            req.onsuccess = () => {
-              const draft = req.result || {};
-              draft.generatedPdf = generatedPdf;
-              store.put(draft, DB_KEY);
-            };
-            db.close();
-          } catch { /* ignore */ }
-        }
       } catch (e) {
         console.error("PDF generation failed (continuing):", e);
       }
 
-      // Only send content relevant to the active mode
+      // Put the document on the server BEFORE payment. The browser draft can't
+      // be trusted to survive the Stripe redirect, and an order must never be
+      // paid for with nothing to print: checkout is refused without this.
+      const toBlob = (b64: string, type: string) => new Blob([Uint8Array.from(atob(b64), (c) => c.charCodeAt(0))], { type });
+      const pdfBlob = generatedPdf ? toBlob(generatedPdf, "application/pdf") : null;
+      const originalBlob = mode === "upload" && originalFile ? toBlob(originalFile.base64, originalFile.type || "application/octet-stream") : null;
+      const stageForm = new FormData();
+      stageForm.append("meta", JSON.stringify({
+        mode,
+        letterSize,
+        letterData: mode === "simple" ? letterData : undefined,
+        htmlContent: mode === "custom" ? htmlContent : undefined,
+        pdfSize: pdfBlob?.size,
+        originalSize: originalBlob?.size,
+      }));
+      if (pdfBlob) stageForm.append("pdf", pdfBlob, "letter.pdf");
+      if (originalBlob && originalFile) {
+        stageForm.append("original", originalBlob, originalFile.name);
+        stageForm.append("originalName", originalFile.name);
+      }
+      const stageRes = await fetch("/api/upload-draft", { method: "POST", body: stageForm });
+      const staged = await stageRes.json().catch(() => ({}));
+      if (!stageRes.ok || !staged.draftId) {
+        setErrorMsg(
+          isFr ? "Nous n'avons pas pu enregistrer votre document. Veuillez réessayer. Vous n'avez pas été facturé."
+                : (staged.error ? `${staged.error} You have not been charged.` : "We couldn't save your document. Please try again. You have not been charged.")
+        );
+        setSending(false);
+        return;
+      }
+
       const res = await fetch("/api/create-checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          htmlContent: mode !== "simple" ? htmlContent : undefined,
           from,
           to,
           mode,
-          letterData: mode === "simple" ? letterData : undefined,
           letterSize,
           pageCount: letterPages,
           language: settings.language,
+          draftId: staged.draftId,
         }),
       });
       const data = await res.json();
@@ -319,7 +334,7 @@ export default function Home() {
       } else {
         setErrorMsg(
           isFr ? "Impossible de créer la commande. Veuillez réessayer."
-                : "Could not create checkout. Please try again."
+                : (data.error ?? "Could not create checkout. Please try again.")
         );
         setSending(false);
       }

@@ -15,7 +15,7 @@ function useSessionId() {
 
 export default function SuccessPage() {
   const sessionId = useSessionId();
-  const [emailStatus, setEmailStatus] = useState<"sending" | "sent" | "error" | "idle">("idle");
+  const [emailStatus, setEmailStatus] = useState<"sending" | "sent" | "error" | "needs_file" | "idle">("idle");
   const sentRef = useRef(false);
 
   // Fire Google Ads conversion event (retry briefly if gtag not ready)
@@ -44,73 +44,25 @@ export default function SuccessPage() {
     async function sendEmail() {
       setEmailStatus("sending");
       try {
-        // Get draft data from IndexedDB
-        let pdfBase64: string | undefined;
-        let htmlContent: string | undefined;
-        let letterData: Record<string, unknown> | undefined;
-        let letterMode: string | undefined;
-        let originalFile: { base64: string; name: string; type: string } | undefined;
-        try {
-          const db = await new Promise<IDBDatabase>((resolve, reject) => {
-            const req = indexedDB.open("sendletter", 1);
-            req.onupgradeneeded = () => req.result.createObjectStore("draft");
-            req.onsuccess = () => resolve(req.result);
-            req.onerror = () => reject(req.error);
+        // The document was uploaded to the server before payment; confirmation
+        // reads it from there, so only the session id is needed. A 503 means the
+        // server couldn't check (database or file store briefly unreachable):
+        // payment is already captured, so just try again shortly.
+        let res: Response | null = null;
+        for (let attempt = 0; attempt < 4; attempt++) {
+          res = await fetch("/api/send-confirmation", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ sessionId }),
           });
-          const tx = db.transaction("draft", "readonly");
-          const draft = await new Promise<Record<string, unknown> | undefined>((resolve) => {
-            const req = tx.objectStore("draft").get("current");
-            req.onsuccess = () => resolve(req.result as Record<string, unknown> | undefined);
-            req.onerror = () => resolve(undefined);
-          });
-          db.close();
+          if (res.status !== 503) break;
+          await new Promise((r) => setTimeout(r, 6000));
+        }
 
-          if (draft) {
-            letterMode = draft.mode as string | undefined;
-            if (draft.letterData) letterData = draft.letterData as Record<string, unknown>;
-            // Upload mode: prefer original file (docx/pdf as uploaded)
-            if (draft.originalFile) {
-              originalFile = draft.originalFile as { base64: string; name: string; type: string };
-            }
-            // Prefer the generated print-quality PDF (simple/custom modes)
-            if (draft.generatedPdf && typeof draft.generatedPdf === "string") {
-              pdfBase64 = draft.generatedPdf;
-            } else if (draft.htmlContent && typeof draft.htmlContent === "string") {
-              const match = draft.htmlContent.match(/data-pdf="([^"]+)"/);
-              if (match) {
-                pdfBase64 = match[1];
-              } else if (!originalFile) {
-                htmlContent = draft.htmlContent;
-              }
-            }
-            // Keep the letter text alongside the PDF. The PDF is only ever
-            // emailed, never stored, so this is the only durable copy of what
-            // the customer wrote. Custom-mode HTML only: upload HTML can be a
-            // whole converted document and already has originalFile.
-            if (!htmlContent && letterMode === "custom" && typeof draft.htmlContent === "string"
-                && draft.htmlContent.length < 500_000) {
-              htmlContent = draft.htmlContent;
-            }
-          }
-        } catch { /* IndexedDB unavailable */ }
-
-        // Only send content relevant to the mode that was used
-        const res = await fetch("/api/send-confirmation", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            sessionId,
-            pdfBase64,
-            htmlContent: letterMode !== "simple" ? htmlContent : undefined,
-            letterData: letterMode === "simple" ? letterData : undefined,
-            letterMode,
-            originalFile,
-          }),
-        });
-
-        if (res.ok) {
-          setEmailStatus("sent");
-          // Clear draft after successful send
+        if (res?.ok) {
+          const data = await res.json().catch(() => ({}));
+          setEmailStatus(data.needsFile ? "needs_file" : "sent");
+          // Clear the form draft after a completed order
           try {
             const db = await new Promise<IDBDatabase>((resolve, reject) => {
               const req = indexedDB.open("sendletter", 1);
@@ -138,11 +90,21 @@ export default function SuccessPage() {
         <div className="w-12 h-12 bg-emerald-50 rounded-2xl flex items-center justify-center mx-auto mb-5 ring-1 ring-emerald-200/60">
           <Check className="w-6 h-6 text-emerald-600" />
         </div>
-        <h1 className="text-xl font-semibold mb-2">Letter sent!</h1>
-        <p className="text-sm text-gray-500 leading-relaxed mb-2">
-          Your letter is being printed and will be in the mail within 1 business
-          day. Expect delivery in 3–7 business days.
-        </p>
+        <h1 className="text-xl font-semibold mb-2">
+          {emailStatus === "needs_file" ? "We need your document" : "Letter sent!"}
+        </h1>
+        {emailStatus === "needs_file" ? (
+          <p className="text-sm text-gray-500 leading-relaxed mb-2">
+            Your payment went through, but your document didn&apos;t reach us, so
+            your letter has not been queued. We&apos;ll email you shortly to get
+            it. You can also write to support@sendletter.app.
+          </p>
+        ) : (
+          <p className="text-sm text-gray-500 leading-relaxed mb-2">
+            Your letter is being printed and will be in the mail within 1 business
+            day. Expect delivery in 3–7 business days.
+          </p>
+        )}
 
         {emailStatus === "sending" && (
           <p className="text-xs text-gray-400 flex items-center justify-center gap-1.5 mb-6">

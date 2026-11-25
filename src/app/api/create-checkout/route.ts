@@ -1,18 +1,18 @@
 import { NextResponse } from "next/server";
 import { getStripe } from "@/lib/stripe";
 import { PRICES, SIZE_LABELS } from "@/lib/pricing";
+import { isCompleteDraft, isDraftId, loadDraft } from "@/lib/draft-store";
 
 export async function POST(req: Request) {
   const body = await req.json();
   const {
-    htmlContent,
     from,
     to,
     mode,
-    letterData,
     letterSize = "standard",
     pageCount = 1,
     language = "en",
+    draftId,
   } = body;
 
   if (!from || !to) {
@@ -22,17 +22,31 @@ export async function POST(req: Request) {
     );
   }
 
-  if (mode === "simple" && !letterData?.body) {
+  // Letter content is validated against the staged draft below, not the body.
+
+  // No document, no payment. The document is staged on the server before
+  // checkout (see lib/draft-store.ts); verify it is really there and complete
+  // before taking any money, so an order can never be paid for with nothing to
+  // print.
+  if (!isDraftId(draftId)) {
     return NextResponse.json(
-      { error: "Letter body is empty" },
+      { error: "Your document wasn't saved. Please try again — you have not been charged." },
       { status: 400 }
     );
   }
-
-  if ((mode === "custom" || mode === "upload") && !htmlContent) {
+  try {
+    const staged = await loadDraft(draftId);
+    if (!isCompleteDraft(staged)) {
+      return NextResponse.json(
+        { error: "Your document wasn't saved. Please try again — you have not been charged." },
+        { status: 400 }
+      );
+    }
+  } catch (e) {
+    console.error("create-checkout: could not verify staged document:", e instanceof Error ? e.message : e);
     return NextResponse.json(
-      { error: "Letter content is empty" },
-      { status: 400 }
+      { error: "We couldn't verify your document right now. Please try again — you have not been charged." },
+      { status: 503 }
     );
   }
 
@@ -72,6 +86,7 @@ export async function POST(req: Request) {
       cancel_url: `${req.headers.get("origin")}`,
       metadata: {
         letterMode: mode,
+        draftId,
         letterSize,
         pageCount: String(pages),
         fromName: from.name,

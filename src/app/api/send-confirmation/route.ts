@@ -4,7 +4,7 @@ import { getDb, DbConnectionError, type OrderInsert } from "@/lib/db";
 import { getStripe } from "@/lib/stripe";
 import { SIZE_LABELS_BILINGUAL } from "@/lib/pricing";
 import { escapeHtml, stripControl } from "@/lib/sanitize";
-import { saveOrderFiles, safeFileName } from "@/lib/order-files";
+import { DraftStoreError, isCompleteDraft, isDraftId, loadDraft } from "@/lib/draft-store";
 
 function getResend() {
   const key = process.env.RESEND_API_KEY;
@@ -123,8 +123,8 @@ function buildInternalEmailHtml(
   letterMode: string,
   hasPdf: boolean,
   hasHtml: boolean,
-  saved: string[],
-  savedKey: string,
+  draftId: string | undefined,
+  missingFile: boolean,
 ): string {
   const eh = escapeHtml;
   const size = SIZE_LABELS[meta.letterSize] || SIZE_LABELS.standard;
@@ -134,8 +134,8 @@ function buildInternalEmailHtml(
 <html><head><meta charset="utf-8"/></head>
 <body style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#111;max-width:600px;margin:0 auto;padding:24px;">
 
-<h2 style="font-size:18px;margin:0 0 16px;color:#F0513C;">New sendletter Order</h2>
-
+<h2 style="font-size:18px;margin:0 0 16px;color:#F0513C;">${missingFile ? "ACTION NEEDED: order paid but NO DOCUMENT" : "New sendletter Order"}</h2>
+${missingFile ? `<div style="background:#fdecea;border-radius:8px;padding:12px 16px;font-size:13px;color:#b3261e;margin:0 0 16px;"><strong>Do not print or mail.</strong> The customer paid but no document reached the server, so no confirmation was sent to them. Email ${eh(customerEmail)} and ask them to reply with the file (order status: needs_file).</div>` : ""}
 <table style="width:100%;font-size:13px;border-collapse:collapse;margin-bottom:16px;">
   <tr><td style="padding:6px 0;color:#888;width:140px;">Date</td><td style="padding:6px 0;">${eh(date)}</td></tr>
   <tr><td style="padding:6px 0;color:#888;">Stripe Session</td><td style="padding:6px 0;font-family:monospace;font-size:11px;">${eh(sessionId)}</td></tr>
@@ -161,8 +161,8 @@ function buildInternalEmailHtml(
 </p>
 
 <div style="background:#f0f9f0;border-radius:8px;padding:12px 16px;font-size:12px;color:#666;margin:20px 0;">
-  <strong>Attachment:</strong> ${hasPdf ? 'PDF attached' : hasHtml ? 'HTML letter content attached' : 'No attachment available'}<br/>
-  <strong>Saved copy:</strong> ${saved.length > 0 ? `orders/${eh(savedKey)}/ &mdash; ${saved.map(eh).join(", ")}` : "none saved"}
+  <strong>Attachment:</strong> ${missingFile ? '<span style="color:#b3261e;">MISSING</span>' : hasPdf ? 'PDF attached' : hasHtml ? 'HTML letter content attached' : 'No attachment available'}<br/>
+  <strong>Saved copy:</strong> ${draftId && !missingFile ? `files store: drafts/${eh(draftId)}/ (canner files ls drafts/${eh(draftId)})` : "none saved"}
 </div>
 
 </body></html>`;
@@ -170,7 +170,15 @@ function buildInternalEmailHtml(
 
 export async function POST(req: Request) {
   try {
-    const { sessionId, pdfBase64, htmlContent, letterData, letterMode, originalFile } = await req.json();
+    // Only sessionId is needed: the document is read back from the server. The
+    // rest is what pre-staging clients posted, kept for sessions already in flight.
+    const body = await req.json();
+    const sessionId: string | undefined = body.sessionId;
+    let pdfBase64: string | undefined = body.pdfBase64;
+    let htmlContent: string | undefined = body.htmlContent;
+    let letterData: Record<string, unknown> | undefined = body.letterData;
+    let letterMode: string | undefined = body.letterMode;
+    let originalFile: { base64: string; name: string; type?: string } | undefined = body.originalFile;
 
     if (!sessionId) {
       return NextResponse.json({ error: "Missing session ID" }, { status: 400 });
@@ -225,20 +233,94 @@ export async function POST(req: Request) {
     const meta = (session.metadata || {}) as Record<string, string>;
     const amount = ((session.amount_total || 0) / 100).toFixed(2);
     const date = new Date().toLocaleDateString("en-CA");
+
+    // The document comes from the server-side staged copy (uploaded and
+    // verified before checkout, see lib/draft-store.ts), not from the browser.
+    // Sessions created before staging existed have no draftId and still use
+    // whatever the browser posted.
+    const draftId = isDraftId(meta.draftId) ? meta.draftId : undefined;
+    if (draftId) {
+      try {
+        const staged = await loadDraft(draftId);
+        if (isCompleteDraft(staged)) {
+          pdfBase64 = staged.pdf?.toString("base64");
+          originalFile = staged.original
+            ? { base64: staged.original.data.toString("base64"), name: staged.original.name.replace(/^original-/, "") }
+            : undefined;
+          htmlContent = staged.meta?.htmlContent;
+          letterData = staged.meta?.letterData;
+          letterMode = staged.meta?.mode;
+        }
+      } catch (e) {
+        // Can't tell "no document" from "store unreachable": don't decide, let
+        // the client retry (payment is already captured; a delay is harmless).
+        console.error("send-confirmation: draft store unreachable, refusing to proceed:", e instanceof DraftStoreError ? e.message : e);
+        return NextResponse.json(
+          { error: "Temporarily unavailable. Please retry." },
+          { status: 503, headers: { "Retry-After": "15" } },
+        );
+      }
+    }
+
     const hasOriginal = !!(originalFile && originalFile.base64 && typeof originalFile.base64 === "string");
     const hasPdf = !!(pdfBase64 && typeof pdfBase64 === "string");
     const hasHtml = !!(htmlContent && typeof htmlContent === "string");
     const hasAttachment = hasOriginal || hasPdf;
+    const mode = letterMode || meta.letterMode || "unknown";
 
-    // Keep what was uploaded BEFORE anything is emailed. The attachments below
-    // are skipped when over the size cap, and the email was the only copy; this
-    // is the one that can't be lost that way. Never throws (see order-files.ts).
-    const savedFiles = await saveOrderFiles(session.id, [
-      ...(hasOriginal ? [{ name: `original-${safeFileName(originalFile.name, "letter")}`, base64: originalFile.base64 as string }] : []),
-      ...(hasPdf ? [{ name: "letter.pdf", base64: pdfBase64 as string }] : []),
-    ]);
-    if (hasAttachment && savedFiles.files.length === 0) {
-      console.error(`send-confirmation: NOTHING SAVED for ${session.id} (upload present); the emails are the only copy`);
+    const saveOrder = async (status: string) => {
+      try {
+        const db = getDb();
+        const order: OrderInsert = {
+          stripe_session_id: sessionId,
+          stripe_payment_status: session.payment_status,
+          customer_email: email,
+          letter_mode: mode,
+          letter_size: meta.letterSize || "standard",
+          page_count: parseInt(meta.pageCount || "1", 10),
+          amount_cents: session.amount_total || 0,
+          from_name: meta.fromName || "",
+          from_line1: meta.fromLine1 || "",
+          from_city: meta.fromCity || "",
+          from_province: meta.fromProvince || "",
+          from_postal: meta.fromPostal || "",
+          from_country: meta.fromCountry || "CA",
+          to_name: meta.toName || "",
+          to_line1: meta.toLine1 || "",
+          to_city: meta.toCity || "",
+          to_province: meta.toProvince || "",
+          to_postal: meta.toPostal || "",
+          to_country: meta.toCountry || "CA",
+          has_pdf_attachment: hasPdf,
+          letter_html: hasHtml ? htmlContent : letterData ? buildSimpleLetterHtml(letterData, meta.letterSize || "standard") : undefined,
+          status,
+        };
+        const { error: dbError } = await db.from("sendletter_orders").insert(order);
+        if (dbError) console.error("DB insert failed (non-blocking):", dbError);
+      } catch (e) {
+        console.error("DB connection failed (non-blocking):", e);
+      }
+    };
+
+    // No document means no order. The customer has already paid by now, so
+    // don't tell them it's queued: record it as needs_file (which also makes a
+    // reload a no-op), alert the owner, and leave the customer unemailed.
+    const hasDocument = mode === "upload" ? hasAttachment : hasAttachment || hasHtml || !!letterData;
+    if (!hasDocument) {
+      console.error(`send-confirmation: NO DOCUMENT for paid session ${sessionId} (draft ${draftId ?? "none"}); order held as needs_file`);
+      const resend = getResend();
+      try {
+        await resend.emails.send({
+          from: "sendletter <noreply@sendletter.app>",
+          to: INTERNAL_EMAIL,
+          subject: `MISSING FILE — do not mail: ${stripControl(meta.toName || "")} — $${amount}`,
+          html: buildInternalEmailHtml(meta, amount, date, email, sessionId, mode, false, false, draftId, true),
+        });
+      } catch (e) {
+        console.error("Missing-file alert email failed:", e);
+      }
+      await saveOrder("needs_file");
+      return NextResponse.json({ ok: true, needsFile: true });
     }
 
     // Build customer confirmation email
@@ -248,14 +330,14 @@ export async function POST(req: Request) {
 
     // Prepare attachments for customer email
     const customerAttachments: { filename: string; content: string }[] = [];
-    if (hasOriginal && originalFile.base64.length < 10_000_000) {
+    if (originalFile?.base64 && originalFile.base64.length < 10_000_000) {
       customerAttachments.push({ filename: originalFile.name, content: originalFile.base64 });
-    } else if (hasPdf && pdfBase64.length < 10_000_000) {
+    } else if (pdfBase64 && pdfBase64.length < 10_000_000) {
       customerAttachments.push({ filename: "letter.pdf", content: pdfBase64 });
     }
 
     if (hasAttachment && customerAttachments.length === 0) {
-      console.warn(`send-confirmation: upload for ${session.id} is over the email size cap; not attached to the customer email (saved: ${savedFiles.files.join(", ") || "no"})`);
+      console.warn(`send-confirmation: upload for ${session.id} is over the email size cap; not attached to the customer email (staged: drafts/${draftId ?? "none"})`);
     }
 
     // Send customer confirmation email
@@ -268,23 +350,22 @@ export async function POST(req: Request) {
     });
 
     // Build internal order email
-    const mode = letterMode || meta.letterMode || "unknown";
-    const internalHtml = buildInternalEmailHtml(meta, amount, date, email, sessionId, mode, hasAttachment, hasHtml, savedFiles.files, session.id);
+    const internalHtml = buildInternalEmailHtml(meta, amount, date, email, sessionId, mode, hasAttachment, hasHtml, draftId, false);
 
     // Prepare attachments for internal email (original + generated PDF)
     const internalAttachments: { filename: string; content: string }[] = [];
     // Attach original file if available (docx/pdf as uploaded)
-    if (hasOriginal && originalFile.base64.length < 10_000_000) {
+    if (originalFile?.base64 && originalFile.base64.length < 10_000_000) {
       internalAttachments.push({ filename: originalFile.name, content: originalFile.base64 });
     }
     // Also attach generated PDF (for all modes)
-    if (hasPdf && pdfBase64.length < 10_000_000) {
+    if (pdfBase64 && pdfBase64.length < 10_000_000) {
       internalAttachments.push({ filename: "letter.pdf", content: pdfBase64 });
     }
     // Always include the letter text when we have it, even alongside a PDF: the
     // PDF is rendered in the customer's browser, so if it came out wrong this
     // is the copy we can re-render from.
-    if (hasHtml) {
+    if (htmlContent) {
       const printHtml = buildPrintHtml(htmlContent, meta.letterSize || "standard");
       internalAttachments.push({
         filename: "letter.html",
@@ -299,7 +380,7 @@ export async function POST(req: Request) {
     }
 
     if (hasAttachment && !internalAttachments.some((a) => a.filename !== "letter.html")) {
-      console.warn(`send-confirmation: upload for ${session.id} is over the email size cap; not attached to the internal email (saved: ${savedFiles.files.join(", ") || "no"})`);
+      console.warn(`send-confirmation: upload for ${session.id} is over the email size cap; not attached to the internal email (staged: drafts/${draftId ?? "none"})`);
     }
 
     // Send internal order email
@@ -316,42 +397,7 @@ export async function POST(req: Request) {
     }
 
     // Save order to database
-    try {
-      const db = getDb();
-      const order: OrderInsert = {
-        stripe_session_id: sessionId,
-        stripe_payment_status: session.payment_status,
-        customer_email: email,
-        letter_mode: mode,
-        letter_size: meta.letterSize || "standard",
-        page_count: parseInt(meta.pageCount || "1", 10),
-        amount_cents: session.amount_total || 0,
-        from_name: meta.fromName || "",
-        from_line1: meta.fromLine1 || "",
-        from_city: meta.fromCity || "",
-        from_province: meta.fromProvince || "",
-        from_postal: meta.fromPostal || "",
-        from_country: meta.fromCountry || "CA",
-        to_name: meta.toName || "",
-        to_line1: meta.toLine1 || "",
-        to_city: meta.toCity || "",
-        to_province: meta.toProvince || "",
-        to_postal: meta.toPostal || "",
-        to_country: meta.toCountry || "CA",
-        has_pdf_attachment: hasPdf,
-        letter_html: hasHtml ? htmlContent : letterData ? buildSimpleLetterHtml(letterData, meta.letterSize || "standard") : undefined,
-      };
-
-      const { error: dbError } = await db
-        .from("sendletter_orders")
-        .insert(order);
-
-      if (dbError) {
-        console.error("DB insert failed (non-blocking):", dbError);
-      }
-    } catch (e) {
-      console.error("DB connection failed (non-blocking):", e);
-    }
+    await saveOrder("pending");
 
     return NextResponse.json({ ok: true });
   } catch (error) {
