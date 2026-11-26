@@ -5,6 +5,7 @@
 //
 //   node scripts/indexnow.mjs            # blog index + every post
 //   node scripts/indexnow.mjs /blog/foo  # just these paths
+//   node scripts/indexnow.mjs --sitemap   # every guide and blog URL in the live sitemap
 //
 // Run this MANUALLY after a deploy that actually changed content. It is
 // deliberately not wired into the build: IndexNow is a "this URL changed right
@@ -78,7 +79,15 @@ const DEFAULT_PATHS = [
 // is rewritten to a Windows path before node ever sees it, and the result was
 // submitted to IndexNow as a nonsense URL. Anything that is not a clean
 // site-relative path is refused rather than published.
-const args = process.argv.slice(2).map((a) => {
+// --sitemap: submit every English guide and blog URL listed in the live sitemap (the guides
+// are generated from data, so this list never has to be kept in step by hand).
+let fromSitemap = null;
+if (process.argv.includes("--sitemap")) {
+  const xml = await (await fetch(`https://${HOST}/sitemap.xml`)).text();
+  fromSitemap = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => new URL(m[1]).pathname).filter((p) => /^\/(blog|guides)(\/|$)/.test(p));
+}
+
+const args = process.argv.slice(2).filter((a) => a !== "--sitemap").map((a) => {
   if (!a.startsWith("/") || /^\/[A-Za-z]:/.test(a) || a.includes("\\") || a.includes(" ")) {
     console.error(`Refusing suspicious path argument: ${a}`);
     console.error("Pass site-relative paths only, e.g. //blog/foo on Git Bash, or run with no arguments.");
@@ -86,7 +95,7 @@ const args = process.argv.slice(2).map((a) => {
   }
   return a;
 });
-const paths = args.length > 0 ? args : DEFAULT_PATHS;
+const paths = fromSitemap ?? (args.length > 0 ? args : DEFAULT_PATHS);
 
 const urlList = paths.map((p) => `https://${HOST}${p.startsWith("/") ? p : `/${p}`}`);
 
