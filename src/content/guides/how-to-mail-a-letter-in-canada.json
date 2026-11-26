@@ -66,7 +66,7 @@
       "h2": "Where to put everything",
       "blocks": [
         {
-          "p": "Canada Post's guidance puts the recipient's address in the centre of the envelope and the return address in the top left corner, written in the same form and not larger than the recipient's. The postage goes in the top right, clear of the address."
+          "p": "Canada Post's addressing guidance puts the recipient's address in the centre of the envelope. The return address goes in the top left corner, in the same form and not larger than the recipient's, and the postage goes in the top right corner, clear of the address."
         }
       ]
     },
@@ -107,6 +107,10 @@
     {
       "label": "Canada Post, Buy stamps, postage meters and indicia",
       "url": "https://www.canadapost-postescanada.ca/cpc/en/commercial/buy-stamps-rent-meters.page"
+    },
+    {
+      "label": "Canada Post, Addressing mail accurately",
+      "url": "https://www.canadapost-postescanada.ca/cpc/en/support/kb/business/address-accuracy/addressing-mail-accurately.page"
     }
   ],
   "related": [

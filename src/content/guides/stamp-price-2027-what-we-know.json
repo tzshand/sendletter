@@ -16,7 +16,7 @@
       "h2": "What the budget says",
       "blocks": [
         {
-          "p": "News reports on the November 2026 federal budget say the price of a single domestic stamp will go from $1.44 to $2.00 in 2027, with increases of about seven per cent a year after that. The budget gives no month for the first increase. Its stated aim is to help Canada Post stop losing money as letter volumes fall, and it estimates the change at roughly $6 a year for an individual and $9 for a small business."
+          "p": "News reports on the November 2026 federal budget say the price of a single domestic stamp will go from $1.44 to $2.00 in 2027, with increases of about seven per cent a year after that. The budget gives no month for the first increase. Global News reports the aim is to offset some of Canada Post's losses from fewer letters being sent, and the budget estimates the change at roughly $6 a year for an individual and $9 for a small business."
         },
         {
           "p": "A Canada Post spokesperson has said U.S. and international letter rates will also rise, but the amounts have not been decided."
@@ -98,6 +98,10 @@
     {
       "label": "Canada Post, Postage rates for letters",
       "url": "https://www.canadapost-postescanada.ca/cpc/en/personal/sending/letters-mail/postage-rates.page"
+    },
+    {
+      "label": "Global News, Stamp prices in Budget 2026",
+      "url": "https://globalnews.ca/news/12138831/stamp-prices-budget-2026/"
     }
   ],
   "related": [

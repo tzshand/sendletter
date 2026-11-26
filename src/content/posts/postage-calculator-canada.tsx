@@ -23,7 +23,7 @@ export default function Post() {
       <P>Estimated weights for a standard business envelope, double-sided sheets counted as one sheet each:</P>
       <Table headers={["Sheets of paper", "Estimated weight", "Postage rate", "Permanent stamps"]} rows={rows} />
       <P>
-        The estimate leans heavy: it assumes 90 gsm paper and a sturdy envelope, then rounds up. Plain 75 gsm printer paper weighs less, so a letter right at a limit may fit under the lower rate. A kitchen scale settles it. Postage is also set by size: a large or oversize envelope costs more at any weight. See <A href="/blog/postage-for-a-large-envelope-canada">postage for a large envelope</A>.
+        The estimate leans heavy: it assumes 90 gsm paper and a sturdy envelope, then rounds up. Canada Post's own table lists up to 5 sheets of paper for the 30 g rate, so this calculator is deliberately more cautious than that. Plain 75 gsm printer paper weighs less, so a letter right at a limit may fit under the lower rate. A kitchen scale settles it. Postage is also set by size: a large or oversize envelope costs more at any weight. See <A href="/blog/postage-for-a-large-envelope-canada">postage for a large envelope</A>.
       </P>
 
       <H2>Which rates this uses</H2>
