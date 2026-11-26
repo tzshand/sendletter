@@ -2,7 +2,7 @@
   "id": "how-to-address-a-letter-to-canada",
   "hub": "from-abroad",
   "wave": 2,
-  "published": "2026-12-03",
+  "published": "2026-11-26",
   "slug": "how-to-address-a-letter-to-canada",
   "title": "How to Address a Letter to Canada",
   "description": "The Canadian address block: addressee, street, then municipality, province and postal code, with the forms for PO boxes, rural routes and general delivery.",
@@ -100,5 +100,6 @@
     "canadian-postal-code-format",
     "mail-a-letter-to-canada-from-abroad",
     "return-address-on-a-canadian-letter"
-  ]
+  ],
+  "live": true
 }

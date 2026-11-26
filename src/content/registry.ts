@@ -11,6 +11,7 @@ import EnCostToMail from "./posts/what-it-costs-to-mail-a-letter-in-canada";
 import EnLegalNotice from "./posts/can-you-mail-a-legal-notice-online";
 import EnApiGuide from "./posts/send-physical-mail-from-your-app";
 import EnApiVolumePricing from "./posts/api-volume-pricing";
+import EnPostageCalculator from "./posts/postage-calculator-canada";
 
 import FrSendALetterOnline from "./posts/fr/envoyer-une-lettre-en-ligne-au-canada";
 import FrCostToMail from "./posts/fr/combien-coute-une-lettre-au-canada";
@@ -23,6 +24,7 @@ const EN: Record<string, ComponentType> = {
   "legal-notice": EnLegalNotice,
   "api-guide": EnApiGuide,
   "api-volume-pricing": EnApiVolumePricing,
+  "postage-calculator": EnPostageCalculator,
 };
 
 const FR: Record<string, ComponentType> = {

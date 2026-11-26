@@ -1,0 +1,117 @@
+{
+  "id": "how-to-mail-a-letter-in-canada",
+  "slug": "how-to-mail-a-letter-in-canada",
+  "hub": "everyday",
+  "wave": 3,
+  "live": true,
+  "published": "2026-11-26",
+  "title": "How to Mail a Letter in Canada: A First-Time Guide",
+  "description": "Envelope, address, return address, stamp and where to post it: a step-by-step guide to mailing a standard letter within Canada, and what it costs.",
+  "keywords": [
+    "how to mail a letter in canada",
+    "how to send a letter canada",
+    "mailing a letter for the first time canada",
+    "how to post a letter canada"
+  ],
+  "answer": "Put the letter in an envelope, write the recipient's address in the centre and your own in the top left corner, add a Permanent stamp in the top right, and post it in a Canada Post letter box or at a post office. One $1.24 stamp covers a standard letter up to 30 grams within Canada.",
+  "sections": [
+    {
+      "h2": "Step by step",
+      "blocks": [
+        {
+          "ol": [
+            "**Write or print the letter.** Fold it so it fits the envelope. A standard business envelope takes a few sheets.",
+            "**Address the envelope.** Put the recipient's address in the centre: the name, then the street address, then the municipality, province and postal code. See [how to address a letter to Canada](/blog/how-to-address-a-letter-to-canada).",
+            "**Add your return address** in the top left corner, in the same form. If the letter cannot be delivered it comes back to you; see [return addresses on Canadian letters](/blog/return-address-on-a-canadian-letter).",
+            "**Add postage.** Put the stamp or stamps in the top right corner. A standard letter up to 30 g needs one Permanent stamp.",
+            "**Post it.** Drop it in a Canada Post letter box or hand it in at a post office."
+          ]
+        }
+      ]
+    },
+    {
+      "h2": "Stamps",
+      "blocks": [
+        {
+          "p": "Canada Post sells stamps at its post offices and online, and through authorized retailers. A Permanent stamp is always accepted at the current domestic postage rate, so you can buy a booklet and keep the stamps. See [what a Permanent stamp is worth](/blog/permanent-stamp-value-canada)."
+        },
+        {
+          "table": {
+            "headers": [
+              "Letter within Canada",
+              "Postage"
+            ],
+            "rows": [
+              [
+                "Up to 30 g (Canada Post's table says up to 5 sheets of paper)",
+                "$1.24 with a booklet stamp, $1.44 with a single stamp"
+              ],
+              [
+                "Over 30 g up to 50 g",
+                "$1.75, which is two Permanent stamps"
+              ],
+              [
+                "Larger or oversize envelope",
+                "More; see [postage for a large envelope](/blog/postage-for-a-large-envelope-canada)"
+              ]
+            ]
+          }
+        },
+        {
+          "p": "Not sure how many stamps yours needs? Use the [postage calculator](/blog/postage-calculator-canada), or weigh the letter. The price of a stamp is expected to rise in 2027; see [what is known](/blog/stamp-price-2027-what-we-know)."
+        }
+      ]
+    },
+    {
+      "h2": "Where to put everything",
+      "blocks": [
+        {
+          "p": "Canada Post's guidance puts the recipient's address in the centre of the envelope and the return address in the top left corner, written in the same form and not larger than the recipient's. The postage goes in the top right, clear of the address."
+        }
+      ]
+    },
+    {
+      "h2": "How long it takes",
+      "blocks": [
+        {
+          "p": "Canada Post's estimates are two business days for a local letter, three within a province and four across Canada. They are not guaranteed. See [how long a letter takes in Canada](/blog/how-long-does-a-letter-take-in-canada)."
+        }
+      ]
+    },
+    {
+      "h2": "If you need to know it arrived",
+      "blocks": [
+        {
+          "p": "An ordinary letter has no tracking and gives no proof of delivery. If that matters, use Registered Mail, which costs $13.15 on top of the postage; see [can you track a letter in Canada](/blog/can-you-track-a-letter-canada)."
+        }
+      ]
+    },
+    {
+      "h2": "If you would rather not do it yourself",
+      "blocks": [
+        {
+          "p": "A letter can also be ordered online, then printed, put in an envelope, stamped and posted for you, with nothing to buy. See [how online letter mailing works](/blog/how-online-letter-mailing-works) and [what it costs](/blog/what-an-online-letter-costs)."
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "label": "Canada Post, How to address letters and parcels",
+      "url": "https://www.canadapost-postescanada.ca/cpc/en/support/kb/sending/sending-faq/how-to-address-mail-and-parcels.page"
+    },
+    {
+      "label": "Canada Post, Postage rates for letters",
+      "url": "https://www.canadapost-postescanada.ca/cpc/en/personal/sending/letters-mail/postage-rates.page"
+    },
+    {
+      "label": "Canada Post, Buy stamps, postage meters and indicia",
+      "url": "https://www.canadapost-postescanada.ca/cpc/en/commercial/buy-stamps-rent-meters.page"
+    }
+  ],
+  "related": [
+    "how-to-address-a-letter-to-canada",
+    "how-many-stamps-for-a-letter-in-canada",
+    "permanent-stamp-value-canada"
+  ]
+}

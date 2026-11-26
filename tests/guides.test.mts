@@ -41,7 +41,7 @@ for (const g of GUIDES) {
     const slugs = new Set(GUIDES.map((x) => x.slug));
     const legacy = new Set([
       "how-to-send-a-letter-online-in-canada", "what-it-costs-to-mail-a-letter-in-canada",
-      "can-you-mail-a-legal-notice-online", "send-physical-mail-from-your-app", "api-volume-pricing",
+      "can-you-mail-a-legal-notice-online", "send-physical-mail-from-your-app", "api-volume-pricing", "postage-calculator-canada",
     ]);
     const text = JSON.stringify(g);
     for (const m of text.matchAll(/\]\((\/[^)\s"]*)\)/g)) {

@@ -160,6 +160,22 @@ const LEGACY_POSTS: PostMeta[] = [
     },
   },
   {
+    // Always live (wave 0): a tool page, not a wave-gated guide.
+    id: "postage-calculator",
+    hub: "postage",
+    wave: 0,
+    published: "2026-11-26",
+    cta: "home",
+    related: ["how-many-stamps-for-a-letter-in-canada", "canada-post-stamp-price", "what-an-online-letter-costs"],
+    en: {
+      slug: "postage-calculator-canada",
+      title: "Postage Calculator: How Many Stamps for a Letter?",
+      description:
+        "Enter your sheets and envelope, or the weight, to see how many Canada Post stamps a letter needs within Canada, and what the postage costs.",
+      keywords: ["postage calculator canada", "how many stamps do i need canada", "canada post postage calculator", "letter weight calculator"],
+    },
+  },
+  {
     id: "api-guide",
     hub: "api",
     wave: 0,
