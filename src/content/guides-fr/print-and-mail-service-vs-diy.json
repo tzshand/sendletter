@@ -9,13 +9,13 @@
     "coût pour poster une lettre soi-même au Canada",
     "service d’envoi de courrier en ligne est-il rentable"
   ],
-  "answer": "Poster une lettre soi-même coûte le timbre de 1,24 $, plus le papier, l’enveloppe, le toner et votre temps. Un service ajoute des frais pour le reste : chez sendletter, 2,25 $ la lettre sur le site Web, ou de 1,24 $ à 0,45 $ par API selon le volume. Le service l’emporte quand votre temps par lettre vaut plus que ces frais.",
+  "answer": "Poster une lettre soi-même coûte le timbre de 1,24 $, plus le papier, l’enveloppe, l’encre et votre temps. Un service ajoute des frais pour le reste : chez sendletter, 2,25 $ la lettre sur le site Web, ou de 1,24 $ à 0,45 $ par API selon le volume. Le service l’emporte quand votre temps par lettre vaut plus que ces frais.",
   "sections": [
     {
       "h2": "Le coût de s’en charger soi-même",
       "blocks": [
         {
-          "p": "Chaque lettre exige un timbre : 1,24 $ à partir d’un carnet, 1,44 $ à l’unité. S’ajoutent le papier, l’enveloppe, le toner ou l’encre, et les minutes qu’il faut pour imprimer, plier, insérer, cacheter, affranchir et poster. Les fournitures coûtent ce que vous les payez, généralement quelques cents par lettre. C’est le temps qui fait la différence."
+          "p": "Chaque lettre exige un timbre : 1,24 $ à partir d’un carnet, 1,44 $ à l’unité. S’ajoutent le papier, l’enveloppe, l’encre, et les minutes qu’il faut pour imprimer, plier, insérer, cacheter, affranchir et poster. Les fournitures coûtent ce que vous les payez, généralement quelques cents par lettre. C’est le temps qui fait la différence."
         }
       ]
     },
