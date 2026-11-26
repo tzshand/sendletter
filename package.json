@@ -7,7 +7,7 @@
     "build": "node scripts/next-cli.mjs build",
     "start": "next start",
     "lint": "eslint",
-    "test": "node --experimental-strip-types --import ./tests/register.mjs --test tests/*.test.mts"
+    "test": "node --experimental-transform-types --import ./tests/register.mjs --test tests/*.test.mts"
   },
   "dependencies": {
     "@next/third-parties": "^16.2.1",

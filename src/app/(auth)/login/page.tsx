@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { SnowGoose } from "@/components/SnowGoose";
 import { Loader2, KeyRound } from "lucide-react";
 import { authenticatePasskey, passkeysSupported, wasDismissed } from "@/lib/passkey";
+import Link from "next/link";
 
 function GoogleIcon() {
   return (
@@ -209,13 +210,13 @@ function LoginForm() {
           )}
 
           {/* Google OAuth — hidden until we have production credentials
-          <a
+          <Link
             href="/api/auth/google"
             className="w-full flex items-center justify-center gap-2.5 border border-gray-300 bg-white text-sm font-medium text-gray-700 py-2.5 rounded-lg hover:bg-gray-50 transition-colors"
           >
             <GoogleIcon />
             Continue with Google
-          </a>
+          </Link>
 
           <div className="relative my-5">
             <div className="absolute inset-0 flex items-center">
@@ -267,9 +268,9 @@ function LoginForm() {
 
           <p className="mt-4 text-center text-sm text-gray-500">
             Need an account?{" "}
-            <a href="/signup" className="text-gray-900 font-medium hover:underline">
+            <Link href="/signup" className="text-gray-900 font-medium hover:underline">
               Create one
-            </a>
+            </Link>
           </p>
         </div>
       </div>

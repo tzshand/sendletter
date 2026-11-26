@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import { SnowGoose } from "@/components/SnowGoose";
 import { quote, formatCents, RATES, MAX_PAGES, MAX_FILE_BYTES, type LetterSize } from "@/lib/pricing";
+import Link from "next/link";
 
 // Every number below comes from the same rates the API charges.
 const $ = (cents: number) => formatCents(cents);
-const SIZES: LetterSize[] = ["standard", "large", "legal"];
 const ex = (pages: number, size: LetterSize, colour: boolean) => quote({ pages, size, colour, duplex: true, channel: "api" });
 /** Most pages one envelope carries (double-sided) before the letter is split across envelopes. */
 function onePageLimit(size: LetterSize): number {
@@ -83,17 +83,17 @@ export default function DocsPage() {
   return (
     <div className="min-h-screen bg-[#fafafa]">
       <header className="bg-zinc-950 text-white px-5 h-[56px] flex items-center justify-between">
-        <a href="/" className="flex items-center gap-1.5 bg-gray-100 rounded-lg px-2.5 py-1.5">
+        <Link href="/" className="flex items-center gap-1.5 bg-gray-100 rounded-lg px-2.5 py-1.5">
           <SnowGoose size={24} />
           <span className="text-[14px] font-bold tracking-tight text-gray-900">sendletter</span>
-        </a>
+        </Link>
         <div className="flex items-center gap-4">
-          <a href="/signup" className="text-xs font-semibold text-white/70 hover:text-white transition-colors">
+          <Link href="/signup" className="text-xs font-semibold text-white/70 hover:text-white transition-colors">
             Create Account
-          </a>
-          <a href="/profile" className="text-xs font-semibold text-white/70 hover:text-white transition-colors">
+          </Link>
+          <Link href="/profile" className="text-xs font-semibold text-white/70 hover:text-white transition-colors">
             Dashboard
-          </a>
+          </Link>
         </div>
       </header>
 
@@ -126,8 +126,8 @@ export default function DocsPage() {
           Send a letter in one API call. You need an account with a payment method and an API key.
         </p>
         <ol className="text-sm text-gray-600 list-decimal list-inside space-y-1 mb-3">
-          <li>Create an account at <a href="/signup" className="text-blue-600 hover:underline">sendletter.app/signup</a></li>
-          <li>Add a payment method on your <a href="/profile" className="text-blue-600 hover:underline">profile</a></li>
+          <li>Create an account at <Link href="/signup" className="text-blue-600 hover:underline">sendletter.app/signup</Link></li>
+          <li>Add a payment method on your <Link href="/profile" className="text-blue-600 hover:underline">profile</Link></li>
           <li>Generate an API key on your profile</li>
           <li>Send a POST request:</li>
         </ol>
@@ -382,7 +382,7 @@ ${ex(1, "standard", true).lines.map((l) => `      { "item": "${l.key}", "qty": $
         <p className="text-sm text-gray-600 mb-2">
           Each letter is charged at the price returned by the API. To keep card fees from eating small letters, usage is
           billed once your account owes at least $10.00, or once the oldest unbilled letter is a week old, whichever
-          comes first. Charges are processed automatically against your saved payment method. You can view usage and billing history on your <a href="/profile" className="text-blue-600 hover:underline">profile</a>.
+          comes first. Charges are processed automatically against your saved payment method. You can view usage and billing history on your <Link href="/profile" className="text-blue-600 hover:underline">profile</Link>.
         </p>
 
         <H2 id="limits">Rate Limits &amp; Constraints</H2>

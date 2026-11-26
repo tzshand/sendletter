@@ -1,8 +1,8 @@
 "use client";
 
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useEditor, EditorContent, Node as TiptapNode } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import Underline from "@tiptap/extension-underline";
 import TextAlign from "@tiptap/extension-text-align";
 import Placeholder from "@tiptap/extension-placeholder";
 import {
@@ -51,30 +51,60 @@ export function LetterEditor({
   /** Live size of the letter, shown under the editor. */
   pageInfo?: { pages: number; sheets: number };
 }) {
-  const editor = useEditor({
-    extensions: [
-      StarterKit,
-      Underline,
-      PageBreak,
-      TextAlign.configure({ types: ["heading", "paragraph"] }),
-      Placeholder.configure({
-        placeholder:
-          settings.language === "fr"
-            ? "Rédigez votre lettre ici..."
-            : "Start writing your letter...",
-      }),
-    ],
-    content: content || "",
-    onUpdate: ({ editor }) => {
-      onChange(editor.getHTML());
-    },
-    editorProps: {
-      attributes: {
-        class: "tiptap",
-        style: `font-family: "${settings.fontFamily}", serif; font-size: ${settings.fontSize}pt;`,
-      },
-    },
+  // The editor is created ONCE and its options never change. Rebuilding them on
+  // every render (new extension objects, a new onUpdate) made Tiptap re-apply
+  // its options each time the parent re-rendered, and with enough content that
+  // fed back through onUpdate into an endless update loop. Everything that does
+  // change (the language, the callback, the font) is read through a ref or set
+  // imperatively instead.
+  const placeholder = settings.language === "fr" ? "Rédigez votre lettre ici..." : "Start writing your letter...";
+  const placeholderRef = useRef(placeholder);
+  const onChangeRef = useRef(onChange);
+  useEffect(() => {
+    placeholderRef.current = placeholder;
+    onChangeRef.current = onChange;
   });
+  // Read once: the editor owns its content from here on.
+  const [initialContent] = useState(content || "");
+
+  // The whole options object is memoised, not just the extensions: Tiptap
+  // compares options on every render and, if any differ (even a freshly built
+  // editorProps or onUpdate), re-applies them to the view. That re-read the DOM
+  // each time and, with a page break in the document, fed back through onUpdate.
+  const options = useMemo(
+    () => ({
+      // This component is part of a server-rendered page; Tiptap needs to be told
+      // not to render during SSR, or it logs a hydration warning and (in dev) fails.
+      immediatelyRender: false,
+      extensions: [
+        StarterKit, // includes Underline
+        PageBreak,
+        TextAlign.configure({ types: ["heading", "paragraph"] }),
+        // Called by Tiptap while the editor renders, never during React's render; the
+        // ref is how the current language reaches it without rebuilding the options.
+        // eslint-disable-next-line react-hooks/refs
+        Placeholder.configure({ placeholder: () => placeholderRef.current }),
+      ],
+      content: initialContent,
+      onUpdate: ({ editor }: { editor: { getHTML: () => string } }) => {
+        onChangeRef.current(editor.getHTML());
+      },
+      editorProps: { attributes: { class: "tiptap" } },
+    }),
+    [initialContent],
+  );
+  const editor = useEditor(options, []);
+
+  useEffect(() => {
+    editor?.setOptions({
+      editorProps: {
+        attributes: {
+          class: "tiptap",
+          style: `font-family: "${settings.fontFamily}", serif; font-size: ${settings.fontSize}pt;`,
+        },
+      },
+    });
+  }, [editor, settings.fontFamily, settings.fontSize]);
 
   if (!editor) return null;
 
@@ -173,7 +203,7 @@ export function LetterEditor({
         <div className="w-px h-4 bg-gray-200 mx-1" />
         <Btn
           title={settings.language === "fr" ? "Saut de page" : "Page break"}
-          onClick={() => editor.chain().focus().insertContent({ type: "pageBreak" }).run()}
+          onClick={() => editor.chain().focus().insertContent([{ type: "pageBreak" }, { type: "paragraph" }]).run()}
         >
           <SeparatorHorizontal className="w-3.5 h-3.5" />
         </Btn>

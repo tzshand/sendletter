@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { BlogHeader, BlogFooter, PostShell } from "@/components/blog/Chrome";
 import { POSTS, getPostBySlug, postPath, SITE } from "@/lib/blog";
-import { getBody } from "@/content/registry";
+import { renderBody } from "@/content/registry";
 import { postJsonLd } from "@/lib/blog-schema";
 
 export function generateStaticParams() {
@@ -49,8 +49,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function ArticleBlogue({ params }: Props) {
   const { slug } = await params;
   const post = getPostBySlug("fr", slug);
-  const Body = post ? getBody("fr", post.id) : undefined;
-  if (!post || !Body) notFound();
+  const body = post ? renderBody("fr", post.id) : null;
+  if (!post || !body) notFound();
 
   // Only the root layout can render <html>, and it is lang="en". Scoping lang
   // on this subtree is valid HTML and is what screen readers and search engines
@@ -63,7 +63,7 @@ export default async function ArticleBlogue({ params }: Props) {
       />
       <BlogHeader locale="fr" />
       <PostShell locale="fr" post={post}>
-        <Body />
+        {body}
       </PostShell>
       <BlogFooter locale="fr" />
     </div>

@@ -82,8 +82,7 @@ export default async function Image() {
             lineHeight: 1.4,
           }}
         >
-          Write or upload your letter, add addresses, and we print and mail it
-          anywhere in Canada. From {formatCents(FROM_ALL_IN_CENTS)} CAD. Printing, postage & tax included.
+          {`Write or upload your letter, add addresses, and we print and mail it anywhere in Canada. From ${formatCents(FROM_ALL_IN_CENTS)} CAD. Printing, postage & tax included.`}
         </div>
 
         {/* Bottom bar */}

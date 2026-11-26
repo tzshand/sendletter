@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { BlogHeader, BlogFooter, PostShell } from "@/components/blog/Chrome";
 import { POSTS, getPostBySlug, postPath, SITE } from "@/lib/blog";
-import { getBody } from "@/content/registry";
+import { renderBody } from "@/content/registry";
 import { postJsonLd } from "@/lib/blog-schema";
 
 export function generateStaticParams() {
@@ -50,8 +50,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function BlogPost({ params }: Props) {
   const { slug } = await params;
   const post = getPostBySlug("en", slug);
-  const Body = post ? getBody("en", post.id) : undefined;
-  if (!post || !Body) notFound();
+  const body = post ? renderBody("en", post.id) : null;
+  if (!post || !body) notFound();
 
   return (
     <div className="min-h-screen bg-[#fafafa]">
@@ -61,7 +61,7 @@ export default async function BlogPost({ params }: Props) {
       />
       <BlogHeader locale="en" />
       <PostShell locale="en" post={post}>
-        <Body />
+        {body}
       </PostShell>
       <BlogFooter locale="en" />
     </div>

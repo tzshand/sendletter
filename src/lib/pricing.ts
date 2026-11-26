@@ -228,7 +228,7 @@ const dflt = quote({ pages: 1, size: "standard", colour: true, duplex: true, cha
  * mandatory (Competition Act drip-pricing rules).
  */
 export const FROM_ALL_IN_CENTS = cheapest.totalCents;
-/** What the default single-page colour tri-fold costs: $3.49. */
+/** What the default single-page colour tri-fold costs: $3.84. */
 export const DEFAULT_SINGLE_CENTS = dflt.totalCents;
 
 export function formatCents(cents: number, lang: "en" | "fr" = "en"): string {

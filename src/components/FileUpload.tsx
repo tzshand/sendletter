@@ -125,7 +125,7 @@ export function FileUpload({
         setLoading(false);
       }
     },
-    [onContent]
+    [onContent, onPageCount, onOriginalFile, language]
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({

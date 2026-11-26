@@ -513,8 +513,13 @@ export function LetterPreviewScaled({
 function PaginatedHtmlPreview({ html, settings, letterSize }: { html: string; settings: Settings; letterSize: LetterSize }) {
   const [layout, setLayout] = useState<HtmlLayout | null>(null);
 
+  // Measured on a short debounce, outside React's commit: laying the HTML out
+  // synchronously on every keystroke made typing in a long custom letter loop
+  // (layout work during commit fed back into the editor's own DOM updates) and
+  // is wasted work besides.
   useEffect(() => {
-    setLayout(layoutHtml(html, settings, letterSize));
+    const t = setTimeout(() => setLayout(layoutHtml(html, settings, letterSize)), 150);
+    return () => clearTimeout(t);
   }, [html, settings, letterSize]);
 
   if (!layout) return null;

@@ -74,6 +74,7 @@ async function generateSimpleLetterPdf(
     orientation: "portrait",
     unit: "in",
     format: [pageW, pageH],
+    compress: true,
   });
 
   const font = FONT_MAP[settings.fontFamily] || "times";
@@ -198,6 +199,54 @@ function pageMetrics(settings: Settings, letterSize: LetterSize) {
   return { pageH, contentH, sliceH };
 }
 
+/**
+ * html2canvas (1.4.1) cannot parse the lab()/oklch() colours Tailwind v4 uses
+ * (the app's <body> has a lab() text colour, which every element without its own
+ * inherits, and its preflight gives every element a lab() border colour), and
+ * throws "unsupported color function". That broke every rasterised letter (the
+ * custom editor and .docx). In the clone it renders from, give html/body a plain
+ * colour (so inheritance yields rgb) and resolve the other colour properties
+ * through it. Letter content has no use for the app's palette.
+ */
+const SAFE_COLOURS_CSS =
+  "html,body{color:#000 !important;}" +
+  "*,*::before,*::after{border-color:currentColor !important;outline-color:currentColor !important;" +
+  "text-decoration-color:currentColor !important;column-rule-color:currentColor !important;}";
+
+/**
+ * html2canvas places text using a font-metrics probe it builds in the LIVE
+ * page: an inline <img> next to a span, measured with whatever line-height the
+ * page inherits. The app's CSS reset makes every <img> display:block and sets
+ * html { line-height: 1.5 }, so the probe measures nonsense and every glyph is
+ * drawn about 8px too low, which cuts the last line of every page. Neutralise
+ * both for the instant of capture only (removed from the clone, so the letter's
+ * own layout is untouched).
+ */
+const PROBE_FIX_CSS = "html,body{line-height:normal !important} img{display:inline !important}";
+
+type H2C = typeof import("html2canvas").default;
+async function capture(html2canvas: H2C, el: HTMLElement, opts: { width: number; height: number; scale: number }) {
+  const probeFix = document.createElement("style");
+  probeFix.setAttribute("data-h2c-probe-fix", "");
+  probeFix.textContent = PROBE_FIX_CSS;
+  document.head.appendChild(probeFix);
+  try {
+    return await html2canvas(el, {
+      ...opts,
+      useCORS: true,
+      backgroundColor: "#ffffff",
+      onclone: (doc) => {
+        doc.querySelectorAll("style[data-h2c-probe-fix]").forEach((n) => n.remove());
+        const style = doc.createElement("style");
+        style.textContent = SAFE_COLOURS_CSS;
+        doc.head.appendChild(style);
+      },
+    });
+  } finally {
+    probeFix.remove();
+  }
+}
+
 function fontCss(settings: Settings): string {
   return `
     font-family: "${settings.fontFamily}", serif;
@@ -298,7 +347,8 @@ async function generateCustomLetterPdf(
   // silently truncating. Nothing is rendered for a letter we won't accept.
   if (layout.pages > RASTER_MAX_PAGES) return { base64: "", pageCount: layout.pages };
 
-  const doc = new jsPDF({ orientation: "portrait", unit: "in", format: [pdfW, pdfH] });
+  // compress: without it jsPDF embeds each page image uncompressed (~13 MB a page at 3x).
+  const doc = new jsPDF({ orientation: "portrait", unit: "in", format: [pdfW, pdfH], compress: true });
 
   if (layout.fits) {
     // One page: matches the preview exactly, including vertical centring.
@@ -316,7 +366,7 @@ async function generateCustomLetterPdf(
     container.innerHTML = layout.html;
     document.body.appendChild(container);
     // 3x for print quality (~216 DPI)
-    const canvas = await html2canvas(container, { width: PAGE_W, height: pageH, scale: 3, useCORS: true, backgroundColor: "#ffffff" });
+    const canvas = await capture(html2canvas, container, { width: PAGE_W, height: pageH, scale: 3 });
     document.body.removeChild(container);
     doc.addImage(canvas.toDataURL("image/png"), "PNG", 0, 0, pdfW, pdfH);
     return { base64: doc.output("datauristring").split(",")[1], pageCount: 1 };
@@ -350,7 +400,7 @@ async function generateCustomLetterPdf(
     wrapper.appendChild(clip);
     document.body.appendChild(wrapper);
 
-    const canvas = await html2canvas(wrapper, { width: PAGE_W, height: pageH, scale, useCORS: true, backgroundColor: "#ffffff" });
+    const canvas = await capture(html2canvas, wrapper, { width: PAGE_W, height: pageH, scale });
     document.body.removeChild(wrapper);
     doc.addImage(canvas.toDataURL("image/png"), "PNG", 0, 0, pdfW, pdfH);
   }

@@ -40,19 +40,36 @@ function keyOf(draftId: string, name?: string): string {
   return `${SLUG}/drafts/${draftId}/${name ?? ""}`;
 }
 
+const ATTEMPTS = 3;
+const TIMEOUT_MS = 20_000;
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+/**
+ * One call to the Canner storage API. Network errors, timeouts and 5xx are
+ * retried (with backoff) before giving up: every operation here is safe to
+ * repeat (a PUT replaces, a GET reads, a DELETE of a missing key is harmless),
+ * and a single dropped request shouldn't fail someone's checkout.
+ */
 async function call(path: string, init: RequestInit = {}): Promise<Response> {
-  let res: Response;
-  try {
-    res = await fetch(`${API}${path}`, {
-      ...init,
-      headers: { Authorization: `Bearer ${token()}`, Accept: "application/json", ...(init.headers ?? {}) },
-      signal: AbortSignal.timeout(30_000),
-    });
-  } catch (e) {
-    if (e instanceof DraftStoreError) throw e;
-    throw new DraftStoreError(`files store unreachable: ${e instanceof Error ? e.message : String(e)}`);
+  let lastError = "";
+  for (let attempt = 1; attempt <= ATTEMPTS; attempt++) {
+    try {
+      // A multipart body is a one-shot FormData, which fetch can resend.
+      const res = await fetch(`${API}${path}`, {
+        ...init,
+        headers: { Authorization: `Bearer ${token()}`, Accept: "application/json", ...(init.headers ?? {}) },
+        signal: AbortSignal.timeout(TIMEOUT_MS),
+      });
+      if (res.status < 500 || attempt === ATTEMPTS) return res;
+      lastError = `HTTP ${res.status}`;
+    } catch (e) {
+      if (e instanceof DraftStoreError) throw e;
+      lastError = e instanceof Error ? e.message : String(e);
+      if (attempt === ATTEMPTS) throw new DraftStoreError(`files store unreachable: ${lastError}`);
+    }
+    await sleep(400 * attempt * attempt);
   }
-  return res;
+  throw new DraftStoreError(`files store unreachable: ${lastError}`);
 }
 
 export async function putDraftFile(draftId: string, name: string, data: Buffer, type: string): Promise<void> {

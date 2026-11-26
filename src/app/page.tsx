@@ -37,6 +37,7 @@ import {
   Upload,
   ChevronDown,
 } from "lucide-react";
+import Link from "next/link";
 
 type Mode = "upload" | "custom" | "simple";
 
@@ -258,23 +259,24 @@ export default function Home() {
   // A #10 only holds so many sheets. When a letter outgrows it, move to a flat
   // envelope (cheaper than splitting across several #10s) and say so. The
   // customer can still pick the #10 again and get a split.
-  const prevPages = useRef(1);
+  const prevOverflow = useRef(false);
   useEffect(() => {
-    const was = prevPages.current;
-    prevPages.current = pages;
-    if (letterSize !== "standard" || pages <= was) return;
+    let overflow = false;
     try {
-      const now = quote({ pages, size: "standard", colour, duplex, channel: "web" }).mailings.length;
-      const before = quote({ pages: was, size: "standard", colour, duplex, channel: "web" }).mailings.length;
-      if (now > 1 && before === 1) {
-        setLetterSize("large");
-        setFlatNote(true);
-      }
+      overflow = quote({ pages, size: "standard", colour, duplex, channel: "web" }).mailings.length > 1;
     } catch {
       /* out of range: the page-limit message covers it */
     }
+    const was = prevOverflow.current;
+    prevOverflow.current = overflow;
+    // Switch when the #10 BECOMES too small (more pages, or single-sided), not
+    // on every render, so a customer who picks the #10 again keeps it.
+    if (letterSize === "standard" && overflow && !was) {
+      setLetterSize("large");
+      setFlatNote(true);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pages]);
+  }, [pages, duplex, colour]);
 
   const isAddressValid = (a: Address) => {
     // Free-form return address: at least two lines (a name and somewhere to find them).
@@ -910,15 +912,15 @@ export default function Home() {
               : `Mail a letter anywhere in Canada from ${formatCents(FROM_ALL_IN_CENTS)}. Printing, postage and tax included. No account required.`}
           </p>
           <div className="flex items-center gap-4 text-xs text-gray-400">
-            <a href="/docs" className="hover:text-gray-600 transition-colors">{isFr ? "Docs API" : "API Docs"}</a>
+            <Link href="/docs" className="hover:text-gray-600 transition-colors">{isFr ? "Docs API" : "API Docs"}</Link>
             <span>·</span>
-            <a href="/blog" className="hover:text-gray-600 transition-colors">{isFr ? "Blogue" : "Blog"}</a>
+            <Link href="/blog" className="hover:text-gray-600 transition-colors">{isFr ? "Blogue" : "Blog"}</Link>
             <span>·</span>
-            <a href="/mail-to-canada" className="hover:text-gray-600 transition-colors">
+            <Link href="/mail-to-canada" className="hover:text-gray-600 transition-colors">
               {isFr ? "Poster au Canada" : "Mail to Canada"}
-            </a>
+            </Link>
             <span>·</span>
-            <a href="/terms" className="hover:text-gray-600 transition-colors">{isFr ? "Conditions" : "Terms"}</a>
+            <Link href="/terms" className="hover:text-gray-600 transition-colors">{isFr ? "Conditions" : "Terms"}</Link>
             <span>·</span>
             <a href="mailto:support@sendletter.app" className="hover:text-gray-600 transition-colors">support@sendletter.app</a>
           </div>

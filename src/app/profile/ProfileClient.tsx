@@ -19,6 +19,7 @@ import {
   KeyRound,
   Monitor,
 } from "lucide-react";
+import Link from "next/link";
 
 const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
@@ -312,10 +313,10 @@ export function ProfileClient({
     <div className="min-h-screen bg-[#fafafa]">
       {/* Header */}
       <header className="bg-zinc-950 text-white px-5 h-[56px] flex items-center justify-between">
-        <a href="/" className="flex items-center gap-1.5 bg-gray-100 rounded-lg px-2.5 py-1.5">
+        <Link href="/" className="flex items-center gap-1.5 bg-gray-100 rounded-lg px-2.5 py-1.5">
           <SnowGoose size={24} />
           <span className="text-[14px] font-bold tracking-tight text-gray-900">sendletter</span>
-        </a>
+        </Link>
         <div className="flex items-center gap-3">
           <span className="text-sm text-white/60">{account.email}</span>
           <button
@@ -646,12 +647,12 @@ export function ProfileClient({
   -H "Content-Type: application/json" \\
   -d '{"mode":"draft","letter":{"body":"Hello"},...}'`}
             </pre>
-            <a
+            <Link
               href="/docs"
               className="inline-block mt-2 text-xs text-blue-600 hover:text-blue-800 font-medium transition-colors"
             >
               Full API Reference &rarr;
-            </a>
+            </Link>
           </div>
         </section>
 

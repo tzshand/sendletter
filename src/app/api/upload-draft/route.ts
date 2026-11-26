@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
 import { DraftStoreError, newDraftId, putDraftFile, type DraftMeta } from "@/lib/draft-store";
 import { safeFileName } from "@/lib/order-files";
+import { MAX_FILE_BYTES } from "@/lib/pricing";
 
 // Stages the customer's document on the server before checkout. See
 // lib/draft-store.ts. Multipart, not JSON/base64: a 10 MB upload is ~13 MB as
 // base64 and would be held in memory twice.
 
-const MAX_FILE_BYTES = 12 * 1024 * 1024;
 const MAX_TEXT_CHARS = 500_000;
 const MODES = ["simple", "custom", "upload"] as const;
 
@@ -47,7 +47,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "The upload was cut short. Please try again." }, { status: 400 });
   }
   if ((pdf && pdf.length > MAX_FILE_BYTES) || (original && original.length > MAX_FILE_BYTES)) {
-    return NextResponse.json({ error: "That file is too large (10 MB maximum)." }, { status: 413 });
+    return NextResponse.json({ error: `That file is too large (${MAX_FILE_BYTES / 1024 / 1024} MB maximum).` }, { status: 413 });
   }
   if (pdf && !isPdf(pdf)) {
     return NextResponse.json({ error: "That doesn't look like a valid PDF." }, { status: 400 });

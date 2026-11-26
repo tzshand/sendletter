@@ -1,7 +1,7 @@
 // Post id → body, per locale. Static imports so every post is prerendered at
 // build time and nothing is fetched at request time.
 
-import type { ComponentType } from "react";
+import { createElement, type ComponentType, type ReactElement } from "react";
 import type { Locale } from "@/lib/blog";
 
 import EnSendALetterOnline from "./posts/how-to-send-a-letter-online-in-canada";
@@ -30,4 +30,10 @@ const FR: Record<string, ComponentType> = {
 
 export function getBody(locale: Locale, id: string): ComponentType | undefined {
   return (locale === "fr" ? FR : EN)[id];
+}
+
+/** The post body as a ready element (so pages render a value, not a component picked at render time). */
+export function renderBody(locale: Locale, id: string): ReactElement | null {
+  const Body = getBody(locale, id);
+  return Body ? createElement(Body) : null;
 }

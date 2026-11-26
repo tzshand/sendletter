@@ -18,7 +18,6 @@ export function escapeHtml(s: string): string {
  * These can cause rendering issues, log injection, or parser confusion.
  */
 export function stripControl(s: string): string {
-  // eslint-disable-next-line no-control-regex
   return s.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F\u200B\u200C\u200D\uFEFF]/g, "");
 }
 

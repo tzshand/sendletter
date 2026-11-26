@@ -1,16 +1,18 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useSyncExternalStore } from "react";
 import { Check, Mail, Loader2 } from "lucide-react";
 import Link from "next/link";
 
+const noSubscribe = () => () => {};
+
+/** The ?session_id= from the URL. null while rendering on the server. */
 function useSessionId() {
-  const [sessionId, setSessionId] = useState<string | null>(null);
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    setSessionId(params.get("session_id"));
-  }, []);
-  return sessionId;
+  return useSyncExternalStore(
+    noSubscribe,
+    () => new URLSearchParams(window.location.search).get("session_id"),
+    () => null,
+  );
 }
 
 export default function SuccessPage() {

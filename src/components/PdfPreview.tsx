@@ -89,7 +89,7 @@ export function PdfCanvasPreview({
     return () => {
       cancelled = true;
     };
-  }, [base64, width]);
+  }, [base64, width, maxPages]);
 
   if (error) {
     return (

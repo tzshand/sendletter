@@ -17,6 +17,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { SnowGoose } from "@/components/SnowGoose";
 import { Loader2, KeyRound, Check } from "lucide-react";
 import { enrollPasskey, passkeysSupported, wasDismissed } from "@/lib/passkey";
+import Link from "next/link";
 
 type State = "idle" | "working" | "done" | "error" | "unsupported" | "no-token";
 
@@ -86,9 +87,9 @@ function EnrollInner() {
                 This link is missing its token, or it has already been used. Request a
                 new one from the sign-in page.
               </p>
-              <a href="/login" className="text-sm font-semibold text-gray-900 hover:underline">
+              <Link href="/login" className="text-sm font-semibold text-gray-900 hover:underline">
                 Back to sign in
-              </a>
+              </Link>
             </>
           ) : state === "unsupported" ? (
             <>
