@@ -964,7 +964,9 @@ test("emails: a paid first order sends our invoice with a PDF attached, then the
   assert.equal(mails.length, 2);
   assert.match(mails[0].subject, /^Invoice SL-\d{4}-\d{6}: \$2\.48 paid$/);
   assert.match(mails[0].html, /sendletter\.app\/account\/invoices\/[0-9a-f-]{36}/);
-  assert.match(mails[0].html, /logo-240\.png/);
+  assert.match(mails[0].html, /goose-128-letter\.png/);
+  assert.match(mails[0].html, /GST \(5%\)/);
+  assert.match(mails[0].html, /QST \(9\.975%\)/);
   assert.equal(mails[0].attachments?.length, 1);
   assert.match(mails[0].attachments![0].filename, /^SL-\d{4}-\d{6}\.pdf$/);
   assert.equal(Buffer.from(mails[0].attachments![0].content, "base64").subarray(0, 5).toString(), "%PDF-");
@@ -992,4 +994,93 @@ test("emails: a failed charge sends the customer no invoice, and a mail failure 
   resend.clear();
   await bill.POST(cronReq());
   assert.equal(resend.sent.filter((m) => m.to === "dev@example.com").length, 0);
+});
+
+// ── Sales tax: calculated for the customer's province, charged as $0 until switched on ───
+
+test("tax: off by default: Quebec fallback, rates recorded, every tax $0.00, the charge is the subtotal", async () => {
+  setup({ firstOrder: true });
+  const res = await send.POST(post(draft()));
+  assert.equal(res.status, 200);
+  const inv = pg.rows("sendletter_invoices")[0];
+  assert.equal(inv.tax_province, "QC");
+  assert.equal(inv.tax_collected, false);
+  assert.equal(inv.tax_cents, 0);
+  assert.equal(inv.subtotal_cents, 248);
+  assert.equal(inv.total_cents, 248);
+  assert.deepEqual((inv.tax_detail as { code: string; rate: number; cents: number }[]).map((t) => [t.code, t.rate, t.cents]), [["GST", 5, 0], ["QST", 9.975, 0]]);
+  assert.equal(pg.rows("sendletter_invoice_lines")[0].tax_cents, 0);
+  assert.equal(stripeMock.intents[0].amount, 248);
+});
+
+test("tax: the province comes from the card's billing address, else the account's tax_province, else Quebec", async () => {
+  setup({ firstOrder: true });
+  stripeMock.setCustomer("cus_1", { default: "pm_default", cards: ["pm_default"], state: "ON" });
+  await send.POST(post(draft()));
+  assert.equal(pg.rows("sendletter_invoices")[0].tax_province, "ON");
+  assert.deepEqual((pg.rows("sendletter_invoices")[0].tax_detail as { code: string }[]).map((t) => t.code), ["HST"]);
+
+  pg.reset(); stripeMock.clear(); setup({ firstOrder: true });
+  pg.rows("sendletter_accounts")[0].tax_province = "British Columbia";
+  stripeMock.setCustomer("cus_1", { default: "pm_default", cards: ["pm_default"], state: "ON" });
+  await send.POST(post(draft()));
+  assert.equal(pg.rows("sendletter_invoices")[0].tax_province, "BC", "the account setting wins");
+
+  pg.reset(); stripeMock.clear(); setup({ firstOrder: true });
+  stripeMock.setCustomer("cus_1", { default: "pm_default", cards: ["pm_default"], state: "CA-California-nonsense" });
+  await send.POST(post(draft()));
+  assert.equal(pg.rows("sendletter_invoices")[0].tax_province, "QC", "unrecognised: Quebec, never untaxed");
+});
+
+test("tax: with TAX_COLLECTING=1 the tax is added to the charge, on each line, and comes back on a refund", async () => {
+  process.env.TAX_COLLECTING = "1";
+  try {
+    setup({ firstOrder: true });
+    const res = await send.POST(post(draft()));
+    assert.equal(res.status, 200);
+    const inv = pg.rows("sendletter_invoices")[0];
+    const gst = Math.round((248 * 5) / 100), qst = Math.round((248 * 9.975) / 100);
+    assert.equal(inv.tax_cents, gst + qst);
+    assert.equal(inv.total_cents, 248 + gst + qst);
+    assert.equal(inv.tax_collected, true);
+    assert.equal(stripeMock.intents[0].amount, 248 + gst + qst);
+    assert.equal(pg.rows("sendletter_invoice_lines")[0].tax_cents, gst + qst);
+    const mails = resend.sent.filter((m) => m.to === "dev@example.com");
+    assert.doesNotMatch(mails[0].html, /not currently registered/);
+    const order = pg.rows("sendletter_orders").find((o) => o.id !== "00000000-0000-4000-8000-000000000001") ?? pg.rows("sendletter_orders")[0];
+    const del = await (await import("../src/app/api/v1/letters/[id]/route.ts")).DELETE(
+      new Request("http://x/api/v1/letters/" + order.id, { method: "DELETE", headers: { authorization: `Bearer ${LIVE}` } }),
+      { params: Promise.resolve({ id: String(order.id) }) },
+    );
+    assert.equal(del.status, 200);
+    assert.equal(stripeMock.refunds[0].amount, 248 + gst + qst, "the tax is refunded with the letter");
+  } finally {
+    delete process.env.TAX_COLLECTING;
+  }
+});
+
+test("tax: the unregistered note is on the invoice email, and old invoices without tax data still render", async () => {
+  setup();
+  pg.seed("sendletter_api_usage", [usage("u1", 379, lastMonth())]);
+  resend.clear();
+  await bill.POST(cronReq());
+  const html = resend.sent.find((m) => m.to === "dev@example.com")!.html;
+  assert.match(html, /not currently registered to collect GST\/HST or QST/);
+  assert.match(html, /Subtotal/);
+  // an invoice recorded before tax existed
+  const { loadInvoiceData } = await import("../src/lib/invoice-mail.ts");
+  pg.seed("sendletter_invoices", [{ id: "11111111-1111-4111-8111-111111111111", seq: 99, account_id: ACCT, kind: "monthly", status: "paid", letters: 1, total_cents: 300, created_at: new Date().toISOString() }]);
+  const old = await loadInvoiceData("11111111-1111-4111-8111-111111111111");
+  assert.equal(old!.pdf.subtotalCents, 300);
+  assert.deepEqual(old!.pdf.taxes.map((t) => t.cents), [0, 0]);
+});
+
+test("tax: province names and codes are recognised", async () => {
+  const { normalizeProvince, taxProvince } = await import("../src/lib/tax.ts");
+  assert.equal(normalizeProvince("qc"), "QC");
+  assert.equal(normalizeProvince("Québec"), "QC");
+  assert.equal(normalizeProvince(" nova  scotia "), "NS");
+  assert.equal(normalizeProvince("Texas"), null);
+  assert.equal(taxProvince(null, "", "Texas"), "QC");
+  assert.equal(taxProvince(undefined, "ON"), "ON");
 });

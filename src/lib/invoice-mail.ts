@@ -4,6 +4,7 @@ import { Resend } from "resend";
 import { getDb } from "@/lib/db";
 import { invoiceEmail, welcomeEmail, type InvoiceEmailData } from "@/lib/emails";
 import { invoicePdf, type InvoicePdfData } from "@/lib/invoice-pdf";
+import { FALLBACK_PROVINCE, taxForLine, type TaxLine } from "@/lib/tax";
 
 const FROM = "sendletter <noreply@sendletter.app>";
 const REPLY_TO = "support@sendletter.app";
@@ -16,7 +17,7 @@ export async function loadInvoiceData(invoiceId: string): Promise<{ email: strin
   const db = getDb();
   const { data: inv } = await db.from("sendletter_invoices").select("*").eq("id", invoiceId).single();
   if (!inv) return null;
-  const { data: lines } = await db.from("sendletter_invoice_lines").select("description, amount_cents").eq("invoice_id", invoiceId);
+  const { data: lines } = await db.from("sendletter_invoice_lines").select("description, amount_cents, tax_cents").eq("invoice_id", invoiceId);
   const { data: acct } = await db.from("sendletter_accounts").select("email").eq("id", inv.account_id).single();
   const email = (acct?.email as string | undefined) ?? "";
   const data: InvoiceEmailData = {
@@ -26,7 +27,11 @@ export async function loadInvoiceData(invoiceId: string): Promise<{ email: strin
     kind: inv.kind,
     letters: inv.letters,
     totalCents: inv.total_cents,
-    lines: (lines ?? []) as { description: string; amount_cents: number }[],
+    subtotalCents: inv.subtotal_cents ?? inv.total_cents,
+    // Invoices from before tax was recorded show the tax lines at $0.00 for the fallback province.
+    taxes: (inv.tax_detail as TaxLine[] | null) ?? taxForLine(0, inv.tax_province ?? FALLBACK_PROVINCE, false),
+    taxCollected: Boolean(inv.tax_collected),
+    lines: ((lines ?? []) as { description: string; amount_cents: number; tax_cents: number | null }[]).map((l) => ({ ...l, tax_cents: l.tax_cents ?? 0 })),
   };
   return { email, pdf: { ...data, billedTo: email, paidAt: inv.paid_at ? day(inv.paid_at, "medium") : null, reference: (inv.stripe_payment_intent_id as string | null) ?? null } };
 }

@@ -5,6 +5,7 @@ import { getDb } from "@/lib/db";
 import { invoiceNumber } from "@/lib/invoices";
 import { isUuid } from "@/lib/api-route";
 import { PrintButton } from "./PrintButton";
+import { FALLBACK_PROVINCE, TAX_NOTE_UNREGISTERED, taxForLine, taxLabel, type TaxLine } from "@/lib/tax";
 
 export const metadata = { title: "Invoice | sendletter", robots: { index: false } };
 
@@ -18,9 +19,11 @@ export default async function InvoicePage({ params }: { params: Promise<{ id: st
   // Scoped to the signed-in account: another customer's invoice id is a 404.
   const { data: inv } = await db.from("sendletter_invoices").select("*").eq("id", id).eq("account_id", session.accountId).single();
   if (!inv) notFound();
-  const { data: lines } = await db.from("sendletter_invoice_lines").select("order_id, description, amount_cents").eq("invoice_id", id);
+  const { data: lines } = await db.from("sendletter_invoice_lines").select("order_id, description, amount_cents, tax_cents").eq("invoice_id", id);
   const { data: acct } = await db.from("sendletter_accounts").select("email").eq("id", session.accountId).single();
 
+  const subtotal: number = inv.subtotal_cents ?? inv.total_cents;
+  const taxes: TaxLine[] = (inv.tax_detail as TaxLine[] | null) ?? taxForLine(0, inv.tax_province ?? FALLBACK_PROVINCE, false);
   const number = invoiceNumber(inv.seq, inv.created_at);
   const date = new Date(inv.created_at).toLocaleDateString("en-CA", { dateStyle: "long" });
 
@@ -37,9 +40,13 @@ export default async function InvoicePage({ params }: { params: Promise<{ id: st
 
       <article className="rounded-xl border border-gray-200 bg-white p-8 print:border-0 print:p-0">
         <div className="flex justify-between items-start mb-8">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">Invoice {number}</h1>
-            <p className="text-sm text-gray-500 mt-1">{date}</p>
+          <div className="flex items-center gap-4">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/goose-128-letter.png" alt="sendletter" width={56} height={56} />
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">Invoice {number}</h1>
+              <p className="text-sm text-gray-500 mt-1">{date}</p>
+            </div>
           </div>
           <span className={`text-xs font-bold uppercase tracking-wide px-2.5 py-1 rounded-full border ${inv.status === "paid" ? "bg-green-50 text-green-800 border-green-200" : inv.status === "failed" ? "bg-red-50 text-red-800 border-red-200" : "bg-gray-100 text-gray-600 border-gray-200"}`}>{inv.status}</span>
         </div>
@@ -50,17 +57,21 @@ export default async function InvoicePage({ params }: { params: Promise<{ id: st
         </div>
 
         <table className="w-full text-sm mb-6">
-          <thead><tr className="text-left text-xs uppercase tracking-wide text-gray-500 border-b border-gray-200"><th className="py-2 font-semibold">Description</th><th className="py-2 font-semibold text-right">Amount (CAD)</th></tr></thead>
+          <thead><tr className="text-left text-xs uppercase tracking-wide text-gray-500 border-b border-gray-200"><th className="py-2 font-semibold">Description</th><th className="py-2 font-semibold text-right">Amount</th><th className="py-2 pl-4 font-semibold text-right">Tax</th></tr></thead>
           <tbody>
-            {(lines ?? []).map((l: { order_id: string; description: string; amount_cents: number }, n: number) => (
-              <tr key={l.order_id ?? n} className="border-b border-gray-100"><td className="py-2.5 pr-4">{l.description}</td><td className="py-2.5 text-right whitespace-nowrap">{money(l.amount_cents)}</td></tr>
+            {(lines ?? []).map((l: { order_id: string; description: string; amount_cents: number; tax_cents: number | null }, n: number) => (
+              <tr key={l.order_id ?? n} className="border-b border-gray-100"><td className="py-2.5 pr-4">{l.description}</td><td className="py-2.5 text-right whitespace-nowrap">{money(l.amount_cents)}</td><td className="py-2.5 pl-4 text-right whitespace-nowrap">{money(l.tax_cents ?? 0)}</td></tr>
             ))}
           </tbody>
-          <tfoot><tr><td className="pt-4 font-bold text-right pr-4">Total</td><td className="pt-4 font-bold text-right">{money(inv.total_cents)}</td></tr></tfoot>
+          <tfoot>
+            <tr><td colSpan={2} className="pt-4 text-right text-gray-600">Subtotal</td><td className="pt-4 pl-4 text-right text-gray-600">{money(subtotal)}</td></tr>
+            {taxes.map((t) => <tr key={t.code}><td colSpan={2} className="pt-1 text-right text-gray-600">{taxLabel(t)}</td><td className="pt-1 pl-4 text-right text-gray-600">{money(t.cents)}</td></tr>)}
+            <tr><td colSpan={2} className="pt-3 font-bold text-right">Total (CAD)</td><td className="pt-3 pl-4 font-bold text-right">{money(inv.total_cents)}</td></tr>
+          </tfoot>
         </table>
 
         <div className="text-xs text-gray-500 space-y-1 border-t border-gray-100 pt-4">
-          <p>{inv.letters} letter{inv.letters === 1 ? "" : "s"}. Postage is included at cost. No GST/HST is charged.</p>
+          <p>{inv.letters} letter{inv.letters === 1 ? "" : "s"}. Postage is included at cost.{inv.tax_collected ? "" : ` ${TAX_NOTE_UNREGISTERED}`}</p>
           {inv.paid_at && <p>Paid {new Date(inv.paid_at).toLocaleString("en-CA", { dateStyle: "medium", timeStyle: "short" })} by card{inv.stripe_payment_intent_id ? ` (reference ${inv.stripe_payment_intent_id})` : ""}.</p>}
           {inv.status === "failed" && <p className="text-red-700">The charge failed{inv.error_message ? `: ${inv.error_message}` : ""}. These letters will be retried on the next billing run; update your card on your <Link href="/profile" className="underline">profile</Link>.</p>}
         </div>

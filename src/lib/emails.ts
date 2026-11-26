@@ -3,6 +3,7 @@
 
 import { escapeHtml as esc } from "@/lib/sanitize";
 import { VOLUME, volumeBaseCents } from "@/lib/volume-curve";
+import { TAX_NOTE_UNREGISTERED, taxLabel, type TaxLine } from "@/lib/tax";
 
 const SITE = "https://sendletter.app";
 const BRAND = "#F0513C";
@@ -13,7 +14,7 @@ function layout(preheader: string, body: string): string {
 <span style="display:none;max-height:0;overflow:hidden;opacity:0;">${esc(preheader)}</span>
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f5;padding:24px 12px;"><tr><td align="center">
 <table role="presentation" width="560" cellpadding="0" cellspacing="0" style="max-width:560px;width:100%;background:#ffffff;border-radius:12px;overflow:hidden;font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;color:#1f2937;">
-<tr><td style="padding:24px 32px 14px 32px;"><a href="${SITE}" style="text-decoration:none;"><img src="${SITE}/logo-240.png" width="44" height="44" alt="" style="vertical-align:middle;border-radius:10px;border:0;"> <span style="font-size:22px;font-weight:700;color:#111827;vertical-align:middle;margin-left:8px;">sendletter</span></a></td></tr>
+<tr><td style="padding:24px 32px 14px 32px;"><a href="${SITE}" style="text-decoration:none;"><img src="${SITE}/goose-128-letter.png" width="48" height="48" alt="sendletter" style="vertical-align:middle;border:0;"> <span style="font-size:22px;font-weight:700;color:#111827;vertical-align:middle;margin-left:8px;">sendletter</span></a></td></tr>
 <tr><td style="height:3px;background:${BRAND};font-size:0;line-height:0;">&nbsp;</td></tr>
 <tr><td style="padding:24px 32px 28px 32px;font-size:15px;line-height:1.55;">${body}</td></tr>
 <tr><td style="padding:16px 32px 24px 32px;border-top:1px solid #e5e7eb;font-size:12px;color:#6b7280;line-height:1.5;">sendletter &middot; print and mail a letter anywhere in Canada<br><a href="${SITE}" style="color:#6b7280;">sendletter.app</a> &middot; <a href="mailto:support@sendletter.app" style="color:#6b7280;">support@sendletter.app</a></td></tr>
@@ -29,25 +30,34 @@ export type InvoiceEmailData = {
   date: string;
   kind: "first_order" | "monthly";
   letters: number;
+  /** What was charged: subtotal + tax. */
   totalCents: number;
-  lines: { description: string; amount_cents: number }[];
+  subtotalCents: number;
+  /** Tax by type for the customer's province. Cents are 0 while tax is not collected. */
+  taxes: TaxLine[];
+  taxCollected: boolean;
+  lines: { description: string; amount_cents: number; tax_cents: number }[];
 };
 
 export function invoiceEmail(inv: InvoiceEmailData): { subject: string; html: string } {
   const url = `${SITE}/account/invoices/${inv.id}`;
+  const td = "padding:7px 0 7px 12px;border-bottom:1px solid #f3f4f6;font-size:14px;text-align:right;white-space:nowrap;";
   const rows = inv.lines
     .slice(0, 25)
-    .map((l) => `<tr><td style="padding:7px 12px 7px 0;border-bottom:1px solid #f3f4f6;font-size:14px;">${esc(l.description)}</td><td style="padding:7px 0;border-bottom:1px solid #f3f4f6;font-size:14px;text-align:right;white-space:nowrap;">${money(l.amount_cents)}</td></tr>`)
+    .map((l) => `<tr><td style="padding:7px 0;border-bottom:1px solid #f3f4f6;font-size:14px;">${esc(l.description)}</td><td style="${td}">${money(l.amount_cents)}</td><td style="${td}">${money(l.tax_cents)}</td></tr>`)
     .join("");
   const more = inv.lines.length > 25 ? `<p style="font-size:13px;color:#6b7280;">...and ${inv.lines.length - 25} more letters. The full list is on the invoice page and in the attached PDF.</p>` : "";
   const what = inv.kind === "first_order" ? "your first letter" : `${inv.letters} letter${inv.letters === 1 ? "" : "s"} you sent through the API`;
+  const tot = (label: string, cents: number, bold = false) => `<tr><td colspan="2" style="padding:6px 0 0 0;text-align:right;font-size:${bold ? 15 : 14}px;${bold ? "font-weight:700;" : "color:#4b5563;"}">${esc(label)}</td><td style="padding:6px 0 0 12px;text-align:right;white-space:nowrap;font-size:${bold ? 15 : 14}px;${bold ? "font-weight:700;" : "color:#4b5563;"}">${money(cents)}</td></tr>`;
+  const totals = tot("Subtotal", inv.subtotalCents) + inv.taxes.map((t) => tot(taxLabel(t), t.cents)).join("") + tot("Total (CAD)", inv.totalCents, true);
+  const taxNote = inv.taxCollected ? "" : ` ${TAX_NOTE_UNREGISTERED}`;
   const body = `<h1 style="font-size:20px;margin:0 0 6px 0;">Invoice ${esc(inv.number)}</h1>
 <p style="margin:0 0 16px 0;color:#6b7280;">${esc(inv.date)} &middot; <strong style="color:#166534;">Paid</strong></p>
 <p>We charged your card on file ${money(inv.totalCents)} CAD for ${what}. This is your receipt; nothing more is owed.</p>
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:14px 0;">${rows}<tr><td style="padding:12px 12px 0 0;font-weight:700;text-align:right;">Total</td><td style="padding:12px 0 0 0;font-weight:700;text-align:right;white-space:nowrap;">${money(inv.totalCents)}</td></tr></table>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:14px 0;"><tr style="color:#6b7280;font-size:12px;text-transform:uppercase;letter-spacing:.04em;"><td style="padding:0 0 6px 0;">Description</td><td align="right" style="padding:0 0 6px 12px;">Amount</td><td align="right" style="padding:0 0 6px 12px;">Tax</td></tr>${rows}${totals}</table>
 ${more}
 ${button(url, "View invoice")}
-<p style="font-size:13px;color:#6b7280;">The PDF is attached. Postage is included at cost and no GST/HST is charged. All your invoices and orders can be exported as CSV from your <a href="${SITE}/account/invoices" style="color:${BRAND};">account</a>.</p>`;
+<p style="font-size:13px;color:#6b7280;">The PDF is attached. Postage is included at cost.${taxNote} All your invoices and orders can be exported as CSV from your <a href="${SITE}/account/invoices" style="color:${BRAND};">account</a>.</p>`;
   return { subject: `Invoice ${inv.number}: ${money(inv.totalCents)} paid`, html: layout(`Invoice ${inv.number}, ${money(inv.totalCents)} paid`, body) };
 }
 

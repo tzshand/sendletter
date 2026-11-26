@@ -17,6 +17,7 @@ import { getDb } from "@/lib/db";
 import { getStripe } from "@/lib/stripe";
 import { torontoMonthStart } from "@/lib/api-limits";
 import { sendPaidInvoiceEmails } from "@/lib/invoice-mail";
+import { sumTax, taxCollecting, taxForLine, taxProvince, totalsByCode, type TaxLine } from "@/lib/tax";
 
 export const invoiceNumber = (seq: number, createdAt: string) =>
   `SL-${new Date(createdAt).getUTCFullYear()}-${String(seq).padStart(6, "0")}`;
@@ -39,11 +40,28 @@ export async function chargeUsage(opts: {
     .in("id", opts.usageIds);
   const rows = (usage ?? []).filter((u: { billed: boolean; voided_at: string | null; invoice_id: string | null }) => !u.billed && !u.voided_at && !u.invoice_id);
   if (!rows.length) return { ok: false, error: "nothing to bill", skipped: true };
-  const total = rows.reduce((s: number, r: { amount_cents: number }) => s + r.amount_cents, 0);
-  if (total <= 0) return { ok: false, error: "nothing to bill", skipped: true };
+  const subtotal = rows.reduce((s: number, r: { amount_cents: number }) => s + r.amount_cents, 0);
+  if (subtotal <= 0) return { ok: false, error: "nothing to bill", skipped: true };
 
-  const { data: account } = await db.from("sendletter_accounts").select("stripe_customer_id, email").eq("id", opts.accountId).single();
+  const { data: account } = await db.from("sendletter_accounts").select("stripe_customer_id, email, tax_province").eq("id", opts.accountId).single();
   if (!account?.stripe_customer_id) return { ok: false, error: "No Stripe customer on file" };
+
+  // Which card, and so (unless the account sets one) which province the tax is based on.
+  let paymentMethod: string | null = null;
+  let cardState: string | null = null;
+  try {
+    const stripe = getStripe();
+    paymentMethod = await cardToCharge(stripe, account.stripe_customer_id);
+    cardState = paymentMethod ? await billingState(stripe, paymentMethod) : null;
+  } catch (e) {
+    return { ok: false, error: e instanceof Error ? e.message : "could not look up the card" };
+  }
+  const province = taxProvince(account.tax_province as string | null, cardState);
+  const collecting = taxCollecting();
+  const taxByRow = new Map<string, TaxLine[]>(rows.map((r: { id: string; amount_cents: number }) => [r.id, taxForLine(r.amount_cents, province, collecting)]));
+  const taxTotals = totalsByCode([...taxByRow.values()], province);
+  const taxCents = sumTax(taxTotals);
+  const total = subtotal + taxCents;
 
   const ids: string[] = rows.map((r: { id: string }) => r.id);
   const orderIds = rows.map((r: { order_id: string | null }) => r.order_id).filter(Boolean) as string[];
@@ -56,6 +74,7 @@ export async function chargeUsage(opts: {
     .from("sendletter_invoices")
     .insert({
       account_id: opts.accountId, kind: opts.kind, letters: rows.length, total_cents: total,
+      subtotal_cents: subtotal, tax_cents: taxCents, tax_province: province, tax_collected: collecting, tax_detail: taxTotals,
       period_start: opts.periodStart?.toISOString() ?? null, period_end: opts.periodEnd?.toISOString() ?? null,
     })
     .select("id, seq, created_at")
@@ -77,7 +96,8 @@ export async function chargeUsage(opts: {
       const where = o ? `${o.to_name ?? "recipient"}, ${o.to_city ?? ""}${o.to_province ? " " + o.to_province : ""}`.trim() : "letter";
       const what = o ? ` (${o.page_count} page${Number(o.page_count) === 1 ? "" : "s"}, ${o.letter_size})` : "";
       const ref = o?.reference ? ` [${o.reference}]` : "";
-      return { invoice_id: inv.id, order_id: r.order_id, description: `Letter to ${where}${what}${ref}`, amount_cents: r.amount_cents };
+      const lt = taxByRow.get(r.id) ?? [];
+      return { invoice_id: inv.id, order_id: r.order_id, description: `Letter to ${where}${what}${ref}`, amount_cents: r.amount_cents, tax_cents: sumTax(lt), tax_detail: lt };
     }),
   );
 
@@ -87,7 +107,6 @@ export async function chargeUsage(opts: {
     // A PaymentIntent does NOT inherit the customer's default payment method: without an explicit
     // payment_method, Stripe refuses with "missing a payment method" (which is how this failed daily
     // for six weeks). Use the customer's default card, or else the first card attached.
-    const paymentMethod = await cardToCharge(stripe, account.stripe_customer_id);
     if (!paymentMethod) throw new Error("No card on file for this customer");
     const pi = await stripe.paymentIntents.create(
       {
@@ -114,6 +133,17 @@ export async function chargeUsage(opts: {
   // We send our own invoice (link + PDF); Stripe's receipt email is not used. Never throws.
   await sendPaidInvoiceEmails(inv.id);
   return { ok: true, invoiceId: inv.id, totalCents: total };
+}
+
+/** The state/province on a card's billing address, if it is a Canadian one. Best effort. */
+export async function billingState(stripe: unknown, paymentMethodId: string): Promise<string | null> {
+  try {
+    const pm = (await (stripe as { paymentMethods: { retrieve: (id: string) => Promise<{ billing_details?: { address?: { state?: string | null; country?: string | null } | null } }> } }).paymentMethods.retrieve(paymentMethodId));
+    const a = pm.billing_details?.address;
+    return a && (!a.country || a.country === "CA") ? (a.state ?? null) : null;
+  } catch {
+    return null;
+  }
 }
 
 /** The card to charge off-session: the customer's default payment method, else the first card attached. */
@@ -182,11 +212,18 @@ export async function runMonthlyBilling(now = new Date()): Promise<MonthlyResult
 /** Refund what a cancelled letter was billed, if it had been paid. Returns cents refunded. */
 export async function refundUsage(usageId: string): Promise<number> {
   const db = getDb();
-  const { data: u } = await db.from("sendletter_api_usage").select("id, amount_cents, billed, invoice_id, refunded_cents").eq("id", usageId).single();
+  const { data: u } = await db.from("sendletter_api_usage").select("id, order_id, amount_cents, billed, invoice_id, refunded_cents").eq("id", usageId).single();
   if (!u || !u.billed || !u.invoice_id || (u.refunded_cents ?? 0) >= u.amount_cents) return 0;
   const { data: inv } = await db.from("sendletter_invoices").select("stripe_payment_intent_id, status").eq("id", u.invoice_id).single();
   if (!inv?.stripe_payment_intent_id || inv.status !== "paid") return 0;
-  const amount = u.amount_cents - (u.refunded_cents ?? 0);
+  const owed = u.amount_cents - (u.refunded_cents ?? 0);
+  // Tax charged on this letter comes back with it (always $0 while tax is not collected).
+  let tax = 0;
+  if (u.order_id && (u.refunded_cents ?? 0) === 0) {
+    const { data: line } = await db.from("sendletter_invoice_lines").select("tax_cents").eq("invoice_id", u.invoice_id).eq("order_id", u.order_id).single();
+    tax = Number(line?.tax_cents ?? 0);
+  }
+  const amount = owed + tax;
   await getStripe().refunds.create({ payment_intent: inv.stripe_payment_intent_id, amount, metadata: { usage_id: usageId } }, { idempotencyKey: `refund-${usageId}` });
   await db.from("sendletter_api_usage").update({ refunded_cents: u.amount_cents }).eq("id", usageId);
   return amount;

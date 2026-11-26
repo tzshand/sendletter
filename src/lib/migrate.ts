@@ -233,6 +233,18 @@ create table if not exists sendletter_invoice_lines (
 create index if not exists idx_sendletter_invoice_lines_invoice
   on sendletter_invoice_lines(invoice_id);
 
+-- Sales tax. Calculated for the customer's province and recorded on every invoice,
+-- but charged as $0 until TAX_COLLECTING=1 (lib/tax.ts). total_cents is what was
+-- charged (subtotal + tax); older invoices have no subtotal and are treated as untaxed.
+alter table sendletter_accounts add column if not exists tax_province text;
+alter table sendletter_invoices add column if not exists subtotal_cents integer;
+alter table sendletter_invoices add column if not exists tax_cents integer not null default 0;
+alter table sendletter_invoices add column if not exists tax_province text;
+alter table sendletter_invoices add column if not exists tax_collected boolean not null default false;
+alter table sendletter_invoices add column if not exists tax_detail jsonb;
+alter table sendletter_invoice_lines add column if not exists tax_cents integer not null default 0;
+alter table sendletter_invoice_lines add column if not exists tax_detail jsonb;
+
 -- Idempotency: a retried request with the same Idempotency-Key returns the
 -- original response instead of mailing a second letter.
 create table if not exists sendletter_idempotency (
