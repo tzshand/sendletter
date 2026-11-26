@@ -19,7 +19,7 @@ export type Locale = "en" | "fr";
  * number. Raise it only after the previous wave has been checked in Search
  * Console: if more than 30% of it is "Crawled - currently not indexed", slow down.
  */
-export const RELEASED_WAVE = 1;
+export const RELEASED_WAVE = 2;
 
 export type LocaleMeta = {
   slug: string;
@@ -84,13 +84,14 @@ const LEGACY_POSTS: PostMeta[] = [
     hub: "postage",
     wave: 0,
     published: "2026-08-02",
+    updated: "2026-11-26",
     cta: "home",
     related: ["canada-post-stamp-price", "send-a-letter-online", "legal-notice"],
     en: {
       slug: "what-it-costs-to-mail-a-letter-in-canada",
-      title: "What It Actually Costs to Mail a Letter in Canada in 2026",
+      title: "How Much Does It Cost to Mail a Letter in Canada? (2026)",
       description:
-        "A single domestic stamp is $1.44 in 2026. Here is the full loaded cost of mailing a letter yourself, and the point where paying a service becomes rational.",
+        "A stamp is $1.24 from a booklet or $1.44 on its own in 2026. Add paper, envelope, printing and time, and see when paying a service is cheaper.",
       keywords: [
         "canada post letter rate 2026",
         "cost to mail a letter in canada",

@@ -1,0 +1,132 @@
+{
+  "id": "what-is-lettermail",
+  "slug": "what-is-lettermail",
+  "hub": "postage",
+  "wave": 3,
+  "live": true,
+  "published": "2026-11-26",
+  "title": "What Is Lettermail? Canada Post's Letter Service",
+  "description": "Lettermail is Canada Post's service for ordinary letters and cards: what it covers, size and weight limits, prices, delivery standards and what it lacks.",
+  "keywords": [
+    "lettermail",
+    "what is lettermail",
+    "canada post lettermail",
+    "lettermail rates canada"
+  ],
+  "answer": "Lettermail is Canada Post's service for ordinary letters and cards: anything you post with stamps in an envelope, up to 500 grams. A standard letter up to 30 grams costs $1.24 with a booklet stamp or $1.44 with a single stamp, and is delivered in two to four business days. It has no tracking and no signature.",
+  "sections": [
+    {
+      "h2": "What counts as Lettermail",
+      "blocks": [
+        {
+          "p": "Lettermail covers letters, cards and flat items that are posted with stamps or metered postage and fit within Canada Post's size and weight limits: up to 245 x 156 x 5 mm and 50 g for a standard letter, and up to 380 x 270 x 20 mm and 500 g for non-standard and oversize items. Anything larger or heavier moves to parcel services. The exact limits and how to measure an envelope are in [Lettermail size and weight limits](/blog/lettermail-size-and-weight-limits)."
+        }
+      ]
+    },
+    {
+      "h2": "What it costs",
+      "blocks": [
+        {
+          "table": {
+            "headers": [
+              "Item within Canada",
+              "Single stamp",
+              "Booklet stamp"
+            ],
+            "rows": [
+              [
+                "Standard letter, up to 30 g",
+                "$1.44",
+                "$1.24"
+              ],
+              [
+                "Standard letter, over 30 g up to 50 g",
+                "$1.75",
+                "$1.75"
+              ],
+              [
+                "Non-standard or oversize, up to 100 g",
+                "$2.61",
+                "n/a"
+              ],
+              [
+                "Up to 200 g",
+                "$4.29",
+                "n/a"
+              ],
+              [
+                "Up to 300 g",
+                "$5.98",
+                "n/a"
+              ],
+              [
+                "Up to 400 g",
+                "$6.85",
+                "n/a"
+              ],
+              [
+                "Up to 500 g",
+                "$7.36",
+                "n/a"
+              ]
+            ]
+          }
+        },
+        {
+          "p": "These are Canada Post's prices without tax. A Permanent stamp is always accepted at the current domestic rate. See [letter rates by weight](/blog/canada-post-letter-rates-by-weight), and [what is known about a 2027 increase](/blog/stamp-price-2027-what-we-know)."
+        }
+      ]
+    },
+    {
+      "h2": "How long it takes",
+      "blocks": [
+        {
+          "p": "Canada Post's delivery standards for letters are two business days locally, three within a province and four across Canada. They are not guaranteed and can be affected by holidays and seasonal volume. See [how long a letter takes](/blog/how-long-does-a-letter-take-in-canada)."
+        }
+      ]
+    },
+    {
+      "h2": "What Lettermail does not include",
+      "blocks": [
+        {
+          "p": "An ordinary letter has no tracking number, no signature on delivery and no proof of mailing, and Canada Post says individual letters without tracking numbers cannot be investigated. For those, Registered Mail adds $13.15 to the postage. See [can you track a letter in Canada](/blog/can-you-track-a-letter-canada) and [Registered versus regular mail](/blog/registered-vs-regular-mail-canada)."
+        }
+      ]
+    },
+    {
+      "h2": "Lettermail for businesses",
+      "blocks": [
+        {
+          "p": "Businesses that send more than 1,000 items can qualify for Incentive Lettermail, which saves about a cent on a standard letter. Most small senders pay the ordinary price. See [Canada Post letter discounts](/blog/canada-post-bulk-letter-discount)."
+        }
+      ]
+    },
+    {
+      "h2": "Sending Lettermail without buying stamps",
+      "blocks": [
+        {
+          "p": "A letter ordered online is printed, stamped and posted as ordinary Lettermail. See [how online letter mailing works](/blog/how-online-letter-mailing-works)."
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "label": "Canada Post, Lettermail size requirements",
+      "url": "https://www.canadapost-postescanada.ca/cpc/en/support/articles/lettermail/size-requirements.page"
+    },
+    {
+      "label": "Canada Post, Business prices (Lettermail price sheet)",
+      "url": "https://www.canadapost-postescanada.ca/cpc/doc/en/support/prices/business-prices.pdf"
+    },
+    {
+      "label": "Canada Post, Why hasn't my letter been delivered?",
+      "url": "https://www.canadapost-postescanada.ca/cpc/en/support/kb/receiving/delivery-faq/how-to-resolve-undelivered-mail.page"
+    }
+  ],
+  "related": [
+    "lettermail-size-and-weight-limits",
+    "canada-post-letter-rates-by-weight",
+    "can-you-track-a-letter-canada"
+  ]
+}

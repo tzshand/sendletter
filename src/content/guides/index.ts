@@ -35,15 +35,16 @@ import g26 from "./proof-of-mailing-letter-canada.json";
 import g27 from "./registered-mail-canada-cost.json";
 import g28 from "./registered-vs-regular-mail-canada.json";
 import g29 from "./stamp-price-2027-what-we-know.json";
-import g30 from "./cancel-a-contract-or-membership-by-mail.json";
-import g31 from "./how-to-write-a-complaint-letter.json";
-import g32 from "./canada-post-address-validation-api.json";
-import g33 from "./canada-post-api-send-letters.json";
-import g34 from "./idempotency-for-physical-mail.json";
-import g35 from "./send-a-letter-with-an-api-canada.json";
-import g36 from "./sendletter-vs-lob.json";
-import g37 from "./sendletter-vs-postgrid.json";
-import g38 from "./test-mode-for-a-mail-api.json";
+import g30 from "./what-is-lettermail.json";
+import g31 from "./cancel-a-contract-or-membership-by-mail.json";
+import g32 from "./how-to-write-a-complaint-letter.json";
+import g33 from "./canada-post-address-validation-api.json";
+import g34 from "./canada-post-api-send-letters.json";
+import g35 from "./idempotency-for-physical-mail.json";
+import g36 from "./send-a-letter-with-an-api-canada.json";
+import g37 from "./sendletter-vs-lob.json";
+import g38 from "./sendletter-vs-postgrid.json";
+import g39 from "./test-mode-for-a-mail-api.json";
 
 export const GUIDES: GuideData[] = [
   // Wave 1
@@ -79,15 +80,16 @@ export const GUIDES: GuideData[] = [
   g27 as GuideData,
   g28 as GuideData,
   g29 as GuideData,
-  // Wave 4
   g30 as GuideData,
+  // Wave 4
   g31 as GuideData,
-  // Wave 5
   g32 as GuideData,
+  // Wave 5
   g33 as GuideData,
   g34 as GuideData,
   g35 as GuideData,
   g36 as GuideData,
   g37 as GuideData,
   g38 as GuideData,
+  g39 as GuideData,
 ];
