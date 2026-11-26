@@ -2,7 +2,7 @@
   "id": "registered-mail-canada-cost",
   "hub": "legal",
   "wave": 3,
-  "published": "2026-12-10",
+  "published": "2026-11-26",
   "slug": "registered-mail-canada-cost",
   "title": "Registered Mail in Canada: What It Costs",
   "description": "Registered Mail is $13.15 plus the letter's postage within Canada, with a signature, proof of mailing, tracking and $100 of coverage included.",
@@ -103,5 +103,6 @@
     "registered-vs-regular-mail-canada",
     "legal-notice",
     "canada-post-stamp-price"
-  ]
+  ],
+  "live": true
 }
