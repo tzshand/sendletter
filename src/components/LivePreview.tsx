@@ -6,7 +6,7 @@ import type { SimpleLetterData } from "./SimpleLetterForm";
 import type { Settings } from "./LetterSettings";
 import type { LetterSize } from "./LetterSizeSelector";
 import { PdfCanvasPreview } from "./PdfPreview";
-import { layoutHtml, type HtmlLayout } from "@/lib/generatePdf";
+import { layoutHtml, PARAGRAPH_GAP, type HtmlLayout, type HtmlSource } from "@/lib/generatePdf";
 import { ADDRESS_PAGE } from "@/lib/address-page";
 
 function formatDate(dateStr: string, language: string): string {
@@ -481,11 +481,11 @@ export function LetterPreviewScaled({
     if (pdfMatch) {
       return <PdfPagesScaled base64={pdfMatch[1]} />;
     }
-    return <PaginatedHtmlPreview html={htmlContent} settings={{ ...settings, verticalCenter: false }} letterSize={letterSize} />;
+    return <PaginatedHtmlPreview html={htmlContent} settings={{ ...settings, verticalCenter: false }} letterSize={letterSize} source="docx" />;
   }
 
   if (mode === "custom" && htmlContent) {
-    return <PaginatedHtmlPreview html={htmlContent} settings={settings} letterSize={letterSize} />;
+    return <PaginatedHtmlPreview html={htmlContent} settings={settings} letterSize={letterSize} source="custom" />;
   }
 
   if (mode === "simple" && previewPdf && letterData.body.trim()) {
@@ -510,7 +510,17 @@ export function LetterPreviewScaled({
  * Multi-page preview of HTML (the custom editor, or a converted .docx), laid out
  * by the same engine that makes the PDF: same margins, same page breaks.
  */
-function PaginatedHtmlPreview({ html, settings, letterSize }: { html: string; settings: Settings; letterSize: LetterSize }) {
+function PaginatedHtmlPreview({
+  html,
+  settings,
+  letterSize,
+  source,
+}: {
+  html: string;
+  settings: Settings;
+  letterSize: LetterSize;
+  source: HtmlSource;
+}) {
   const [layout, setLayout] = useState<HtmlLayout | null>(null);
 
   // Measured on a short debounce, outside React's commit: laying the HTML out
@@ -518,24 +528,26 @@ function PaginatedHtmlPreview({ html, settings, letterSize }: { html: string; se
   // (layout work during commit fed back into the editor's own DOM updates) and
   // is wasted work besides.
   useEffect(() => {
-    const t = setTimeout(() => setLayout(layoutHtml(html, settings, letterSize)), 150);
+    const t = setTimeout(() => setLayout(layoutHtml(html, settings, letterSize, source)), 150);
     return () => clearTimeout(t);
-  }, [html, settings, letterSize]);
+  }, [html, settings, letterSize, source]);
 
   if (!layout) return null;
-  const { pageH, sliceH, pages } = layout;
+  const { pageH, ranges } = layout;
   const font = {
     fontFamily: `"${settings.fontFamily}", serif`,
     fontSize: `${settings.fontSize}pt`,
     lineHeight: 1.5,
     color: "#000",
-  };
+    ["--p-gap" as string]: PARAGRAPH_GAP[source],
+  } as React.CSSProperties;
 
   // Everything fits one page: shown exactly as printed, including vertical centring.
   if (layout.fits) {
     return (
       <ScaledFrame nativeWidth={612} nativeHeight={pageH}>
         <div
+          className="letter-doc"
           style={{
             width: 612,
             height: pageH,
@@ -557,7 +569,7 @@ function PaginatedHtmlPreview({ html, settings, letterSize }: { html: string; se
 
   return (
     <div className="flex flex-col gap-4">
-      {Array.from({ length: pages }, (_, i) => (
+      {ranges.map(({ start, end }, i) => (
         <div key={i}>
           {i > 0 && (
             <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-2">
@@ -566,12 +578,13 @@ function PaginatedHtmlPreview({ html, settings, letterSize }: { html: string; se
           )}
           <ScaledFrame nativeWidth={612} nativeHeight={pageH}>
             <div style={{ width: 612, height: pageH, overflow: "hidden", background: "#fff", position: "relative" }}>
-              <div style={{ position: "absolute", left: 0, top: 72, width: 612, height: sliceH, overflow: "hidden" }}>
+              <div style={{ position: "absolute", left: 0, top: 72, width: 612, height: end - start, overflow: "hidden" }}>
                 <div
+                  className="letter-doc"
                   style={{
                     position: "absolute",
                     left: 0,
-                    top: -i * sliceH,
+                    top: -start,
                     width: 612,
                     padding: "0 72px",
                     boxSizing: "border-box",

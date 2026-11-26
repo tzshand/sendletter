@@ -5,27 +5,11 @@ import { useDropzone } from "react-dropzone";
 import { Upload, FileText, Loader2, X } from "lucide-react";
 import mammoth from "mammoth";
 import { MAX_PAGES, RASTER_MAX_PAGES, MAX_FILE_BYTES } from "@/lib/pricing";
+import { measureHtmlPages } from "@/lib/generatePdf";
 
-/** Measure how many 8.5×11 pages the HTML content fills */
+/** Pages a converted .docx will print as (same engine as the preview and the PDF). */
 function measurePages(html: string): number {
-  const pageW = 612;
-  const pageH = 792;
-  const padding = 72;
-
-  const el = document.createElement("div");
-  el.style.cssText = `
-    position: fixed; left: -9999px; top: 0;
-    width: ${pageW}px; background: #fff;
-    font-family: "Times New Roman", serif; font-size: 12pt;
-    line-height: 1.6; color: #000;
-    padding: ${padding}px;
-    box-sizing: border-box;
-  `;
-  el.innerHTML = html;
-  document.body.appendChild(el);
-  const pages = Math.max(1, Math.ceil(el.scrollHeight / pageH));
-  document.body.removeChild(el);
-  return pages;
+  return measureHtmlPages(html, { language: "en", fontFamily: "Times New Roman", fontSize: 12 }, "standard", "docx");
 }
 
 export function FileUpload({
@@ -87,7 +71,8 @@ export function FileUpload({
           file.name.endsWith(".docx")
         ) {
           const arrayBuffer = await file.arrayBuffer();
-          const result = await mammoth.convertToHtml({ arrayBuffer });
+          // Keep blank paragraphs: in Word they are the spacing between sections.
+          const result = await mammoth.convertToHtml({ arrayBuffer }, { ignoreEmptyParagraphs: false });
           if (result.value.length === 0) {
             setError("The document appears to be empty.");
             setLoading(false);

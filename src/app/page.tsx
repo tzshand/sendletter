@@ -221,11 +221,11 @@ export default function Home() {
           if (!htmlContent) return setPages(1);
           if (isPdfUpload) return setPages(pdfPages);
           const { measureHtmlPages } = await import("@/lib/generatePdf");
-          if (!cancelled) setPages(measureHtmlPages(htmlContent, { ...settings, verticalCenter: false }, letterSize));
+          if (!cancelled) setPages(measureHtmlPages(htmlContent, { ...settings, verticalCenter: false }, letterSize, "docx"));
         } else if (mode === "custom") {
           if (!htmlContent) return setPages(1);
           const { measureHtmlPages } = await import("@/lib/generatePdf");
-          if (!cancelled) setPages(measureHtmlPages(htmlContent, settings, letterSize));
+          if (!cancelled) setPages(measureHtmlPages(htmlContent, settings, letterSize, "custom"));
         } else {
           // Classic letter: build the real (vector) PDF; it is both the preview and the count.
           const { generateLetterPdf } = await import("@/lib/generatePdf");

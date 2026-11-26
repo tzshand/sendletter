@@ -31,7 +31,7 @@ export async function generateLetterPdf({
   if (mode === "upload") {
     const match = htmlContent.match(/data-pdf="([^"]+)"/);
     if (match) return { base64: match[1], pageCount: null };
-    if (htmlContent) return await generateDocxHtmlPdf(htmlContent, settings, letterSize);
+    if (htmlContent) return await generateCustomLetterPdf(htmlContent, { ...settings, verticalCenter: false }, letterSize, "docx");
     return null;
   }
 
@@ -39,7 +39,7 @@ export async function generateLetterPdf({
     if (mode === "simple") {
       return await generateSimpleLetterPdf(letterData, settings, letterSize);
     } else {
-      return await generateCustomLetterPdf(htmlContent, settings, letterSize);
+      return await generateCustomLetterPdf(htmlContent, settings, letterSize, "custom");
     }
   } catch (e) {
     console.error("PDF generation failed:", e);
@@ -190,13 +190,51 @@ async function generateSimpleLetterPdf(
 const PAGE_W = 612; // 8.5in at 72dpi
 const PAGE_PAD = 72; // 1in margins
 
-function pageMetrics(settings: Settings, letterSize: LetterSize) {
+function pageMetrics(letterSize: LetterSize) {
   const pageH = letterSize === "legal" ? 1008 : 792;
-  const contentH = pageH - PAGE_PAD * 2;
-  // Snap page breaks to whole lines so text isn't sliced mid-line.
-  const lineHpx = settings.fontSize * (96 / 72) * 1.5;
-  const sliceH = Math.max(lineHpx, Math.floor(contentH / lineHpx) * lineHpx);
-  return { pageH, contentH, sliceH };
+  return { pageH, contentH: pageH - PAGE_PAD * 2 };
+}
+
+/**
+ * Space between paragraphs. Word keeps its spacing in the paragraph styles and
+ * the converter (mammoth) drops it, so a .docx is given a Word-like gap
+ * (Word's default is 8pt after); the custom editor shows 0.3em, so its output
+ * matches what was typed.
+ */
+export const PARAGRAPH_GAP = { custom: "0.3em", docx: "0.65em" } as const;
+export type HtmlSource = keyof typeof PARAGRAPH_GAP;
+
+/**
+ * The letter's own typography, scoped to .letter-doc and used identically to
+ * measure, preview and render. The app's CSS reset removes paragraph margins,
+ * list bullets and heading weight, which is why Word documents came out as a
+ * solid block of text. Keep the specificity above the reset's.
+ */
+export const LETTER_CSS = `
+.letter-doc p { margin: 0 0 var(--p-gap, 0.3em); }
+.letter-doc p:empty::before { content: "\\00a0"; }
+.letter-doc h1, .letter-doc h2, .letter-doc h3, .letter-doc h4, .letter-doc h5, .letter-doc h6 { font-weight: 700; margin: 0 0 var(--p-gap, 0.3em); }
+.letter-doc h1 { font-size: 1.5em; } .letter-doc h2 { font-size: 1.25em; } .letter-doc h3 { font-size: 1.1em; }
+.letter-doc h4, .letter-doc h5, .letter-doc h6 { font-size: 1em; }
+.letter-doc ul, .letter-doc ol { margin: 0 0 var(--p-gap, 0.3em); padding-left: 1.6em; }
+.letter-doc ul { list-style: disc; } .letter-doc ol { list-style: decimal; }
+.letter-doc li { margin: 0; } .letter-doc li > p { margin: 0; }
+.letter-doc strong, .letter-doc b { font-weight: 700; }
+.letter-doc em, .letter-doc i { font-style: italic; }
+.letter-doc u { text-decoration: underline; }
+.letter-doc blockquote { margin: 0 0 var(--p-gap, 0.3em) 1.5em; }
+.letter-doc table { border-collapse: collapse; margin: 0 0 var(--p-gap, 0.3em); }
+.letter-doc td, .letter-doc th { border: 1px solid #000; padding: 2px 5px; vertical-align: top; }
+.letter-doc img { max-width: 100%; height: auto; }
+`;
+
+/** Make the letter stylesheet available to the page (and so to html2canvas's clone of it). */
+export function ensureLetterStyles(): void {
+  if (typeof document === "undefined" || document.getElementById("letter-doc-css")) return;
+  const style = document.createElement("style");
+  style.id = "letter-doc-css";
+  style.textContent = LETTER_CSS;
+  document.head.appendChild(style);
 }
 
 /**
@@ -255,93 +293,121 @@ function fontCss(settings: Settings): string {
   `;
 }
 
+/** Vertical extent of one page's content, in px from the top of the laid-out HTML. */
+export type PageRange = { start: number; end: number };
+
 export type HtmlLayout = {
-  /** The HTML with hard page breaks sized to land on a page boundary. */
-  html: string;
   pages: number;
+  /** Where each page's content starts and ends. Only meaningful when !fits. */
+  ranges: PageRange[];
   /** True when it all fits one page (so it can be vertically centred). */
   fits: boolean;
   pageH: number;
   contentH: number;
-  sliceH: number;
+  html: string;
+  source: HtmlSource;
 };
 
-function hasContentAfter(node: HTMLElement, root: HTMLElement): boolean {
-  let n: Node | null = node;
-  while (n && n !== root) {
-    for (let sib = n.nextSibling; sib; sib = sib.nextSibling) {
-      if (sib.nodeType === Node.TEXT_NODE && (sib.textContent ?? "").trim()) return true;
-      if (sib.nodeType === Node.ELEMENT_NODE) {
-        const el = sib as HTMLElement;
-        if (el.matches("img, hr") || (el.textContent ?? "").trim()) return true;
-      }
-    }
-    n = n.parentNode;
+type Seg = { top: number; bottom: number; force: boolean };
+
+/**
+ * The visual lines of the laid-out content: one segment per line of text (and
+ * per image or rule), measured from the real browser layout. Pages are broken
+ * BETWEEN these, so a line is never sliced, whatever the paragraph spacing,
+ * headings or blank lines in between.
+ */
+function collectSegments(root: HTMLElement): Seg[] {
+  const base = root.getBoundingClientRect().top;
+  const raw: { top: number; bottom: number }[] = [];
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+  const range = document.createRange();
+  for (let n = walker.nextNode(); n; n = walker.nextNode()) {
+    if (!/\S/.test(n.nodeValue ?? "")) continue;
+    range.selectNodeContents(n);
+    for (const r of Array.from(range.getClientRects())) if (r.height > 0) raw.push({ top: r.top - base, bottom: r.bottom - base });
   }
-  return false;
+  root.querySelectorAll("img, hr").forEach((el) => {
+    const r = el.getBoundingClientRect();
+    if (r.height > 0) raw.push({ top: r.top - base, bottom: r.bottom - base });
+  });
+  raw.sort((a, b) => a.top - b.top || a.bottom - b.bottom);
+
+  const segs: Seg[] = [];
+  for (const r of raw) {
+    const last = segs[segs.length - 1];
+    if (last && r.top < last.bottom - 1) last.bottom = Math.max(last.bottom, r.bottom); // same visual line
+    else segs.push({ top: r.top, bottom: r.bottom, force: false });
+  }
+  // A hard page break (<div data-page-break>) starts the next line on a new page.
+  root.querySelectorAll("[data-page-break]").forEach((el) => {
+    const t = el.getBoundingClientRect().top - base;
+    const next = segs.find((s) => s.top >= t);
+    if (next && next !== segs[0]) next.force = true;
+  });
+  return segs;
 }
 
 /**
- * Lay HTML out inside the page margins. Hard page breaks
- * (`<div data-page-break>`) are sized so the next block starts on a fresh page.
+ * Lay HTML out inside the page margins and decide where the pages break.
  * Browser only.
  */
-export function layoutHtml(html: string, settings: Settings, letterSize: LetterSize): HtmlLayout {
-  const { pageH, contentH, sliceH } = pageMetrics(settings, letterSize);
+export function layoutHtml(html: string, settings: Settings, letterSize: LetterSize, source: HtmlSource = "custom"): HtmlLayout {
+  const { pageH, contentH } = pageMetrics(letterSize);
+  ensureLetterStyles();
   const el = document.createElement("div");
+  el.className = "letter-doc";
   el.style.cssText = `
     position: fixed; left: -9999px; top: 0;
     width: ${PAGE_W}px; padding: 0 ${PAGE_PAD}px;
+    --p-gap: ${PARAGRAPH_GAP[source]};
     ${fontCss(settings)}
     background: #fff; box-sizing: border-box;
   `;
   el.innerHTML = html;
   document.body.appendChild(el);
   try {
-    let forced = false;
-    for (const br of Array.from(el.querySelectorAll<HTMLElement>("[data-page-break]"))) {
-      br.style.height = "0px";
-      if (!hasContentAfter(br, el)) continue;
-      const rem = br.offsetTop % sliceH;
-      if (rem !== 0) {
-        br.style.height = `${sliceH - rem}px`;
-        forced = true;
-      }
+    const segs = collectSegments(el);
+    // Half-leading: the gap above and below the glyphs inside a line box.
+    const fontPx = settings.fontSize * (96 / 72);
+    const pad = Math.max(0, (fontPx * 1.5 - fontPx * 1.15) / 2);
+
+    const ranges: PageRange[] = [];
+    for (let i = 0; i < segs.length; ) {
+      const start = Math.max(0, segs[i].top - pad);
+      let j = i;
+      while (j + 1 < segs.length && !segs[j + 1].force && segs[j + 1].bottom + pad - start <= contentH) j++;
+      // A single line taller than a page (a big image) is clipped to the page.
+      ranges.push({ start, end: Math.min(segs[j].bottom + pad, start + contentH) });
+      i = j + 1;
     }
-    const total = el.scrollHeight;
-    const fits = !forced && total <= contentH;
-    return {
-      html: el.innerHTML,
-      pages: fits ? 1 : Math.max(2, Math.ceil(total / sliceH)),
-      fits,
-      pageH,
-      contentH,
-      sliceH,
-    };
+    const fits = ranges.length <= 1;
+    return { pages: Math.max(1, ranges.length), ranges, fits, pageH, contentH, html, source };
   } finally {
     document.body.removeChild(el);
   }
 }
 
 /** How many pages this HTML will print as. Browser only. */
-export function measureHtmlPages(html: string, settings: Settings, letterSize: LetterSize): number {
-  return layoutHtml(html, settings, letterSize).pages;
+export function measureHtmlPages(html: string, settings: Settings, letterSize: LetterSize, source: HtmlSource = "custom"): number {
+  return layoutHtml(html, settings, letterSize, source).pages;
 }
 
 async function generateCustomLetterPdf(
   htmlContent: string,
   settings: Settings,
   letterSize: LetterSize,
+  source: HtmlSource,
 ): Promise<GeneratedPdf> {
   const [{ default: html2canvas }, { jsPDF }] = await Promise.all([
     import("html2canvas"),
     import("jspdf"),
   ]);
 
-  const layout = layoutHtml(htmlContent, settings, letterSize);
-  const { pageH, sliceH } = layout;
+  const layout = layoutHtml(htmlContent, settings, letterSize, source);
+  const { pageH } = layout;
   const pdfW = 8.5;
   const pdfH = letterSize === "legal" ? 14 : 11;
+  const vars = `--p-gap: ${PARAGRAPH_GAP[source]};`;
 
   // Over the limit: report the true count so the caller can refuse, rather than
   // silently truncating. Nothing is rendered for a letter we won't accept.
@@ -353,10 +419,12 @@ async function generateCustomLetterPdf(
   if (layout.fits) {
     // One page: matches the preview exactly, including vertical centring.
     const container = document.createElement("div");
+    container.className = "letter-doc";
     container.style.cssText = `
       position: fixed; left: -9999px; top: 0;
       width: ${PAGE_W}px; height: ${pageH}px;
       background: #fff; overflow: hidden;
+      ${vars}
       ${fontCss(settings)}
       padding: ${PAGE_PAD}px;
       display: flex; flex-direction: column;
@@ -374,7 +442,8 @@ async function generateCustomLetterPdf(
 
   // Many pages go lighter on memory: 2x past ten pages.
   const scale = layout.pages > 10 ? 2 : 3;
-  for (let i = 0; i < layout.pages; i++) {
+  for (let i = 0; i < layout.ranges.length; i++) {
+    const { start, end } = layout.ranges[i];
     if (i > 0) doc.addPage([pdfW, pdfH]);
 
     const wrapper = document.createElement("div");
@@ -383,15 +452,19 @@ async function generateCustomLetterPdf(
       width: ${PAGE_W}px; height: ${pageH}px;
       overflow: hidden; background: #fff;
     `;
+    // The window onto this page's lines: exactly the lines chosen for it, so a
+    // line below it (which didn't fit) can never show through the margin.
     const clip = document.createElement("div");
     clip.style.cssText = `
       position: absolute; left: 0; top: ${PAGE_PAD}px;
-      width: ${PAGE_W}px; height: ${sliceH}px; overflow: hidden;
+      width: ${PAGE_W}px; height: ${end - start}px; overflow: hidden;
     `;
     const inner = document.createElement("div");
+    inner.className = "letter-doc";
     inner.style.cssText = `
-      position: absolute; left: 0; top: ${-i * sliceH}px;
+      position: absolute; left: 0; top: ${-start}px;
       width: ${PAGE_W}px; padding: 0 ${PAGE_PAD}px;
+      ${vars}
       ${fontCss(settings)}
       box-sizing: border-box;
     `;
@@ -406,15 +479,6 @@ async function generateCustomLetterPdf(
   }
 
   return { base64: doc.output("datauristring").split(",")[1], pageCount: layout.pages };
-}
-
-// Docx HTML takes the same paged path, just never vertically centred.
-async function generateDocxHtmlPdf(
-  htmlContent: string,
-  settings: Settings,
-  letterSize: LetterSize,
-): Promise<GeneratedPdf> {
-  return generateCustomLetterPdf(htmlContent, { ...settings, verticalCenter: false }, letterSize);
 }
 
 function formatDate(dateStr: string, language: string): string {
