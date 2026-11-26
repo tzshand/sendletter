@@ -15,14 +15,7 @@ const nextConfig: NextConfig = {
   },
   async redirects() {
     return [
-      // The "from abroad" blog post was promoted into the /mail-to-canada hub,
-      // which carries its content plus the per-country guides. Permanent so the
-      // hub inherits the post's existing indexing rather than competing with it.
-      {
-        source: "/blog/mail-a-letter-to-canada-from-abroad",
-        destination: "/mail-to-canada",
-        permanent: true,
-      },
+      // (/blog/mail-a-letter-to-canada-from-abroad used to redirect to /mail-to-canada; since 2026-11-26 it is a live guide again.)
       {
         source: "/fr/blog/envoyer-une-lettre-au-canada-depuis-l-etranger",
         destination: "/fr/mail-to-canada/envoyer-une-lettre-au-canada",
