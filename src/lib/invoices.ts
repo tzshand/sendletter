@@ -41,7 +41,7 @@ export async function chargeUsage(opts: {
   const total = rows.reduce((s: number, r: { amount_cents: number }) => s + r.amount_cents, 0);
   if (total <= 0) return { ok: false, error: "nothing to bill", skipped: true };
 
-  const { data: account } = await db.from("sendletter_accounts").select("stripe_customer_id").eq("id", opts.accountId).single();
+  const { data: account } = await db.from("sendletter_accounts").select("stripe_customer_id, email").eq("id", opts.accountId).single();
   if (!account?.stripe_customer_id) return { ok: false, error: "No Stripe customer on file" };
 
   const ids: string[] = rows.map((r: { id: string }) => r.id);
@@ -82,11 +82,19 @@ export async function chargeUsage(opts: {
 
   // 2. Charge.
   try {
-    const pi = await getStripe().paymentIntents.create(
+    const stripe = getStripe();
+    // A PaymentIntent does NOT inherit the customer's default payment method: without an explicit
+    // payment_method, Stripe refuses with "missing a payment method" (which is how this failed daily
+    // for six weeks). Use the customer's default card, or else the first card attached.
+    const paymentMethod = await cardToCharge(stripe, account.stripe_customer_id);
+    if (!paymentMethod) throw new Error("No card on file for this customer");
+    const pi = await stripe.paymentIntents.create(
       {
         amount: total,
         currency: "cad",
         customer: account.stripe_customer_id,
+        payment_method: paymentMethod,
+        receipt_email: account.email || undefined,
         off_session: true,
         confirm: true,
         description: `sendletter invoice ${invoiceNumber(inv.seq, inv.created_at)}: ${rows.length} letter${rows.length === 1 ? "" : "s"}`,
@@ -106,7 +114,41 @@ export async function chargeUsage(opts: {
   }
 }
 
+/** The card to charge off-session: the customer's default payment method, else the first card attached. */
+export async function cardToCharge(
+  stripe: { customers: { retrieve: (id: string) => Promise<unknown> }; paymentMethods: { list: (p: { customer: string; type: "card" }) => Promise<{ data: { id: string }[] }> } },
+  customerId: string,
+): Promise<string | null> {
+  const c = (await stripe.customers.retrieve(customerId)) as { deleted?: boolean; invoice_settings?: { default_payment_method?: string | { id: string } | null } };
+  if (c.deleted) return null;
+  const def = c.invoice_settings?.default_payment_method;
+  const defId = typeof def === "string" ? def : def?.id;
+  if (defId) return defId;
+  const cards = await stripe.paymentMethods.list({ customer: customerId, type: "card" });
+  return cards.data[0]?.id ?? null;
+}
+
 export type MonthlyResult = { accountId: string; status: "succeeded" | "failed" | "skipped"; amount?: number; invoiceId?: string; error?: string };
+
+/** What the monthly run WOULD charge right now, without charging anything or writing anything. */
+export async function previewMonthlyBilling(now = new Date()) {
+  const monthStart = torontoMonthStart(now);
+  const { data } = await getDb()
+    .from("sendletter_api_usage")
+    .select("id, account_id, amount_cents, created_at")
+    .eq("billed", false)
+    .isNull("voided_at")
+    .isNull("invoice_id")
+    .lt("created_at", monthStart.toISOString());
+  const byAccount = new Map<string, { letters: number; cents: number; oldest: string }>();
+  for (const r of (data ?? []) as { account_id: string; amount_cents: number; created_at: string }[]) {
+    const g = byAccount.get(r.account_id) ?? { letters: 0, cents: 0, oldest: String(r.created_at) };
+    g.letters++;
+    g.cents += r.amount_cents;
+    byAccount.set(r.account_id, g);
+  }
+  return { monthStart: monthStart.toISOString(), accounts: [...byAccount].map(([accountId, g]) => ({ accountId, ...g })) };
+}
 
 /** Invoice every account's unbilled usage from before the start of this month (Toronto time). */
 export async function runMonthlyBilling(now = new Date()): Promise<MonthlyResult[]> {

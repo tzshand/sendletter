@@ -898,3 +898,57 @@ test("volume: the calculator is exact beyond 5,000 letters and counts every enve
   // 50 letters of several envelopes each is well past 100 mailings: the steady fee is the floor.
   assert.equal(quote({ pages: 40, size: "standard", colour: false, duplex: true, channel: "api", priorMailings: 50 * split.mailings_per_letter - 1 }).totalCents, split.steady_state_letter_cents);
 });
+
+// ── Charging the card (the production bug: no payment_method) ───
+
+test("charge: the card is passed explicitly: the customer's default, else the first attached; with a receipt email", async () => {
+  setup();
+  pg.rows("sendletter_accounts")[0].email = "buyer@example.com";
+  stripeMock.setCustomer("cus_1", { default: "pm_default_visa", cards: ["pm_other", "pm_default_visa"] });
+  pg.seed("sendletter_api_usage", [usage("u1", 500, lastMonth())]);
+  await bill.POST(cronReq());
+  assert.equal(stripeMock.intents[0].payment_method, "pm_default_visa");
+  assert.equal(stripeMock.intents[0].receipt_email, "buyer@example.com");
+  assert.equal(stripeMock.intents[0].off_session, true);
+  assert.equal(stripeMock.intents[0].customer, "cus_1");
+
+  pg.rows("sendletter_api_usage").length = 0; pg.rows("sendletter_invoices").length = 0; stripeMock.clear();
+  stripeMock.setCustomer("cus_1", { default: null, cards: ["pm_first", "pm_second"] });
+  pg.seed("sendletter_api_usage", [usage("u2", 500, lastMonth())]);
+  await bill.POST(cronReq());
+  assert.equal(stripeMock.intents[0].payment_method, "pm_first", "no default: the first card");
+});
+
+test("charge: a customer with no card at all fails cleanly, keeps the usage, and the owner is emailed", async () => {
+  setup();
+  stripeMock.setCustomer("cus_1", { default: null, cards: [] });
+  pg.seed("sendletter_api_usage", [usage("u1", 500, lastMonth())]);
+  const j = await (await bill.POST(cronReq())).json();
+  assert.equal(j.results[0].status, "failed");
+  assert.match(j.results[0].error, /No card on file/);
+  assert.equal(pg.rows("sendletter_api_usage")[0].billed, false);
+  assert.equal(pg.rows("sendletter_api_usage")[0].invoice_id, null);
+  assert.equal(stripeMock.intents.length, 0);
+  assert.match(resend.sent.at(-1)!.subject, /billing: 1 charge FAILED/);
+});
+
+test("charge: a first letter for a customer with no card is a clean 402 and nothing is sent", async () => {
+  setup({ firstOrder: true });
+  stripeMock.setCustomer("cus_1", { default: null, cards: [] });
+  const res = await send.POST(post(draft()));
+  assert.equal(res.status, 402);
+  assert.equal((await res.json()).code, "payment_failed");
+  assert.equal(resend.sent.length, 0);
+});
+
+test("bill: ?dry_run=1 shows what would be charged and charges and writes nothing", async () => {
+  setup();
+  pg.seed("sendletter_api_usage", [usage("u1", 379, daysAgo(60)), usage("u2", 379, daysAgo(59)), usage("u3", 300, new Date().toISOString())]);
+  const before = JSON.stringify(pg.rows("sendletter_api_usage"));
+  const j = await (await bill.POST(new Request("http://x/api/cron/bill?dry_run=1", { method: "POST", headers: { "x-cron-key": process.env.CRON_SECRET! } }))).json();
+  assert.equal(j.dry_run, true);
+  assert.deepEqual(j.accounts.map((a: { letters: number; cents: number }) => [a.letters, a.cents]), [[2, 758]], "this month's letter is not included");
+  assert.equal(stripeMock.intents.length, 0);
+  assert.equal(pg.rows("sendletter_invoices").filter((i) => i.kind === "monthly").length, 0);
+  assert.equal(JSON.stringify(pg.rows("sendletter_api_usage")), before, "nothing written");
+});
