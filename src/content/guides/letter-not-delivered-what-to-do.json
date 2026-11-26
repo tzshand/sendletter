@@ -1,0 +1,101 @@
+{
+  "id": "letter-not-delivered-what-to-do",
+  "slug": "letter-not-delivered-what-to-do",
+  "hub": "everyday",
+  "title": "My Letter Has Not Arrived: What to Do in Canada",
+  "description": "Canada Post's delivery standards, how long to wait before worrying, what to check, and what Canada Post will and will not do about an untracked letter.",
+  "keywords": [
+    "canada post letter not delivered",
+    "letter hasn't arrived canada",
+    "lost letter canada post",
+    "how long to wait for a letter canada"
+  ],
+  "answer": "Wait until a few business days past the standard: two days locally, three within a province, four across Canada. Canada Post says most delayed letters arrive within five business days of the usual standard. After that you can send feedback through a support ticket, but letters without tracking numbers cannot be investigated.",
+  "sections": [
+    {
+      "h2": "How long is too long?",
+      "blocks": [
+        {
+          "table": {
+            "headers": [
+              "Distance",
+              "Standard"
+            ],
+            "rows": [
+              [
+                "Local",
+                "2 business days"
+              ],
+              [
+                "Within the province",
+                "3 business days"
+              ],
+              [
+                "Across Canada",
+                "4 business days"
+              ],
+              [
+                "International",
+                "Up to 7 business days"
+              ]
+            ]
+          }
+        },
+        {
+          "p": "Canada Post says these standards are not guaranteed and can be affected by holidays and seasonal volume, and that most delayed letters arrive within five business days of their usual standard. Waiting that long first is reasonable."
+        }
+      ]
+    },
+    {
+      "h2": "What to check first",
+      "blocks": [
+        {
+          "ul": [
+            "The address and the postal code. A wrong or missing code is a common reason for delay or return. See [why letters to Canada get returned](/blog/why-letters-to-canada-get-returned).",
+            "The postage. A letter with too little postage can be delayed or returned. See [letter with too little postage](/blog/letter-with-too-little-postage).",
+            "Whether the recipient has checked a community mailbox, a neighbour, the building's mail room, or a redirected address.",
+            "Whether a return address was on it. Letters that cannot be delivered are returned to it."
+          ]
+        }
+      ]
+    },
+    {
+      "h2": "What Canada Post will do",
+      "blocks": [
+        {
+          "p": "If the letter has a tracking number, use Canada Post's tracking page. If it does not, Canada Post says individual letters cannot be investigated, and that if the letter is delayed beyond the usual standards you can send feedback through a support ticket. Its page also says feedback will not receive a direct response, so expect the ticket to help Canada Post improve and not to find your letter."
+        }
+      ]
+    },
+    {
+      "h2": "If the letter really matters",
+      "blocks": [
+        {
+          "p": "When a letter is time-sensitive or must be provable, send a copy by another route as well, such as email, and use [Registered Mail](/blog/registered-mail-canada-cost) next time so there is a tracking number and a signature."
+        }
+      ]
+    },
+    {
+      "h2": "If you ordered it through sendletter",
+      "blocks": [
+        {
+          "p": "Write to support@sendletter.app with your order number. We can confirm when it was printed and handed to Canada Post,."
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "label": "Canada Post, Why hasn't my letter been delivered?",
+      "url": "https://www.canadapost-postescanada.ca/cpc/en/support/kb/receiving/delivery-faq/how-to-resolve-undelivered-mail.page"
+    }
+  ],
+  "related": [
+    "can-you-track-a-letter-canada",
+    "how-long-does-a-letter-take-in-canada",
+    "why-letters-to-canada-get-returned"
+  ],
+  "wave": 3,
+  "live": true,
+  "published": "2026-11-26"
+}

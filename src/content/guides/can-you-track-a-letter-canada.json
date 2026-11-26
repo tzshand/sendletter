@@ -1,0 +1,103 @@
+{
+  "id": "can-you-track-a-letter-canada",
+  "slug": "can-you-track-a-letter-canada",
+  "hub": "everyday",
+  "title": "Can You Track a Letter in Canada?",
+  "description": "An ordinary letter has no tracking number. Registered Mail is the tracked option: what it costs, what you get, and when a stamp is enough.",
+  "keywords": [
+    "can you track a letter in canada",
+    "track a letter canada post",
+    "tracking number lettermail",
+    "track regular mail canada"
+  ],
+  "answer": "Not an ordinary letter. Standard Lettermail has no tracking number, and Canada Post says individual letters without one cannot be investigated. The tracked option for a letter is Registered Mail, which adds $13.15 to the postage and gives you a tracking number, a signature on delivery and a mailing receipt.",
+  "sections": [
+    {
+      "h2": "Ordinary letters",
+      "blocks": [
+        {
+          "p": "A letter with a stamp on it travels as Lettermail. It carries no number you can look up, so there is nothing to track, and you receive no confirmation when it is delivered. Canada Post's help page is blunt about the consequence: individual letters without tracking numbers cannot be investigated."
+        },
+        {
+          "p": "For most letters that is fine. Letters are delivered within two, three or four business days depending on distance, though those standards are not guaranteed. See [how long a letter takes](/blog/how-long-does-a-letter-take-in-canada)."
+        }
+      ]
+    },
+    {
+      "h2": "The tracked option: Registered Mail",
+      "blocks": [
+        {
+          "table": {
+            "headers": [
+              "",
+              "Registered Mail"
+            ],
+            "rows": [
+              [
+                "Added cost",
+                "$13.15 on top of the postage, within Canada"
+              ],
+              [
+                "Tracking",
+                "A unique tracking number"
+              ],
+              [
+                "Proof of mailing",
+                "A receipt with the date of purchase, from the post office"
+              ],
+              [
+                "Signature",
+                "Recorded on delivery"
+              ],
+              [
+                "Liability coverage",
+                "$100 included"
+              ],
+              [
+                "Where to post",
+                "A post office, not a street letter box"
+              ]
+            ]
+          }
+        },
+        {
+          "p": "A $1.44 stamp plus the $13.15 fee comes to $14.59 for a letter that can be tracked. [What Registered Mail costs](/blog/registered-mail-canada-cost) and [Registered versus regular mail](/blog/registered-vs-regular-mail-canada) go into more detail."
+        }
+      ]
+    },
+    {
+      "h2": "What about parcels and packets?",
+      "blocks": [
+        {
+          "p": "Parcel and packet services carry tracking numbers, but a letter in an envelope is Lettermail, and sending it as a packet costs more than the stamp. If you only need to know that a letter arrived, Registered Mail is the usual answer."
+        }
+      ]
+    },
+    {
+      "h2": "If you ordered it through sendletter",
+      "blocks": [
+        {
+          "p": "A letter ordered through sendletter is printed and posted as ordinary Lettermail, so Canada Post does not track it either. What we can show is our own side: when it was received, printed and handed to Canada Post. API customers get the same through letter statuses and webhooks."
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "label": "Canada Post, Why hasn't my letter been delivered?",
+      "url": "https://www.canadapost-postescanada.ca/cpc/en/support/kb/receiving/delivery-faq/how-to-resolve-undelivered-mail.page"
+    },
+    {
+      "label": "Canada Post, Registered Mail",
+      "url": "https://www.canadapost-postescanada.ca/cpc/en/personal/send-within-canada/registered-mail.page"
+    }
+  ],
+  "related": [
+    "registered-mail-canada-cost",
+    "registered-vs-regular-mail-canada",
+    "how-long-does-a-letter-take-in-canada"
+  ],
+  "wave": 3,
+  "live": true,
+  "published": "2026-11-26"
+}

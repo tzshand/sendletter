@@ -1,0 +1,82 @@
+{
+  "id": "proof-of-mailing-letter-canada",
+  "slug": "proof-of-mailing-letter-canada",
+  "hub": "legal",
+  "title": "How to Prove You Mailed a Letter in Canada",
+  "description": "What Canada Post's options can and cannot prove, how Registered Mail gives you a receipt and signature, and how to keep your own record of what you sent.",
+  "keywords": [
+    "proof of mailing canada",
+    "prove you mailed a letter canada",
+    "proof of mailing canada post",
+    "certificate of mailing canada"
+  ],
+  "answer": "Ordinary mail proves nothing about whether a letter was sent or received. Registered Mail gives you a dated receipt, a tracking number and a signature on delivery. Canada Post notes that none of its options prove what was inside the envelope, so keep a copy of exactly what you sent.",
+  "sections": [
+    {
+      "h2": "Ordinary mail",
+      "blocks": [
+        {
+          "p": "A stamped letter dropped in a mailbox leaves no record: no receipt, no signature, no delivery date. If a dispute depends on the letter having been sent, an ordinary stamp is the weakest choice."
+        }
+      ]
+    },
+    {
+      "h2": "Registered Mail",
+      "blocks": [
+        {
+          "p": "For letters within Canada, Canada Post says Registered Mail gives you a mailing receipt with the date of your purchase, a copy of the signature of the person who accepted the delivery, and tracking with the date it was delivered. It costs $13.15 on top of the postage and is handed in at a post office; see [what Registered Mail costs](/blog/registered-mail-canada-cost)."
+        },
+        {
+          "p": "Canada Post is also clear on a limit: its mailing options cannot prove that you mailed a specific letter or the exact contents of a parcel. The receipt shows that an item was mailed, not what was in it."
+        }
+      ]
+    },
+    {
+      "h2": "Keep your own record",
+      "blocks": [
+        {
+          "ul": [
+            "Keep a copy of the exact letter, signed and dated, and of anything enclosed.",
+            "Note the date, the address you used, and how you sent it.",
+            "Keep the Registered Mail receipt and tracking number, and save the delivery confirmation when it shows.",
+            "Write down who witnessed you posting it, if anyone did."
+          ]
+        }
+      ]
+    },
+    {
+      "h2": "When a rule decides the method",
+      "blocks": [
+        {
+          "p": "Some notices must be given in a particular way: a lease, a contract, a consumer cancellation or a court rule may say how, to what address, and when it counts as received. Check that rule first; it matters more than which Canada Post product you pick. [Registered versus regular mail](/blog/registered-vs-regular-mail-canada) and [mailing a legal notice online](/blog/can-you-mail-a-legal-notice-online) cover the common cases. This is general information, not legal advice."
+        }
+      ]
+    },
+    {
+      "h2": "What a print-and-mail service can show",
+      "blocks": [
+        {
+          "p": "A letter ordered from sendletter goes by ordinary Lettermail, so it carries no Canada Post proof. We can show our own record of when it was received, printed and posted. If you need proof of delivery, post it yourself by Registered Mail."
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "label": "Canada Post, How to show that you mailed a letter or parcel",
+      "url": "https://www.canadapost-postescanada.ca/cpc/en/support/kb/sending/sending-faq/how-to-show-that-you-mailed-a-letter-or-parcel.page"
+    },
+    {
+      "label": "Canada Post, Registered Mail",
+      "url": "https://www.canadapost-postescanada.ca/cpc/en/personal/send-within-canada/registered-mail.page"
+    }
+  ],
+  "related": [
+    "registered-vs-regular-mail-canada",
+    "registered-mail-canada-cost",
+    "legal-notice"
+  ],
+  "wave": 3,
+  "live": true,
+  "published": "2026-11-26"
+}

@@ -1,0 +1,111 @@
+{
+  "id": "stamp-price-2027-what-we-know",
+  "slug": "stamp-price-2027-what-we-know",
+  "hub": "postage",
+  "title": "Canada Post's $2 Stamp in 2027: What Is Known",
+  "description": "What the federal budget says about a $2 domestic stamp in 2027, what Canada Post has not announced, and what to do with stamps you already own.",
+  "keywords": [
+    "canada post stamp price 2027",
+    "canada post $2 stamp",
+    "stamp price increase canada 2027",
+    "will stamps go up in canada"
+  ],
+  "answer": "The 2026 federal budget says a single domestic stamp will rise from $1.44 to $2.00 in 2027, then by about seven per cent a year. No month has been announced and Canada Post has not published a new rate table. Today's rate is still $1.44 for a single stamp, or $1.24 each in a booklet.",
+  "sections": [
+    {
+      "h2": "What the budget says",
+      "blocks": [
+        {
+          "p": "News reports on the November 2026 federal budget say the price of a single domestic stamp will go from $1.44 to $2.00 in 2027, with increases of about seven per cent a year after that. The budget gives no month for the first increase. Its stated aim is to help Canada Post stop losing money as letter volumes fall, and it estimates the change at roughly $6 a year for an individual and $9 for a small business."
+        },
+        {
+          "p": "A Canada Post spokesperson has said U.S. and international letter rates will also rise, but the amounts have not been decided."
+        }
+      ]
+    },
+    {
+      "h2": "What is not known yet",
+      "blocks": [
+        {
+          "ul": [
+            "The month the new price takes effect.",
+            "The price of a stamp in a booklet, coil or pane (today $1.24 each). Whether it rises in step with the single-stamp price has not been announced.",
+            "The price of heavier letters, and of letters to the United States and overseas.",
+            "Whether Canada Post will publish the new rates before they take effect, or how much notice it will give."
+          ]
+        },
+        {
+          "p": "Canada Post's price pages say prices are subject to change without notice. Treat any specific date or booklet price you read elsewhere as a guess until Canada Post publishes it."
+        }
+      ]
+    },
+    {
+      "h2": "Today's rates",
+      "blocks": [
+        {
+          "table": {
+            "headers": [
+              "Letter within Canada",
+              "Price"
+            ],
+            "rows": [
+              [
+                "Up to 30 g, single stamp",
+                "$1.44"
+              ],
+              [
+                "Up to 30 g, stamp in a booklet",
+                "$1.24 each"
+              ],
+              [
+                "Over 30 g up to 50 g",
+                "$1.75"
+              ]
+            ]
+          }
+        },
+        {
+          "p": "See [Canada Post stamp prices](/blog/canada-post-stamp-price) and [letter rates by weight](/blog/canada-post-letter-rates-by-weight) for the full table."
+        }
+      ]
+    },
+    {
+      "h2": "Do stamps you buy now stay valid?",
+      "blocks": [
+        {
+          "p": "A Permanent stamp is always accepted at the current domestic postage rate, Canada Post says, so one bought now will still cover a standard letter after the price rises. See [what a Permanent stamp is worth](/blog/permanent-stamp-value-canada). A stamp with a printed dollar value is different: it is only worth its face value, so after an increase you would need to add postage to reach the new rate."
+        }
+      ]
+    },
+    {
+      "h2": "If you mail only the odd letter",
+      "blocks": [
+        {
+          "p": "The stamp is part of the cost of every letter however you send it. A print-and-mail service passes postage through at cost, so a change in the stamp price changes the postage line and nothing else. [What an online letter costs](/blog/what-an-online-letter-costs) shows the breakdown at today's rates."
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "label": "CTV News, Canada Post to increase stamp costs to $2 in 2027",
+      "url": "https://www.ctvnews.ca/ottawa/article/canada-post-to-increase-stamp-costs-to-2-in-2027/"
+    },
+    {
+      "label": "BNN Bloomberg, Canada Post to increase stamp costs to $2 in 2027",
+      "url": "https://www.bnnbloomberg.ca/business/2026/11/05/canada-post-to-increase-stamp-costs-to-2-in-2027/"
+    },
+    {
+      "label": "Canada Post, Postage rates for letters",
+      "url": "https://www.canadapost-postescanada.ca/cpc/en/personal/sending/letters-mail/postage-rates.page"
+    }
+  ],
+  "related": [
+    "canada-post-stamp-price",
+    "permanent-stamp-value-canada",
+    "what-an-online-letter-costs"
+  ],
+  "wave": 3,
+  "live": true,
+  "published": "2026-11-26"
+}
