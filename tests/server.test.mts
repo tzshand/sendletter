@@ -908,7 +908,7 @@ test("charge: the card is passed explicitly: the customer's default, else the fi
   pg.seed("sendletter_api_usage", [usage("u1", 500, lastMonth())]);
   await bill.POST(cronReq());
   assert.equal(stripeMock.intents[0].payment_method, "pm_default_visa");
-  assert.equal(stripeMock.intents[0].receipt_email, "buyer@example.com");
+  assert.equal(stripeMock.intents[0].receipt_email, undefined, "we send our own invoice; no Stripe receipt");
   assert.equal(stripeMock.intents[0].off_session, true);
   assert.equal(stripeMock.intents[0].customer, "cus_1");
 
@@ -951,4 +951,45 @@ test("bill: ?dry_run=1 shows what would be charged and charges and writes nothin
   assert.equal(stripeMock.intents.length, 0);
   assert.equal(pg.rows("sendletter_invoices").filter((i) => i.kind === "monthly").length, 0);
   assert.equal(JSON.stringify(pg.rows("sendletter_api_usage")), before, "nothing written");
+});
+
+// ── Our own invoice emails (link + PDF), and the welcome email ───
+
+test("emails: a paid first order sends our invoice with a PDF attached, then the welcome email; no Stripe receipt", async () => {
+  setup({ firstOrder: true });
+  resend.clear();
+  const res = await send.POST(post(draft()));
+  assert.equal(res.status, 200);
+  const mails = resend.sent.filter((m) => m.to === "dev@example.com");
+  assert.equal(mails.length, 2);
+  assert.match(mails[0].subject, /^Invoice SL-\d{4}-\d{6}: \$2\.48 paid$/);
+  assert.match(mails[0].html, /sendletter\.app\/account\/invoices\/[0-9a-f-]{36}/);
+  assert.match(mails[0].html, /logo-240\.png/);
+  assert.equal(mails[0].attachments?.length, 1);
+  assert.match(mails[0].attachments![0].filename, /^SL-\d{4}-\d{6}\.pdf$/);
+  assert.equal(Buffer.from(mails[0].attachments![0].content, "base64").subarray(0, 5).toString(), "%PDF-");
+  assert.match(mails[1].subject, /^Welcome to sendletter/);
+  assert.match(mails[1].html, /\$0\.99/);
+  assert.match(mails[1].html, /\$0\.20/);
+  assert.match(mails[1].html, /\$1\.69/);
+  assert.equal(stripeMock.intents[0].receipt_email, undefined);
+});
+
+test("emails: a monthly invoice sends the invoice only (no second welcome)", async () => {
+  setup();
+  pg.seed("sendletter_api_usage", [usage("u1", 379, lastMonth())]);
+  resend.clear();
+  await bill.POST(cronReq());
+  const mails = resend.sent.filter((m) => m.to === "dev@example.com");
+  assert.equal(mails.length, 1);
+  assert.match(mails[0].subject, /\$3\.79 paid/);
+});
+
+test("emails: a failed charge sends the customer no invoice, and a mail failure never undoes a charge", async () => {
+  setup();
+  stripeMock.failNext("Your card was declined.");
+  pg.seed("sendletter_api_usage", [usage("u1", 379, lastMonth())]);
+  resend.clear();
+  await bill.POST(cronReq());
+  assert.equal(resend.sent.filter((m) => m.to === "dev@example.com").length, 0);
 });

@@ -30,6 +30,7 @@ export default async function InvoicePage({ params }: { params: Promise<{ id: st
         <Link href="/account/invoices" className="text-sm text-gray-500 hover:text-gray-800">← All invoices</Link>
         <div className="flex gap-4 items-center">
           <a href={`/api/account/invoices/export?invoice=${id}`} className="text-sm font-semibold text-brand hover:underline">CSV</a>
+          <a href={`/api/account/invoices/${id}/pdf`} className="text-sm font-semibold text-brand hover:underline">PDF</a>
           <PrintButton />
         </div>
       </div>

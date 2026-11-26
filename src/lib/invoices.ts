@@ -16,6 +16,7 @@
 import { getDb } from "@/lib/db";
 import { getStripe } from "@/lib/stripe";
 import { torontoMonthStart } from "@/lib/api-limits";
+import { sendPaidInvoiceEmails } from "@/lib/invoice-mail";
 
 export const invoiceNumber = (seq: number, createdAt: string) =>
   `SL-${new Date(createdAt).getUTCFullYear()}-${String(seq).padStart(6, "0")}`;
@@ -94,7 +95,6 @@ export async function chargeUsage(opts: {
         currency: "cad",
         customer: account.stripe_customer_id,
         payment_method: paymentMethod,
-        receipt_email: account.email || undefined,
         off_session: true,
         confirm: true,
         description: `sendletter invoice ${invoiceNumber(inv.seq, inv.created_at)}: ${rows.length} letter${rows.length === 1 ? "" : "s"}`,
@@ -105,13 +105,15 @@ export async function chargeUsage(opts: {
     // 3. Record.
     await db.from("sendletter_api_usage").update({ billed: true }).in("id", ids);
     await db.from("sendletter_invoices").update({ status: "paid", paid_at: new Date().toISOString(), stripe_payment_intent_id: pi.id }).eq("id", inv.id);
-    return { ok: true, invoiceId: inv.id, totalCents: total };
   } catch (e) {
     const msg = e instanceof Error ? e.message : "charge failed";
     await db.from("sendletter_api_usage").update({ invoice_id: null }).eq("invoice_id", inv.id);
     await db.from("sendletter_invoices").update({ status: "failed", error_message: msg }).eq("id", inv.id);
     return { ok: false, invoiceId: inv.id, error: msg };
   }
+  // We send our own invoice (link + PDF); Stripe's receipt email is not used. Never throws.
+  await sendPaidInvoiceEmails(inv.id);
+  return { ok: true, invoiceId: inv.id, totalCents: total };
 }
 
 /** The card to charge off-session: the customer's default payment method, else the first card attached. */
