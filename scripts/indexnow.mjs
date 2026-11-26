@@ -84,7 +84,7 @@ const DEFAULT_PATHS = [
 let fromSitemap = null;
 if (process.argv.includes("--sitemap")) {
   const xml = await (await fetch(`https://${HOST}/sitemap.xml`)).text();
-  fromSitemap = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => new URL(m[1]).pathname).filter((p) => /^\/(blog|guides)(\/|$)/.test(p));
+  fromSitemap = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => new URL(m[1]).pathname).filter((p) => /^(\/fr)?\/(blog|guides)(\/|$)/.test(p));
 }
 
 const args = process.argv.slice(2).filter((a) => a !== "--sitemap").map((a) => {

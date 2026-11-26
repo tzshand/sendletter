@@ -96,17 +96,18 @@ export function PostShell({
   const meta = post[locale]!;
   const other: Locale = locale === "fr" ? "en" : "fr";
   const related = relatedFor(post, locale, 6);
-  const hub = locale === "en" && post.hub ? HUBS_BY_ID.get(post.hub) : undefined;
+  const hub = post.hub ? HUBS_BY_ID.get(post.hub) : undefined;
+  const hubTitle = hub ? (locale === "fr" ? hub.fr?.title : hub.title) : undefined;
 
   return (
     <article className="max-w-2xl mx-auto px-5 py-12">
       <nav className="mb-6 flex items-center justify-between">
-        {hub ? (
+        {hub && hubTitle ? (
           <Link
-            href={hubPath(hub)}
+            href={hubPath(hub, locale)}
             className="text-xs font-medium text-gray-400 hover:text-gray-600 transition-colors"
           >
-            ← {hub.title}
+            ← {hubTitle}
           </Link>
         ) : (
           <Link

@@ -1,0 +1,113 @@
+{
+  "id": "holiday-mailing-deadlines-2026",
+  "slug": "derniere-date-pour-poster-des-cartes-des-fetes-au-canada-2026",
+  "title": "Dernier jour pour poster des cartes des fêtes au Canada (2026)",
+  "description": "Les dates limites d’envoi 2026 de Postes Canada pour les cartes et lettres au Canada, aux États-Unis et outre-mer, et comment prévoir une lettre imprimée en ligne.",
+  "keywords": [
+    "dates limites postes canada fêtes 2026",
+    "dernier jour pour poster des cartes de noël canada",
+    "date limite envoi cartes de noël canada",
+    "postes canada courrier des fêtes date limite"
+  ],
+  "answer": "Les dates limites d’envoi de Postes Canada pour les cartes sont le 22 décembre pour le courrier local, le 21 décembre pour le régional et le 18 décembre pour le national. Les cartes à destination des États-Unis devraient partir d’ici le 11 décembre, et celles à destination de l’étranger entre le 3 et le 11 décembre selon le pays. Ce sont des estimations, non des garanties : postez tôt.",
+  "sections": [
+    {
+      "h2": "Cartes et lettres au Canada",
+      "blocks": [
+        {
+          "table": {
+            "headers": [
+              "Destination",
+              "Date limite d’envoi"
+            ],
+            "rows": [
+              [
+                "Local",
+                "22 décembre"
+              ],
+              [
+                "Régional",
+                "21 décembre"
+              ],
+              [
+                "National",
+                "18 décembre"
+              ]
+            ]
+          }
+        },
+        {
+          "p": "Postes Canada précise que ces dates s’appliquent entre les grands centres urbains, qu’elles dépendent du lieu d’origine et de la destination et que certaines restrictions s’appliquent. Local, régional et national désignent la distance que parcourt la lettre, qui détermine sa norme de livraison de deux, trois ou quatre jours ouvrables. Voir [le temps que prend une lettre au Canada](/blog/how-long-does-a-letter-take-in-canada)."
+        }
+      ]
+    },
+    {
+      "h2": "Cartes et lettres à destination de l’étranger",
+      "blocks": [
+        {
+          "table": {
+            "headers": [
+              "Destination",
+              "Date limite d’envoi"
+            ],
+            "rows": [
+              [
+                "États-Unis",
+                "11 décembre"
+              ],
+              [
+                "Royaume-Uni, France, Allemagne, Pays-Bas, Suisse, Japon",
+                "11 décembre"
+              ],
+              [
+                "Reste de l’Europe, Asie, Australie, Nouvelle-Zélande, Chine, Inde, Moyen-Orient",
+                "9 décembre"
+              ],
+              [
+                "Afrique, Amérique centrale et Amérique du Sud, Caraïbes",
+                "3 décembre"
+              ]
+            ]
+          }
+        },
+        {
+          "p": "Les délais de livraison à l’international varient selon le pays, les douanes et le service postal local : considérez ces dates comme les plus tardives possible, et non comme des dates sûres."
+        }
+      ]
+    },
+    {
+      "h2": "Lettres au père Noël",
+      "blocks": [
+        {
+          "p": "Les lettres au père Noël de Postes Canada s’adressent au Père Noël, Pôle Nord, H0H 0H0, Canada. Postes Canada demande que les lettres arrivent d’ici le 9 décembre 2026 pour recevoir une réponse du pôle Nord, et aucun timbre n’est nécessaire pour les lettres postées au Canada."
+        }
+      ]
+    },
+    {
+      "h2": "Si vous commandez une lettre imprimée en ligne",
+      "blocks": [
+        {
+          "p": "Une lettre commandée par l’entremise de sendletter est imprimée et postée avec Postes Canada. Prévoyez un jour ouvrable pour l’impression et le dépôt à la poste, puis ajoutez la norme de livraison de Postes Canada, de deux à quatre jours ouvrables. Pour que la lettre arrive avant la date limite d’envoi, commandez quelques jours avant cette date. Voir [ce qu’il en coûte pour une lettre en ligne](/blog/what-an-online-letter-costs) et [comment fonctionne l’envoi de lettres en ligne](/blog/how-online-letter-mailing-works)."
+        }
+      ]
+    },
+    {
+      "h2": "À vérifier avant de vous fier à une date",
+      "blocks": [
+        {
+          "p": "Postes Canada peut modifier ces dates, et les normes de livraison sont des estimations qu’elle ne garantit pas. Confirmez-les sur la page des Fêtes de Postes Canada avant la dernière semaine."
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "label": "Postes Canada, lignes directrices pour les envois des fêtes",
+      "url": "https://www.canadapost-postescanada.ca/scp/fr/notre-entreprise/conseils-dexpedition-pour-les-fetes.page"
+    },
+    {
+      "label": "Postes Canada, écrire une lettre au père Noël",
+      "url": "https://www.canadapost-postescanada.ca/scp/fr/notre-entreprise/ecris-une-lettre-au-perenoel.page"
+    }
+  ]
+}

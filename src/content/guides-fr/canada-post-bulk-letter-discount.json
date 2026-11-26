@@ -1,0 +1,114 @@
+{
+  "id": "canada-post-bulk-letter-discount",
+  "slug": "rabais-postes-canada-lettres-en-quantite",
+  "title": "Rabais de Postes Canada sur les lettres : qui y a droit",
+  "description": "Le rabais sur quantité de Postes Canada commence à plus de 1 000 envois. Sa valeur sur une lettre standard, ses conditions et les options des petits expéditeurs.",
+  "keywords": [
+    "postes canada envoi en nombre 1000 lettres",
+    "rabais postes canada lettres",
+    "poste-lettres à tarifs préférentiels",
+    "rabais sur quantité postes canada"
+  ],
+  "answer": "Postes Canada annonce des rabais sur les lettres pour les entreprises qui postent plus de 1 000 articles au Canada, ou plus de 100 à l’international. Sur une lettre standard de 30 g ou moins, l’économie est mince : la Poste-lettres à tarifs préférentiels coûte 1,23 $ la lettre, contre 1,24 $ avec un timbre de carnet et 1,44 $ avec un timbre à l’unité. Elle exige aussi les outils d’expédition électroniques de Postes Canada.",
+  "sections": [
+    {
+      "h2": "Le seuil",
+      "blocks": [
+        {
+          "p": "La page de Postes Canada sur les rabais pour les lettres indique que vous pouvez économiser si vous postez plus de 1 000 articles au Canada ou plus de 100 à l’international, et elle annonce un affranchissement à partir de 1,23 $ l’unité au Canada. Sa grille de prix présente le produit à prix réduit, la Poste-lettres à tarifs préférentiels, avec un volume minimal de 1 000 pour les lettres mécanisables. En deçà, vous payez les tarifs ordinaires de la Poste-lettres."
+        }
+      ]
+    },
+    {
+      "h2": "Ce que vaut le rabais",
+      "blocks": [
+        {
+          "table": {
+            "headers": [
+              "Lettre standard, au Canada",
+              "Jusqu’à 30 g",
+              "De 30 à 50 g"
+            ],
+            "rows": [
+              [
+                "Timbre à l’unité",
+                "1,44 $",
+                "1,75 $"
+              ],
+              [
+                "Timbre de carnet, de rouleau ou de feuillet",
+                "1,24 $",
+                "1,75 $"
+              ],
+              [
+                "Empreinte d’affranchissement",
+                "1,24 $",
+                "1,75 $"
+              ],
+              [
+                "Machine à affranchir",
+                "1,23 $",
+                "1,75 $"
+              ],
+              [
+                "Poste-lettres à tarifs préférentiels (volume minimal de 1 000)",
+                "1,23 $",
+                "1,74 $"
+              ]
+            ]
+          }
+        },
+        {
+          "p": "Pour une lettre ordinaire, l’écart entre le prix réduit et celui d’un timbre de carnet est d’un cent. Le rabais est bien réel par rapport aux timbres à l’unité (0,21 $ la lettre), mais la plupart des petits expéditeurs paient déjà le prix du carnet ou de la machine à affranchir. Faites le calcul avec votre propre répartition de poids avant de bâtir un processus autour de ce rabais."
+        }
+      ]
+    },
+    {
+      "h2": "Ce qu’il exige",
+      "blocks": [
+        {
+          "ul": [
+            "Une entente de Poste-lettres ou de Poste-lettres à tarifs préférentiels avec Postes Canada, puisque la grille de prix fait partie de cette entente.",
+            "Les outils d’expédition électroniques de Postes Canada pour préparer et soumettre chaque commande. Une commande préparée manuellement est facturée au prix de la machine à affranchir ou de l’empreinte d’affranchissement.",
+            "Le volume minimal pour chaque envoi. Si un envoi n’atteint pas ce seuil, un affranchissement supplémentaire est exigible pour la différence entre le volume réel et le volume minimal.",
+            "Des lettres mécanisables, c’est-à-dire de format standard et compatibles avec l’équipement de tri de Postes Canada."
+          ]
+        }
+      ]
+    },
+    {
+      "h2": "Des prix plus bas existent, dans d’autres produits",
+      "blocks": [
+        {
+          "p": "La grille de prix de Postes Canada présente d’autres produits postaux dont le prix à l’unité est beaucoup plus bas, comme le Courrier personnalisé à partir d’environ 0,56 $ pour un article standard, avec un volume minimal de 100, selon leurs propres ententes. Ces produits ont leurs propres règles quant au type de courrier qu’ils acheminent. Demandez donc au Réseau du service aux entreprises de Postes Canada si votre courrier est admissible avant de planifier quoi que ce soit. Cette page ne les couvre pas."
+        }
+      ]
+    },
+    {
+      "h2": "Si vous postez moins de 1 000 envois",
+      "blocks": [
+        {
+          "p": "La plupart des entreprises qui postent des relevés, des avis ou des factures sont sous le seuil. Vos choix réalistes : les poster vous-même au prix du timbre de carnet ou de la machine à affranchir, ou confier leur impression et leur envoi à un service. Consultez [l’envoi de factures et de relevés à moins de 1 000 par mois](/blog/mail-invoices-statements-small-business) et [service d’impression et d’envoi postal ou faire soi-même](/blog/print-and-mail-service-vs-diy)."
+        }
+      ]
+    },
+    {
+      "h2": "Les tarifs changent",
+      "blocks": [
+        {
+          "p": "Le budget fédéral propose un timbre à l’unité à 2,00 $ en 2027, suivi de hausses annuelles. Ce que l’on sait et ce que l’on ignore se trouve sur [la page sur le timbre de 2027](/blog/stamp-price-2027-what-we-know). Confirmez les chiffres à jour dans les grilles de prix de Postes Canada avant de vous engager."
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "label": "Postes Canada, Obtenez des rabais pour les gros volumes de courrier",
+      "url": "https://www.canadapost-postescanada.ca/scp/fr/comptes-commerciaux/services-postaux/reduction-courrier.page"
+    },
+    {
+      "label": "Postes Canada, prix pour les entreprises (grille de prix de la Poste-lettres et de la Poste-lettres à tarifs préférentiels)",
+      "url": "https://www.canadapost-postescanada.ca/scp/doc/fr/soutien/tarifs/tarifs-entreprise.pdf"
+    }
+  ]
+}

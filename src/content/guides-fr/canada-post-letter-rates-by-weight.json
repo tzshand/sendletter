@@ -1,0 +1,139 @@
+{
+  "id": "canada-post-letter-rates-by-weight",
+  "slug": "tarifs-postes-canada-lettres-selon-le-poids-2026",
+  "title": "Tarifs des lettres de Postes Canada selon le poids (2026)",
+  "description": "Tarifs de la Poste-lettres au Canada de 30 g à 500 g, avec les seuils standard, non standard et surdimensionné, et les tarifs pour les États-Unis et l’étranger.",
+  "keywords": [
+    "tarifs postaux lettres postes canada",
+    "tarifs poste-lettres postes canada",
+    "prix d’une lettre postes canada",
+    "tarifs d’affranchissement postes canada"
+  ],
+  "answer": "Postes Canada demande de 1,24 $ à 1,44 $ pour une lettre standard au Canada jusqu’à 30 grammes et 1,75 $ jusqu’à 50 grammes. Les lettres non standard et surdimensionnées coûtent 2,61 $ jusqu’à 100 grammes, puis jusqu’à 7,36 $ à 500 grammes. Au-delà de 500 grammes, une lettre n’est plus de la Poste-lettres et passe aux prix des colis.",
+  "sections": [
+    {
+      "h2": "Poste-lettres au Canada",
+      "blocks": [
+        {
+          "table": {
+            "headers": [
+              "Poids",
+              "Enveloppe standard",
+              "Non standard ou surdimensionnée"
+            ],
+            "rows": [
+              [
+                "Jusqu’à 30 g",
+                "1,44 $ à l’unité, 1,24 $ en carnet",
+                "2,61 $"
+              ],
+              [
+                "De 30 à 50 g",
+                "1,75 $",
+                "2,61 $"
+              ],
+              [
+                "De 50 à 100 g",
+                "s. o.",
+                "2,61 $"
+              ],
+              [
+                "De 100 à 200 g",
+                "s. o.",
+                "4,29 $"
+              ],
+              [
+                "De 200 à 300 g",
+                "s. o.",
+                "5,98 $"
+              ],
+              [
+                "De 300 à 400 g",
+                "s. o.",
+                "6,85 $"
+              ],
+              [
+                "De 400 à 500 g",
+                "s. o.",
+                "7,36 $"
+              ]
+            ]
+          }
+        },
+        {
+          "p": "La Poste-lettres standard s’arrête à 50 g. Un article plus lourd est facturé dans la colonne non standard ou surdimensionné, même s’il entrerait par ailleurs dans une enveloppe standard. Ce qui est standard dépend du format : voyez [les limites de format et de poids](/blog/lettermail-size-and-weight-limits)."
+        }
+      ]
+    },
+    {
+      "h2": "Deux pièges de tarification",
+      "blocks": [
+        {
+          "ul": [
+            "**Un code postal manquant ou erroné.** Selon le guide des prix de Postes Canada, un article dont le code postal est manquant ou erroné est facturé aux autres tarifs de la Poste-lettres, qui commencent à 2,61 $.",
+            "**Une enveloppe non scellée.** Les articles non scellés, comme les brochures et les bulletins, sont aussi facturés aux autres tarifs de la Poste-lettres."
+          ]
+        }
+      ]
+    },
+    {
+      "h2": "Du Canada vers les États-Unis et l’étranger",
+      "blocks": [
+        {
+          "table": {
+            "headers": [
+              "Poste aux lettres",
+              "États-Unis",
+              "Autres pays"
+            ],
+            "rows": [
+              [
+                "Standard, jusqu’à 30 g",
+                "1,75 $",
+                "3,65 $"
+              ],
+              [
+                "Standard, de 30 à 50 g",
+                "2,61 $",
+                "5,21 $"
+              ],
+              [
+                "Non standard, jusqu’à 100 g",
+                "4,29 $",
+                "8,60 $"
+              ],
+              [
+                "De 100 à 200 g",
+                "7,49 $",
+                "14,99 $"
+              ],
+              [
+                "De 200 à 500 g",
+                "14,99 $",
+                "29,96 $"
+              ]
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "h2": "Transformer un tarif en timbres",
+      "blocks": [
+        {
+          "p": "Un tarif en cents correspond rarement à un seul timbre. [Combien de timbres il faut pour une lettre](/blog/how-many-stamps-for-a-letter-in-canada) convertit chaque tranche en nombre de timbres."
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "label": "Postes Canada, prix pour les consommateurs (mis à jour le 7 septembre 2026)",
+      "url": "https://www.canadapost-postescanada.ca/scp/doc/fr/soutien/tarifs/tarifs-personnel.pdf"
+    },
+    {
+      "label": "Postes Canada, exigences de format de la Poste-lettres",
+      "url": "https://www.canadapost-postescanada.ca/scp/fr/soutien/sujet/poste-lettres/dimensions.page"
+    }
+  ]
+}

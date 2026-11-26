@@ -8,6 +8,7 @@
 
 import { HUBS, type HubId } from "./hubs";
 import { GUIDES } from "@/content/guides";
+import { GUIDES_FR } from "@/content/guides-fr";
 import { API_FROM_ALL_IN_CENTS } from "./volume";
 import { formatCents } from "./pricing";
 
@@ -175,6 +176,13 @@ const LEGACY_POSTS: PostMeta[] = [
         "Enter your sheets and envelope, or the weight, to see how many Canada Post stamps a letter needs within Canada, and what the postage costs.",
       keywords: ["postage calculator canada", "how many stamps do i need canada", "canada post postage calculator", "letter weight calculator"],
     },
+    fr: {
+      slug: "calculateur-de-timbres-canada",
+      title: "Calculateur d’affranchissement : combien de timbres?",
+      description:
+        "Indiquez le nombre de feuilles et l’enveloppe, ou le poids, pour savoir combien de timbres de Postes Canada exige une lettre au pays et ce que coûte l’affranchissement.",
+      keywords: ["calculateur d’affranchissement canada", "combien de timbres pour une lettre", "calculateur postes canada", "poids d’une lettre"],
+    },
   },
   {
     id: "api-guide",
@@ -224,6 +232,9 @@ export const ALL_POSTS: PostMeta[] = [
       cta: "home",
       related: g.related ?? [],
       en: { slug: g.slug, title: g.title, description: g.description, keywords: g.keywords },
+      ...(GUIDES_FR[g.id]
+        ? { fr: { slug: GUIDES_FR[g.id].slug, title: GUIDES_FR[g.id].title, description: GUIDES_FR[g.id].description, keywords: GUIDES_FR[g.id].keywords } }
+        : {}),
     }),
   ),
 ];

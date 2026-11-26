@@ -1,0 +1,73 @@
+{
+  "id": "how-long-does-a-letter-take-in-canada",
+  "slug": "combien-de-temps-pour-livrer-une-lettre-au-canada",
+  "title": "Combien de temps faut-il pour livrer une lettre au Canada?",
+  "description": "Les normes de la Poste-lettres de Postes Canada sont de 2 jours ouvrables en local, 3 en provincial et 4 en national. Ce sont des estimations, non des garanties.",
+  "keywords": [
+    "combien de temps pour une lettre au canada",
+    "délai de livraison poste-lettres postes canada",
+    "normes de livraison poste-lettres"
+  ],
+  "answer": "Les normes de livraison de la Poste-lettres de Postes Canada sont de deux jours ouvrables dans une même ville, de trois dans une même province et de quatre d’un bout à l’autre du pays, sans compter le jour du dépôt. Ce sont des estimations, non des garanties. Une lettre envoyée par un service d’envoi postal a aussi besoin d’environ une journée pour être imprimée et postée.",
+  "sections": [
+    {
+      "h2": "Les normes de Postes Canada",
+      "blocks": [
+        {
+          "table": {
+            "headers": [
+              "Trajet",
+              "Jours ouvrables"
+            ],
+            "rows": [
+              [
+                "Local, dans une même ville",
+                "2"
+              ],
+              [
+                "Provincial",
+                "3"
+              ],
+              [
+                "National",
+                "4"
+              ]
+            ]
+          }
+        },
+        {
+          "p": "Les jours ouvrables ne comprennent pas le jour du dépôt. Postes Canada précise que les normes de livraison sont des estimations et ne sont pas garanties."
+        }
+      ]
+    },
+    {
+      "h2": "Ajouter la première étape",
+      "blocks": [
+        {
+          "p": "Si vous postez la lettre vous-même, le compteur démarre lorsqu’elle entre dans le réseau postal. Si un service l’imprime et la poste, ajoutez son délai de traitement. sendletter imprime et poste une commande en un jour ouvrable après le paiement : selon la norme nationale de Postes Canada, une lettre arrive donc environ cinq jours ouvrables après la commande. Les normes de Postes Canada sont des estimations, non des garanties."
+        },
+        {
+          "p": "Prévoyez du temps supplémentaire autour des jours fériés et dans les régions rurales ou éloignées. La Poste-lettres ordinaire n’offre pas de repérage : vous ne verrez donc pas la lettre avancer."
+        }
+      ]
+    },
+    {
+      "h2": "Si la date compte",
+      "blocks": [
+        {
+          "p": "Comme la Poste-lettres ordinaire n’est ni garantie ni repérable, elle convient mal à une échéance. Postez tôt ou choisissez un service avec repérage. [Courrier recommandé ou courrier ordinaire](/blog/registered-vs-regular-mail-canada) explique ce que chacun offre."
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "label": "Postes Canada, normes de livraison de la Poste-lettres",
+      "url": "https://www.canadapost-postescanada.ca/scp/fr/soutien/sujet/poste-lettres/normes-de-livraison.page"
+    },
+    {
+      "label": "Postes Canada, aperçu des normes de livraison",
+      "url": "https://www.canadapost-postescanada.ca/scp/fr/soutien/sujet/normes-livraison/apercu.page"
+    }
+  ]
+}

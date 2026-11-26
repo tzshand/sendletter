@@ -1,0 +1,92 @@
+{
+  "id": "letter-not-delivered-what-to-do",
+  "slug": "ma-lettre-nest-pas-arrivee-que-faire-au-canada",
+  "title": "Ma lettre n’est pas arrivée\u00a0: que faire au Canada",
+  "description": "Les normes de livraison de Postes Canada, combien de temps attendre avant de s’inquiéter, quoi vérifier et ce que Postes Canada fait pour une lettre sans repérage.",
+  "keywords": [
+    "postes canada lettre non livrée",
+    "ma lettre n’est pas arrivée canada",
+    "lettre perdue postes canada",
+    "combien de temps attendre une lettre canada"
+  ],
+  "answer": "Attendez quelques jours ouvrables de plus que la norme\u00a0: deux jours en local, trois dans une même province, quatre d’un bout à l’autre du Canada. Postes Canada indique que la plupart des lettres en retard arrivent dans les cinq jours ouvrables suivant la norme habituelle. Passé ce délai, vous pouvez envoyer un commentaire par demande d’assistance, mais on n’enquête pas sur une lettre sans numéro de repérage.",
+  "sections": [
+    {
+      "h2": "Combien de temps est trop long?",
+      "blocks": [
+        {
+          "table": {
+            "headers": [
+              "Distance",
+              "Norme"
+            ],
+            "rows": [
+              [
+                "Local",
+                "2 jours ouvrables"
+              ],
+              [
+                "Dans la province",
+                "3 jours ouvrables"
+              ],
+              [
+                "D’un bout à l’autre du Canada",
+                "4 jours ouvrables"
+              ],
+              [
+                "International",
+                "Jusqu’à 7 jours ouvrables"
+              ]
+            ]
+          }
+        },
+        {
+          "p": "Postes Canada précise que ces normes ne sont pas garanties et que les jours fériés et le volume saisonnier peuvent les influencer, et que la plupart des lettres en retard arrivent dans les cinq jours ouvrables suivant leur norme habituelle. Il est raisonnable d’attendre jusque-là d’abord."
+        }
+      ]
+    },
+    {
+      "h2": "Quoi vérifier d’abord",
+      "blocks": [
+        {
+          "ul": [
+            "L’adresse et le code postal. Un code erroné ou manquant est une cause fréquente de retard ou de retour. Voyez [pourquoi les lettres envoyées au Canada sont renvoyées](/blog/why-letters-to-canada-get-returned).",
+            "L’affranchissement. Une lettre insuffisamment affranchie peut être retardée ou renvoyée. Voyez [la lettre insuffisamment affranchie](/blog/letter-with-too-little-postage).",
+            "Si le destinataire a vérifié sa boîte postale communautaire, auprès d’un voisin, à la salle du courrier de l’immeuble ou à une adresse réacheminée.",
+            "Si une adresse de l’expéditeur figurait sur la lettre. Les lettres impossibles à livrer y sont renvoyées."
+          ]
+        }
+      ]
+    },
+    {
+      "h2": "Ce que fera Postes Canada",
+      "blocks": [
+        {
+          "p": "Si la lettre porte un numéro de repérage, utilisez la page de repérage de Postes Canada. Sinon, Postes Canada indique qu’on ne peut pas enquêter sur des lettres individuelles et que, si la lettre dépasse les normes habituelles, vous pouvez envoyer un commentaire par demande d’assistance. Sa page précise aussi que les commentaires ne recevront pas de réponse directe\u00a0: attendez-vous donc à ce que la demande aide Postes Canada à s’améliorer, et non à retrouver votre lettre."
+        }
+      ]
+    },
+    {
+      "h2": "Si la lettre est vraiment importante",
+      "blocks": [
+        {
+          "p": "Quand une lettre est urgente ou doit pouvoir être prouvée, envoyez-en aussi une copie par un autre moyen, par exemple par courriel, et utilisez le [Courrier recommandé](/blog/registered-mail-canada-cost) la prochaine fois, afin d’avoir un numéro de repérage et une signature."
+        }
+      ]
+    },
+    {
+      "h2": "Si vous l’avez commandée par sendletter",
+      "blocks": [
+        {
+          "p": "Écrivez à support@sendletter.app en indiquant votre numéro de commande. Nous pouvons confirmer le moment où elle a été imprimée et remise à Postes Canada."
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "label": "Postes Canada, pourquoi ma lettre n’a-t-elle pas été livrée?",
+      "url": "https://www.canadapost-postescanada.ca/scp/fr/soutien/bc/recevoir/faq-livraison/comment-trouver-le-courrier-non-livre.page"
+    }
+  ]
+}

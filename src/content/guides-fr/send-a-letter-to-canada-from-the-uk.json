@@ -1,0 +1,87 @@
+{
+  "id": "send-a-letter-to-canada-from-the-uk",
+  "slug": "envoyer-une-lettre-au-canada-depuis-le-royaume-uni",
+  "title": "Envoyer une lettre au Canada depuis le Royaume-Uni",
+  "description": "Poster une lettre du Royaume-Uni vers le Canada : les services internationaux de Royal Mail, quoi vérifier avant d’expédier et une option sans timbre international.",
+  "keywords": [
+    "envoyer une lettre au canada depuis le royaume-uni",
+    "poster une lettre au canada depuis l’angleterre",
+    "coût d’une lettre du royaume-uni vers le canada",
+    "affranchissement royaume-uni canada"
+  ],
+  "answer": "Depuis le Royaume-Uni, vous pouvez poster une lettre vers le Canada avec les services internationaux de Royal Mail, dont les prix et les limites de poids sont fixés par Royal Mail. Vous pouvez aussi la commander en ligne et la faire imprimer et poster au Canada : elle circule alors comme du courrier canadien ordinaire. Dans les deux cas, l’adresse canadienne doit comporter un code postal exact.",
+  "sections": [
+    {
+      "h2": "La poster avec Royal Mail",
+      "blocks": [
+        {
+          "p": "Royal Mail offre plusieurs services internationaux pour les lettres. Son guide du Canada indique ceux qui sont offerts pour le Canada, avec les prix et les limites de poids, et ses prix ont changé le 7 avril 2026. Consultez cette page le jour de l’envoi, car un chiffre tiré d’un article plus ancien peut être périmé."
+        },
+        {
+          "ul": [
+            "Pesez la lettre, et l’enveloppe, avant d’acheter l’affranchissement.",
+            "Choisissez un service avec suivi si vous devez savoir qu’elle est arrivée.",
+            "Écrivez l’adresse canadienne dans l’ordre canadien et ajoutez le nom du pays selon les directives de Royal Mail.",
+            "Ajoutez votre adresse au Royaume-Uni comme adresse de l’expéditeur."
+          ]
+        }
+      ]
+    },
+    {
+      "h2": "La commander plutôt en ligne",
+      "blocks": [
+        {
+          "p": "Un service d’impression et d’envoi postal au Canada peut recevoir la lettre sous forme de fichier et la poster au destinataire. Vous payez en ligne, sans timbre britannique, et la lettre entre dans le réseau postal canadien. La norme de la Poste-lettres de Postes Canada est de 2 à 4 jours ouvrables à compter du dépôt, une estimation et non une garantie, et le service a besoin d’environ un jour ouvrable pour imprimer et poster la lettre. sendletter fonctionne ainsi, pour des destinataires canadiens seulement. Il n’offre pas de suivi."
+        },
+        {
+          "table": {
+            "headers": [
+              "",
+              "Royal Mail international",
+              "En ligne, posté au Canada"
+            ],
+            "rows": [
+              [
+                "Vous payez",
+                "Le tarif international de Royal Mail",
+                "À partir de 3,49 $ tout compris, en dollars canadiens"
+              ],
+              [
+                "Suivi",
+                "Selon le service",
+                "Aucun"
+              ],
+              [
+                "Format de la lettre",
+                "Vous l’imprimez et l’emballez",
+                "Vous envoyez un PDF, un fichier Word ou du texte"
+              ]
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "h2": "Avant d’envoyer",
+      "blocks": [
+        {
+          "p": "Soignez l’adresse : [comment adresser une lettre au Canada](/blog/how-to-address-a-letter-to-canada) et [le format du code postal canadien](/blog/canadian-postal-code-format). Le portrait d’ensemble se trouve dans [l’envoi de courrier au Canada depuis l’étranger](/blog/mail-a-letter-to-canada-from-abroad)."
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "label": "Royal Mail, Affranchissement et expédition vers le Canada",
+      "url": "https://www.royalmail.com/sending/international/country-guides/canada"
+    },
+    {
+      "label": "Royal Mail, Prix 2026",
+      "url": "https://www.royalmail.com/prices2026"
+    },
+    {
+      "label": "Postes Canada, normes de livraison de la Poste-lettres",
+      "url": "https://www.canadapost-postescanada.ca/scp/fr/soutien/sujet/poste-lettres/normes-de-livraison.page"
+    }
+  ]
+}

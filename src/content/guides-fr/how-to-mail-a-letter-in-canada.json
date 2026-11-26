@@ -1,0 +1,112 @@
+{
+  "id": "how-to-mail-a-letter-in-canada",
+  "slug": "comment-poster-une-lettre-au-canada",
+  "title": "Comment poster une lettre au Canada : guide pour débutants",
+  "description": "Enveloppe, adresse, adresse de l’expéditeur, timbre et lieu de dépôt : le guide pas à pas pour poster une lettre standard au Canada, et ce qu’il en coûte.",
+  "keywords": [
+    "comment poster une lettre au canada",
+    "comment envoyer une lettre au canada",
+    "envoyer une lettre pour la première fois canada",
+    "comment expédier une lettre par la poste"
+  ],
+  "answer": "Mettez la lettre dans une enveloppe, inscrivez l’adresse du destinataire au centre et la vôtre dans le coin supérieur gauche, collez un timbre Permanent dans le coin supérieur droit, puis déposez-la dans une boîte aux lettres de Postes Canada ou à un bureau de poste. Un timbre de 1,24 $ suffit pour une lettre standard d’au plus 30 g au Canada.",
+  "sections": [
+    {
+      "h2": "Étape par étape",
+      "blocks": [
+        {
+          "ol": [
+            "**Rédigez ou imprimez la lettre.** Pliez-la pour qu’elle entre dans l’enveloppe. Une enveloppe commerciale standard peut contenir quelques feuilles.",
+            "**Inscrivez l’adresse sur l’enveloppe.** Placez l’adresse du destinataire au centre : le nom, puis l’adresse municipale, puis la municipalité, la province et le code postal. Voir [comment adresser une lettre au Canada](/blog/how-to-address-a-letter-to-canada).",
+            "**Ajoutez l’adresse de l’expéditeur** dans le coin supérieur gauche, selon la même présentation. Si la lettre ne peut pas être livrée, elle vous est retournée; voir [l’adresse de l’expéditeur sur les lettres canadiennes](/blog/return-address-on-a-canadian-letter).",
+            "**Affranchissez la lettre.** Collez le ou les timbres dans le coin supérieur droit. Une lettre standard d’au plus 30 g nécessite un timbre Permanent.",
+            "**Postez-la.** Déposez-la dans une boîte aux lettres de Postes Canada ou remettez-la à un bureau de poste."
+          ]
+        }
+      ]
+    },
+    {
+      "h2": "Les timbres",
+      "blocks": [
+        {
+          "p": "Postes Canada vend des timbres dans ses bureaux de poste et en ligne, ainsi que chez des détaillants autorisés. Un timbre Permanent est toujours accepté au tarif d’affranchissement intérieur en vigueur : vous pouvez donc acheter un carnet et conserver les timbres. Voir [ce que vaut un timbre Permanent](/blog/permanent-stamp-value-canada)."
+        },
+        {
+          "table": {
+            "headers": [
+              "Lettre au Canada",
+              "Affranchissement"
+            ],
+            "rows": [
+              [
+                "Jusqu’à 30 g (selon le tableau de Postes Canada, jusqu’à 5 feuilles de papier)",
+                "1,24 $ avec un timbre de carnet, 1,44 $ avec un timbre à l’unité"
+              ],
+              [
+                "Plus de 30 g jusqu’à 50 g",
+                "1,75 $, soit deux timbres Permanents"
+              ],
+              [
+                "Enveloppe grand format ou surdimensionnée",
+                "Davantage; voir [l’affranchissement d’une grande enveloppe](/blog/postage-for-a-large-envelope-canada)"
+              ]
+            ]
+          }
+        },
+        {
+          "p": "Vous ne savez pas combien de timbres il vous faut? Utilisez le [calculateur d’affranchissement](/blog/postage-calculator-canada) ou pesez la lettre. Le prix d’un timbre devrait augmenter en 2027; voir [ce que l’on sait](/blog/stamp-price-2027-what-we-know)."
+        }
+      ]
+    },
+    {
+      "h2": "Où placer chaque élément",
+      "blocks": [
+        {
+          "p": "Selon les consignes d’adressage de Postes Canada, l’adresse du destinataire se place au centre de l’enveloppe. L’adresse de l’expéditeur va dans le coin supérieur gauche, selon la même présentation et en caractères pas plus grands que ceux de l’adresse du destinataire, et l’affranchissement va dans le coin supérieur droit, à l’écart de l’adresse."
+        }
+      ]
+    },
+    {
+      "h2": "Le délai de livraison",
+      "blocks": [
+        {
+          "p": "Postes Canada estime le délai à deux jours ouvrables pour une lettre locale, à trois à l’intérieur d’une province et à quatre d’un bout à l’autre du Canada. Ces délais ne sont pas garantis. Voir [le temps que prend une lettre au Canada](/blog/how-long-does-a-letter-take-in-canada)."
+        }
+      ]
+    },
+    {
+      "h2": "Si vous devez savoir que la lettre est arrivée",
+      "blocks": [
+        {
+          "p": "Une lettre ordinaire n’a pas de repérage et ne donne aucune preuve de livraison. Si c’est important, utilisez le Courrier recommandé, qui coûte 13,15 $ en plus de l’affranchissement; voir [peut-on suivre une lettre au Canada](/blog/can-you-track-a-letter-canada)."
+        }
+      ]
+    },
+    {
+      "h2": "Si vous préférez ne pas vous en charger",
+      "blocks": [
+        {
+          "p": "Vous pouvez aussi commander une lettre en ligne : elle est imprimée, mise sous enveloppe, affranchie et postée pour vous, sans rien à acheter de votre côté. Voir [comment fonctionne l’envoi de lettres en ligne](/blog/how-online-letter-mailing-works) et [ce qu’il en coûte](/blog/what-an-online-letter-costs)."
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "label": "Postes Canada, comment adresser les lettres et les colis",
+      "url": "https://www.canadapost-postescanada.ca/scp/fr/soutien/bc/expedier/faq-expedition/comment-adresser-du-courrier-et-des-colis.page"
+    },
+    {
+      "label": "Postes Canada, tarifs d’affranchissement des lettres",
+      "url": "https://www.canadapost-postescanada.ca/scp/fr/personnel/tarifs-affranchissement.page"
+    },
+    {
+      "label": "Postes Canada, acheter des timbres, des machines à affranchir et des empreintes",
+      "url": "https://www.canadapost-postescanada.ca/scp/fr/comptes-commerciaux/timbres-et-machines-a-affranchir.page"
+    },
+    {
+      "label": "Postes Canada, adresser le courrier avec exactitude",
+      "url": "https://www.canadapost-postescanada.ca/scp/fr/soutien/bc/entreprises/exactitude-adresses/ladressage-exact.page"
+    }
+  ]
+}

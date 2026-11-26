@@ -1,0 +1,102 @@
+{
+  "id": "registered-vs-regular-mail-canada",
+  "slug": "courrier-recommande-ou-courrier-ordinaire-canada",
+  "title": "Courrier recommandé ou courrier ordinaire au Canada",
+  "description": "Ce que le courrier ordinaire n’offre pas, ce qu’ajoute le Courrier recommandé, ce que chacun coûte et pourquoi la règle derrière votre avis détermine le choix.",
+  "keywords": [
+    "courrier recommandé ou courrier ordinaire canada",
+    "preuve de dépôt postes canada",
+    "preuve de livraison lettre canada",
+    "signifier un avis par la poste"
+  ],
+  "answer": "La Poste-lettres ordinaire est économique, sans repérage ni signature. Le Courrier recommandé ajoute une signature, une preuve de dépôt, le repérage et une couverture de responsabilité de 100 $, pour 13,15 $ en plus de l’affranchissement. Le choix dépend de la règle qui encadre votre lettre, et la correspondance courante exige rarement une preuve de livraison.",
+  "sections": [
+    {
+      "h2": "Comparaison côte à côte",
+      "blocks": [
+        {
+          "table": {
+            "headers": [
+              "",
+              "Poste-lettres ordinaire",
+              "Courrier recommandé"
+            ],
+            "rows": [
+              [
+                "Coût",
+                "Affranchissement seulement",
+                "Des frais de 13,15 $ en plus de l’affranchissement"
+              ],
+              [
+                "Signature à la livraison",
+                "Non",
+                "Oui, incluse"
+              ],
+              [
+                "Preuve de dépôt",
+                "Non",
+                "Oui, un reçu daté du bureau de poste"
+              ],
+              [
+                "Repérage",
+                "Non",
+                "Confirmation de livraison; Postes Canada rend la date de livraison accessible le jour ouvrable suivant"
+              ],
+              [
+                "Couverture de responsabilité",
+                "Aucune mentionnée",
+                "Jusqu’à 100 $ incluse"
+              ],
+              [
+                "Où le poster",
+                "N’importe quelle boîte aux lettres",
+                "Un bureau de poste, ou un facteur rural"
+              ]
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "h2": "Quand le courrier ordinaire suffit",
+      "blocks": [
+        {
+          "p": "Pour la plupart des lettres : demandes, plaintes, annulations où aucun mode de livraison particulier n’est exigé, et tout cas où une erreur coûte peu. Si personne ne contestera plus tard que la lettre est arrivée, une preuve de livraison ne vous apporte rien."
+        }
+      ]
+    },
+    {
+      "h2": "Quand la règle tranche",
+      "blocks": [
+        {
+          "p": "Certains avis doivent être remis d’une façon précise, et certains doivent pouvoir être prouvés. La règle qui s’applique à votre situation en décide : une loi, la procédure d’un tribunal ou un contrat. Par exemple, selon les directives de Tribunaux décisionnels Ontario sur la signification de documents dans les affaires de la Commission de la location immobilière, un document envoyé par courrier ordinaire est considéré comme reçu cinq jours après l’envoi, et vous remplissez un certificat de signification indiquant comment et quand il a été remis. Les autres provinces et les autres types d’avis ont leurs propres règles."
+        },
+        {
+          "note": "Ces renseignements sont d’ordre général et ne constituent pas un avis juridique. Si un délai, un tribunal ou une cour entre en jeu, lisez la règle applicable ou consultez un avocat ou le tribunal lui-même."
+        }
+      ]
+    },
+    {
+      "h2": "Ce qu’envoie sendletter",
+      "blocks": [
+        {
+          "p": "sendletter envoie de la Poste-lettres ordinaire. Il n’a ni signature, ni repérage, ni preuve de livraison : c’est donc la colonne du courrier ordinaire de ce tableau. Si vous avez besoin de la colonne du recommandé, postez la lettre vous-même dans un bureau de poste. [Peut-on envoyer un avis juridique en ligne](/blog/can-you-mail-a-legal-notice-online) traite de la question plus en profondeur, et [Le coût du Courrier recommandé](/blog/registered-mail-canada-cost) présente la grille de prix."
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "label": "Postes Canada, prix pour les consommateurs (mis à jour le 7 septembre 2026)",
+      "url": "https://www.canadapost-postescanada.ca/scp/doc/fr/soutien/tarifs/tarifs-personnel.pdf"
+    },
+    {
+      "label": "Postes Canada, caractéristiques du Courrier recommandé",
+      "url": "https://www.canadapost-postescanada.ca/scp/fr/soutien/sujet/courrier-recommande-regime-interieur/caracteristiques.page"
+    },
+    {
+      "label": "Tribunaux décisionnels Ontario, Comment signifier des documents à un locateur ou à un locataire",
+      "url": "https://tribunalsontario.ca/documents/ltb/Brochures/How%20to%20Serve%20a%20Landlord%20or%20Tenant%20with%20Documents%20(EN).html"
+    }
+  ]
+}

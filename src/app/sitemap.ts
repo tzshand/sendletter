@@ -61,14 +61,16 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
     ...posts,
     // Hubs with at least one live guide.
-    ...liveHubs().map((h) => ({
-      url: `${SITE}${hubPath(h)}`,
-      lastModified: new Date(
+    ...liveHubs().flatMap((h) => {
+      const lastModified = new Date(
         `${POSTS.filter((p) => p.hub === h.id).map((p) => p.updated ?? p.published).sort().pop()}T00:00:00Z`,
-      ),
-      changeFrequency: "weekly" as const,
-      priority: 0.7,
-    })),
+      );
+      // A French hub page exists once the hub has French text and two translated guides.
+      const french = Boolean(h.fr) && POSTS.filter((p) => p.hub === h.id && p.fr).length >= 2;
+      const languages = french ? { "en-CA": `${SITE}${hubPath(h, "en")}`, "fr-CA": `${SITE}${hubPath(h, "fr")}` } : undefined;
+      const entry = (url: string) => ({ url, lastModified, changeFrequency: "weekly" as const, priority: 0.7, ...(languages ? { alternates: { languages } } : {}) });
+      return french ? [entry(`${SITE}${hubPath(h, "en")}`), entry(`${SITE}${hubPath(h, "fr")}`)] : [entry(`${SITE}${hubPath(h)}`)];
+    }),
     {
       url: `${SITE}/mail-to-canada`,
       lastModified: new Date(),

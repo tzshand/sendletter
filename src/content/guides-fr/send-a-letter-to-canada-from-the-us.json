@@ -1,0 +1,67 @@
+{
+  "id": "send-a-letter-to-canada-from-the-us",
+  "slug": "envoyer-une-lettre-au-canada-depuis-les-etats-unis",
+  "title": "Envoyer une lettre au Canada depuis les États-Unis",
+  "description": "Poster une lettre des États-Unis vers le Canada : le timbre USPS Global Forever à 1,75 $, ce qu’il faut vérifier et une façon d’éviter le timbre international.",
+  "keywords": [
+    "envoyer une lettre au canada depuis les états-unis",
+    "combien de timbres des états-unis vers le canada",
+    "timbre usps pour le canada",
+    "timbre global forever canada"
+  ],
+  "answer": "Depuis les États-Unis, l’USPS indique que les timbres pour une lettre de format standard d’une once ou moins commencent à 1,75 $ pour tous les pays, et qu’un timbre Global Forever, actuellement à 1,75 $, n’expire jamais. Les enveloppes plus lourdes, surdimensionnées ou de forme inhabituelle sont tarifées selon la destination. Vous pouvez aussi commander la lettre en ligne et la faire imprimer et poster au Canada.",
+  "sections": [
+    {
+      "h2": "Avec l’USPS",
+      "blocks": [
+        {
+          "p": "Selon la page de l’USPS sur les lettres internationales, un timbre Global Forever coûte actuellement 1,75 $ et n’expire jamais, même si le prix augmente, et les timbres pour les lettres de format standard d’une once (1 oz) ou moins commencent à 1,75 $ pour tous les pays. Les articles plus lourds, surdimensionnés ou de forme inhabituelle sont tarifés selon le groupe de prix du pays de destination, que l’USPS présente dans sa page Country Price Groups."
+        },
+        {
+          "p": "La page de l’USPS ne précise pas si les timbres Forever ordinaires pour le courrier intérieur sont valides pour le Canada. Utilisez donc un timbre Global Forever ou demandez à votre bureau de poste. L’USPS vend des timbres internationaux dans sa boutique en ligne."
+        },
+        {
+          "ul": [
+            "Pesez la lettre. Une lettre de plus d’une once exige un affranchissement supérieur.",
+            "Écrivez l’adresse canadienne dans l’ordre canadien et ajoutez le nom du pays selon les consignes de l’USPS.",
+            "Ajoutez une adresse de l’expéditeur aux États-Unis."
+          ]
+        }
+      ]
+    },
+    {
+      "h2": "Commander en ligne plutôt",
+      "blocks": [
+        {
+          "p": "Un service en ligne peut poster la lettre depuis le Canada, ce qui la fait voyager comme de la Poste-lettres canadienne ordinaire : de 2 à 4 jours ouvrables selon la norme de Postes Canada une fois postée, ce qui est une estimation et non une garantie. La lettre la moins chère de sendletter coûte 3,49 $ en dollars canadiens, impression, affranchissement et taxes compris. C’est du courrier ordinaire sans repérage, pour des adresses canadiennes seulement."
+        }
+      ]
+    },
+    {
+      "h2": "Erreurs courantes",
+      "blocks": [
+        {
+          "ul": [
+            "Écrire le code postal comme un code ZIP. Un code canadien suit le format [lettre-chiffre-lettre, chiffre-lettre-chiffre](/blog/canadian-postal-code-format).",
+            "Omettre le code postal. Selon le guide des prix de Postes Canada, un code manquant ou incorrect entraîne des tarifs plus élevés, et l’article peut être impossible à livrer.",
+            "Oublier l’adresse de l’expéditeur. Voyez [pourquoi les lettres envoyées au Canada sont renvoyées](/blog/why-letters-to-canada-get-returned)."
+          ]
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "label": "USPS, courrier international de première classe",
+      "url": "https://www.usps.com/international/first-class-mail-international.htm"
+    },
+    {
+      "label": "Postes Canada, prix pour les consommateurs (mis à jour le 7 septembre 2026)",
+      "url": "https://www.canadapost-postescanada.ca/scp/doc/fr/soutien/tarifs/tarifs-personnel.pdf"
+    },
+    {
+      "label": "Postes Canada, normes de livraison de la Poste-lettres",
+      "url": "https://www.canadapost-postescanada.ca/scp/fr/soutien/sujet/poste-lettres/normes-de-livraison.page"
+    }
+  ]
+}

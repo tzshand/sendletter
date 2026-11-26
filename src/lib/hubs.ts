@@ -1,3 +1,5 @@
+import { HUBS_FR } from "./hubs-fr";
+
 // The topical map. One registry drives hub pages, breadcrumbs, related-guide
 // blocks and footer links, so a new guide gets its internal links by being
 // added here (via its JSON file) and nowhere else.
@@ -20,6 +22,8 @@ export type Hub = {
   description: string;
   /** Hub-page opening paragraphs. Plain text; the guide list is generated. */
   intro: string[];
+  /** Canadian French version of the hub page (src/lib/hubs-fr.ts). Absent: the hub is English only. */
+  fr?: { slug: string; title: string; description: string; intro: string[] };
 };
 
 export const HUBS: Hub[] = [
@@ -97,11 +101,15 @@ export const HUBS: Hub[] = [
   },
 ];
 
+// French hub pages (src/lib/hubs-fr.ts imports only types from this file, so there is no runtime cycle).
+for (const h of HUBS) h.fr = HUBS_FR[h.id];
+
 export const HUBS_BY_ID = new Map(HUBS.map((h) => [h.id, h]));
 
 export const getHubBySlug = (slug: string) => HUBS.find((h) => h.slug === slug);
+export const getHubByFrSlug = (slug: string) => HUBS.find((h) => h.fr?.slug === slug);
 
-export const hubPath = (h: Hub) => `/guides/${h.slug}`;
+export const hubPath = (h: Hub, locale: "en" | "fr" = "en") => (locale === "fr" && h.fr ? `/fr/guides/${h.fr.slug}` : `/guides/${h.slug}`);
 
 // ── Guide content (src/content/guides/*.json) ──
 
@@ -111,6 +119,9 @@ export type Block =
   | { ol: string[] }
   | { table: { headers: string[]; rows: string[][] } }
   | { note: string };
+
+/** A guide translated into Canadian French (src/content/guides-fr/<id>.json). Same shape as the English guide; metadata (hub, wave, dates) comes from the English one. */
+export type FrGuide = Pick<GuideData, "id" | "slug" | "title" | "description" | "keywords" | "answer" | "sections" | "sources">;
 
 export type GuideData = {
   id: string;

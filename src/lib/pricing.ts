@@ -255,7 +255,7 @@ export const COLOUR_SINGLE_CENTS = colourSingle.totalCents;
 
 export function formatCents(cents: number, lang: "en" | "fr" = "en"): string {
   const s = (cents / 100).toFixed(2);
-  return lang === "fr" ? `${s.replace(".", ",")} $` : `$${s}`;
+  return lang === "fr" ? `${s.replace(".", ",")} $` : `$${s}`; // OQLF: no-break space before the symbol
 }
 
 // ── Labels ──

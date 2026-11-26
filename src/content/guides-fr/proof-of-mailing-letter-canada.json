@@ -1,0 +1,73 @@
+{
+  "id": "proof-of-mailing-letter-canada",
+  "slug": "prouver-envoi-lettre-canada",
+  "title": "Comment prouver l’envoi d’une lettre au Canada",
+  "description": "Ce que les options de Postes Canada peuvent et ne peuvent pas prouver, ce que donne le Courrier recommandé et comment conserver votre propre preuve.",
+  "keywords": [
+    "preuve de dépôt lettre canada",
+    "prouver l’envoi d’une lettre au canada",
+    "preuve de dépôt postes canada",
+    "certificat d’envoi postes canada"
+  ],
+  "answer": "Le courrier ordinaire ne prouve ni l’envoi ni la réception d’une lettre. Le Courrier recommandé donne un reçu daté, un numéro de repérage et une signature à la livraison. Postes Canada précise qu’aucune de ses options ne prouve le contenu de l’enveloppe : gardez donc une copie exacte de ce que vous avez envoyé.",
+  "sections": [
+    {
+      "h2": "Le courrier ordinaire",
+      "blocks": [
+        {
+          "p": "Une lettre affranchie et déposée dans une boîte aux lettres ne laisse aucune trace : ni reçu, ni signature, ni date de livraison. Si un litige dépend de l’envoi de la lettre, un simple timbre est le choix le moins sûr."
+        }
+      ]
+    },
+    {
+      "h2": "Le Courrier recommandé",
+      "blocks": [
+        {
+          "p": "Pour les lettres envoyées au Canada, Postes Canada indique que le Courrier recommandé vous donne un reçu portant la date de votre achat, une copie de la signature de la personne qui a accepté la livraison, ainsi qu’un suivi avec la date de livraison. Il coûte 13,15 $ en plus de l’affranchissement et se dépose dans un bureau de poste. Voir [le prix du Courrier recommandé](/blog/registered-mail-canada-cost)."
+        },
+        {
+          "p": "Postes Canada est aussi claire sur une limite : ses options d’envoi ne peuvent pas prouver que vous avez posté une lettre en particulier ni le contenu exact d’un colis. Le reçu montre qu’un article a été posté, pas ce qu’il contenait."
+        }
+      ]
+    },
+    {
+      "h2": "Conservez votre propre preuve",
+      "blocks": [
+        {
+          "ul": [
+            "Gardez une copie de la lettre exacte, signée et datée, ainsi que de tout ce qui y était joint.",
+            "Notez la date, l’adresse utilisée et le mode d’envoi.",
+            "Conservez le reçu du Courrier recommandé et le numéro de repérage, et enregistrez la confirmation de livraison dès qu’elle s’affiche.",
+            "Notez le nom de la personne qui vous a vu poster la lettre, s’il y en a une."
+          ]
+        }
+      ]
+    },
+    {
+      "h2": "Quand une règle impose la méthode",
+      "blocks": [
+        {
+          "p": "Certains avis doivent être donnés d’une façon précise : un bail, un contrat, une résiliation de contrat de consommation ou une règle judiciaire peut prévoir comment, à quelle adresse et à quel moment l’avis est réputé reçu. Vérifiez d’abord cette règle, car elle compte davantage que le produit de Postes Canada que vous choisirez. [Courrier recommandé ou courrier ordinaire](/blog/registered-vs-regular-mail-canada) et [envoyer un avis juridique en ligne](/blog/can-you-mail-a-legal-notice-online) couvrent les cas courants. Ces renseignements sont d’ordre général et ne constituent pas un avis juridique."
+        }
+      ]
+    },
+    {
+      "h2": "Ce que peut montrer un service d’impression et d’envoi postal",
+      "blocks": [
+        {
+          "p": "Une lettre commandée sur sendletter part par Poste-lettres ordinaire : elle ne comporte donc aucune preuve de Postes Canada. Nous pouvons montrer notre propre registre indiquant quand la lettre a été reçue, imprimée et postée. Si vous avez besoin d’une preuve de livraison, postez-la vous-même par Courrier recommandé."
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "label": "Postes Canada, comment prouver que vous avez posté une lettre ou un colis",
+      "url": "https://www.canadapost-postescanada.ca/scp/fr/soutien/bc/expedier/faq-expedition/comment-prouver-le-depot-dune-lettre-ou-dun-colis.page"
+    },
+    {
+      "label": "Postes Canada, Courrier recommandé",
+      "url": "https://www.canadapost-postescanada.ca/scp/fr/personnel/envois-au-canada/courrier-recommande.page"
+    }
+  ]
+}

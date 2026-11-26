@@ -1,0 +1,93 @@
+{
+  "id": "postage-for-a-large-envelope-canada",
+  "slug": "affranchissement-grande-enveloppe-canada",
+  "title": "Affranchissement d’une grande enveloppe au Canada",
+  "description": "Une enveloppe plate de 9 × 12 est de la Poste-lettres surdimensionné\u00a0: 2,61 $ jusqu’à 100 g, trois timbres Permanents, et plus selon le poids, jusqu’à 500 g.",
+  "keywords": [
+    "combien de timbres pour une grande enveloppe canada",
+    "poste-lettres surdimensionné postes canada",
+    "affranchissement enveloppe 9x12 canada",
+    "affranchissement grande enveloppe canada"
+  ],
+  "answer": "Une grande enveloppe plate, par exemple de 9 × 12 pouces, est de la Poste-lettres surdimensionné. Elle coûte 2,61 $ jusqu’à 100 grammes, 4,29 $ jusqu’à 200 grammes et 7,36 $ à la limite de 500 grammes. En timbres Permanents (1,24 $ chacun), cela représente trois timbres jusqu’à 100 grammes.",
+  "sections": [
+    {
+      "h2": "Tarifs et timbres",
+      "blocks": [
+        {
+          "table": {
+            "headers": [
+              "Poids",
+              "Tarif de Postes Canada",
+              "Timbres Permanents"
+            ],
+            "rows": [
+              [
+                "Jusqu’à 100 g",
+                "2,61 $",
+                "\u00d7\u00a03"
+              ],
+              [
+                "100 à 200 g",
+                "4,29 $",
+                "\u00d7\u00a04"
+              ],
+              [
+                "200 à 300 g",
+                "5,98 $",
+                "\u00d7\u00a05"
+              ],
+              [
+                "300 à 400 g",
+                "6,85 $",
+                "\u00d7\u00a06"
+              ],
+              [
+                "400 à 500 g",
+                "7,36 $",
+                "\u00d7\u00a06"
+              ]
+            ]
+          }
+        },
+        {
+          "p": "Deux timbres Permanents (2,48 $) manquent de 0,13 $ pour atteindre la première tranche\u00a0: une enveloppe plate en exige donc trois, même si elle est légère."
+        }
+      ]
+    },
+    {
+      "h2": "Limites de dimensions",
+      "blocks": [
+        {
+          "p": "Le plus grand article de Poste-lettres mesure 380 × 270 × 20 mm et pèse 500 g. Une enveloppe de 9 × 12 pouces (environ 229 × 305 mm) y entre. Un colis plus épais, ou tout ce qui dépasse 500 g, n’est plus de la Poste-lettres et doit partir comme colis. Les articles non standard ont un poids minimal de 3 g et les articles surdimensionnés, de 5 g."
+        }
+      ]
+    },
+    {
+      "h2": "Pourquoi une enveloppe plate coûte plus cher",
+      "blocks": [
+        {
+          "p": "Une lettre pliée dans une enveloppe standard est admissible au tarif le plus bas. Une feuille à plat dans une enveloppe de 9 × 12 ne l’est pas, parce qu’elle dépasse 245 × 156 mm. Postes Canada la tarife comme de la Poste-lettres non standard ou surdimensionné, et l’enveloppe elle-même coûte plus cher qu’une enveloppe no 10."
+        }
+      ]
+    },
+    {
+      "h2": "Quand l’envoi à plat vaut la peine",
+      "blocks": [
+        {
+          "p": "L’envoi à plat convient aux documents qui ne doivent pas être pliés\u00a0: certificats, dessins et tout ce que vous voulez voir arriver bien à plat. Une longue lettre peut aussi coûter moins cher à plat que pliée en plusieurs enveloppes. sendletter propose des enveloppes plates de 9 × 12 et de 10 × 15; le [détail des coûts](/blog/what-an-online-letter-costs) montre comment chacune est tarifée."
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "label": "Postes Canada, prix pour les consommateurs (mis à jour le 7 septembre 2026)",
+      "url": "https://www.canadapost-postescanada.ca/scp/doc/fr/soutien/tarifs/tarifs-personnel.pdf"
+    },
+    {
+      "label": "Postes Canada, exigences relatives aux dimensions de la Poste-lettres",
+      "url": "https://www.canadapost-postescanada.ca/scp/fr/soutien/sujet/poste-lettres/dimensions.page"
+    }
+  ]
+}

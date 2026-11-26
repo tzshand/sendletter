@@ -5,11 +5,11 @@
 import type { ReactNode } from "react";
 import type { Block, GuideData } from "@/lib/hubs";
 import { A, H2, Lead, Note, OL, P, Table, UL } from "@/components/blog/Prose";
-import { getPostBySlug } from "@/lib/blog";
+import { getPostBySlug, postPath, type Locale } from "@/lib/blog";
 
 const INLINE = /(\*\*[^*]+\*\*|\[[^\]]+\]\([^)]+\))/g;
 
-export function inline(text: string): ReactNode[] {
+export function inline(text: string, locale: Locale = "en"): ReactNode[] {
   return text.split(INLINE).map((part, i) => {
     const bold = part.match(/^\*\*([^*]+)\*\*$/);
     if (bold) return <strong key={i}>{bold[1]}</strong>;
@@ -17,36 +17,41 @@ export function inline(text: string): ReactNode[] {
     if (link) {
       // A guide may point at a later wave. Until that wave is released the
       // target does not exist, so render the words rather than a dead link.
-      const href = link[2];
-      if (href.startsWith("/blog/") && !getPostBySlug("en", href.slice("/blog/".length))) return link[1];
+      let href = link[2];
+      if (href.startsWith("/blog/")) {
+        const target = getPostBySlug("en", href.slice("/blog/".length));
+        if (!target) return link[1];
+        // French pages link to the French version of a guide when there is one, else to the English page.
+        if (locale === "fr") href = postPath(target, "fr");
+      }
       return <A key={i} href={href}>{link[1]}</A>;
     }
     return part;
   });
 }
 
-function BlockView({ block }: { block: Block }) {
-  if ("p" in block) return <P>{inline(block.p)}</P>;
-  if ("note" in block) return <Note>{inline(block.note)}</Note>;
-  if ("ul" in block) return <UL>{block.ul.map((li, i) => <li key={i}>{inline(li)}</li>)}</UL>;
-  if ("ol" in block) return <OL>{block.ol.map((li, i) => <li key={i}>{inline(li)}</li>)}</OL>;
+function BlockView({ block, locale }: { block: Block; locale: Locale }) {
+  if ("p" in block) return <P>{inline(block.p, locale)}</P>;
+  if ("note" in block) return <Note>{inline(block.note, locale)}</Note>;
+  if ("ul" in block) return <UL>{block.ul.map((li, i) => <li key={i}>{inline(li, locale)}</li>)}</UL>;
+  if ("ol" in block) return <OL>{block.ol.map((li, i) => <li key={i}>{inline(li, locale)}</li>)}</OL>;
   return (
     <Table
       headers={block.table.headers}
-      rows={block.table.rows.map((r) => r.map((c) => inline(c)))}
+      rows={block.table.rows.map((r) => r.map((c) => inline(c, locale)))}
     />
   );
 }
 
-export function GuideBody({ guide }: { guide: GuideData }) {
+export function GuideBody({ guide, locale = "en" }: { guide: Pick<GuideData, "answer" | "sections" | "sources">; locale?: Locale }) {
   return (
     <>
-      <Lead>{inline(guide.answer)}</Lead>
+      <Lead>{inline(guide.answer, locale)}</Lead>
       {guide.sections.map((s) => (
         <section key={s.h2}>
           <H2>{s.h2}</H2>
           {s.blocks.map((b, i) => (
-            <BlockView key={i} block={b} />
+            <BlockView key={i} block={b} locale={locale} />
           ))}
         </section>
       ))}

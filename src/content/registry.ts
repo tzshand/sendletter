@@ -5,6 +5,7 @@ import { createElement, type ComponentType, type ReactElement } from "react";
 import type { Locale } from "@/lib/blog";
 import { GuideBody } from "@/components/blog/GuideBody";
 import { GUIDES } from "@/content/guides";
+import { GUIDES_FR } from "@/content/guides-fr";
 
 import EnSendALetterOnline from "./posts/how-to-send-a-letter-online-in-canada";
 import EnCostToMail from "./posts/what-it-costs-to-mail-a-letter-in-canada";
@@ -17,6 +18,7 @@ import FrSendALetterOnline from "./posts/fr/envoyer-une-lettre-en-ligne-au-canad
 import FrCostToMail from "./posts/fr/combien-coute-une-lettre-au-canada";
 import FrLegalNotice from "./posts/fr/envoyer-une-mise-en-demeure-par-la-poste";
 import FrApiGuide from "./posts/fr/envoyer-du-courrier-depuis-votre-application";
+import FrPostageCalculator from "./posts/fr/calculateur-de-timbres-canada";
 
 const EN: Record<string, ComponentType> = {
   "send-a-letter-online": EnSendALetterOnline,
@@ -32,6 +34,7 @@ const FR: Record<string, ComponentType> = {
   "cost-to-mail": FrCostToMail,
   "legal-notice": FrLegalNotice,
   "api-guide": FrApiGuide,
+  "postage-calculator": FrPostageCalculator,
 };
 
 export function getBody(locale: Locale, id: string): ComponentType | undefined {
@@ -42,8 +45,8 @@ const GUIDES_BY_ID = new Map(GUIDES.map((g) => [g.id, g]));
 
 /** The post body as a ready element (so pages render a value, not a component picked at render time). */
 export function renderBody(locale: Locale, id: string): ReactElement | null {
-  const guide = locale === "en" ? GUIDES_BY_ID.get(id) : undefined;
-  if (guide) return createElement(GuideBody, { guide });
+  const guide = locale === "en" ? GUIDES_BY_ID.get(id) : GUIDES_FR[id];
+  if (guide) return createElement(GuideBody, { guide, locale });
   const Body = getBody(locale, id);
   return Body ? createElement(Body) : null;
 }

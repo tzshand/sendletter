@@ -1,0 +1,96 @@
+{
+  "id": "lettermail-size-and-weight-limits",
+  "slug": "poste-lettres-limites-de-taille-et-de-poids",
+  "title": "Poste-lettres : limites de taille et de poids au Canada",
+  "description": "Lettre standard jusqu’à 245 × 156 × 5 mm et 50 g; non standard et surdimensionné jusqu’à 380 × 270 × 20 mm et 500 g. Minimums et hausses de prix.",
+  "keywords": [
+    "poste-lettres dimensions maximales canada",
+    "taille enveloppe standard postes canada",
+    "dimensions enveloppe et tarifs postes canada",
+    "poids maximal poste-lettres"
+  ],
+  "answer": "La Poste-lettres standard canadienne mesure au plus 245 × 156 × 5 millimètres et pèse au plus 50 grammes. La Poste-lettres non standard et surdimensionnée peut atteindre 380 × 270 × 20 millimètres et 500 grammes. Les articles plus grands ou plus lourds ne sont plus de la Poste-lettres : ils doivent être envoyés comme colis, aux tarifs des colis.",
+  "sections": [
+    {
+      "h2": "Les limites",
+      "blocks": [
+        {
+          "table": {
+            "headers": [
+              "",
+              "Standard",
+              "Non standard / surdimensionné"
+            ],
+            "rows": [
+              [
+                "Taille maximale",
+                "245 × 156 × 5 mm",
+                "380 × 270 × 20 mm"
+              ],
+              [
+                "Poids maximal",
+                "50 g",
+                "500 g"
+              ],
+              [
+                "Poids minimal",
+                "2 g",
+                "3 g (non standard), 5 g (surdimensionné)"
+              ],
+              [
+                "Taille minimale",
+                "140 × 90 × 0,18 mm",
+                "140 × 90 × 0,18 mm"
+              ]
+            ]
+          }
+        },
+        {
+          "p": "En pouces, un article standard mesure 9,6 × 6,1 × 0,2 et le plus grand article de Poste-lettres mesure 14,9 × 10,6 × 0,8."
+        }
+      ]
+    },
+    {
+      "h2": "L’exception de l’enveloppe carrée",
+      "blocks": [
+        {
+          "p": "Une enveloppe carrée dont les côtés mesurent de 140 × 140 mm à 156 × 156 mm est tarifée comme article standard. Les autres articles qui dépassent les dimensions standard sont tarifés comme non standard ou surdimensionnés."
+        }
+      ]
+    },
+    {
+      "h2": "Comment vérifier votre enveloppe",
+      "blocks": [
+        {
+          "ol": [
+            "Mesurez l’enveloppe fermée elle-même, et non le papier qu’elle contient : la longueur, la hauteur, puis l’épaisseur à l’endroit le plus épais.",
+            "Comparez avec les limites standard. Si une seule dimension est dépassée, l’article est non standard ou surdimensionné.",
+            "Pesez-la. Le poids détermine la tranche de prix; la taille détermine la grille tarifaire applicable.",
+            "Fermez-la. Un article non fermé n’est pas tarifé comme une lettre standard."
+          ]
+        },
+        {
+          "p": "Une lettre standard franchira généralement un seuil de poids bien avant la limite d’épaisseur de 5 mm, car le papier est mince. Une carte munie d’une bosse, d’une clé ou d’un rembourrage est le moyen le plus courant de dépasser l’épaisseur permise."
+        }
+      ]
+    },
+    {
+      "h2": "Si l’article est trop grand",
+      "blocks": [
+        {
+          "p": "Postes Canada indique qu’une lettre qui dépasse les dimensions maximales doit être envoyée par ses services de colis. Ceux-ci ont leurs propres prix et leurs propres normes de livraison. Le coût de chaque tranche figure dans [les tarifs des lettres selon le poids](/blog/canada-post-letter-rates-by-weight)."
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "label": "Postes Canada, exigences relatives aux dimensions de la Poste-lettres",
+      "url": "https://www.canadapost-postescanada.ca/scp/fr/soutien/sujet/poste-lettres/dimensions.page"
+    },
+    {
+      "label": "Postes Canada, prix pour les consommateurs (mis à jour le 7 septembre 2026)",
+      "url": "https://www.canadapost-postescanada.ca/scp/doc/fr/soutien/tarifs/tarifs-personnel.pdf"
+    }
+  ]
+}

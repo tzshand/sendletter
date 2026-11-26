@@ -1,0 +1,97 @@
+{
+  "id": "canada-post-stamp-price",
+  "slug": "prix-timbre-postes-canada-2026",
+  "title": "Prix d’un timbre de Postes Canada en 2026",
+  "description": "Un timbre à l’unité coûte 1,44 $ et un timbre de carnet 1,24 $ pour une lettre jusqu’à 30 g. Tarifs selon le poids et hausse proposée en 2027.",
+  "keywords": [
+    "prix timbre postes canada",
+    "prix d’un timbre canadien",
+    "tarif timbre canada",
+    "combien coûte un timbre au canada"
+  ],
+  "answer": "Un timbre à l’unité de Postes Canada coûte 1,44 $ en 2026. Les timbres achetés en carnet, en rouleau ou en feuillet coûtent 1,24 $ chacun. L’un ou l’autre permet d’envoyer une lettre standard d’au plus 30 grammes partout au Canada. Une lettre de 30 à 50 grammes coûte 1,75 $. Ces tarifs s’appliquent depuis le 13 janvier 2025.",
+  "sections": [
+    {
+      "h2": "Prix actuels de la Poste-lettres",
+      "blocks": [
+        {
+          "table": {
+            "headers": [
+              "Lettre standard",
+              "Timbre à l’unité",
+              "Carnet, rouleau ou feuillet"
+            ],
+            "rows": [
+              [
+                "Jusqu’à 30 g",
+                "1,44 $",
+                "1,24 $"
+              ],
+              [
+                "De 30 g à 50 g",
+                "1,75 $",
+                "1,75 $"
+              ]
+            ]
+          }
+        },
+        {
+          "p": "Une lettre standard est une enveloppe ou une carte d’au plus 245 × 156 × 5 mm. Tout ce qui est plus grand ou plus épais est tarifé comme article non standard ou surdimensionné. Voir [l’affranchissement d’une grande enveloppe](/blog/postage-for-a-large-envelope-canada)."
+        }
+      ]
+    },
+    {
+      "h2": "Comment le prix en est arrivé là",
+      "blocks": [
+        {
+          "p": "La hausse du 13 janvier 2025 a fait passer le timbre à l’unité de 1,15 $ à 1,44 $, soit une augmentation d’environ 25 %, et le timbre de carnet, de rouleau et de feuillet de 0,99 $ à 1,24 $. Les pages de prix de Postes Canada affichent aujourd’hui les mêmes tarifs, et le tarif de 30 à 50 g est de 1,75 $ pour les deux types de timbres."
+        }
+      ]
+    },
+    {
+      "h2": "Les timbres de carnet sont des timbres Permanents",
+      "blocks": [
+        {
+          "p": "Le guide des prix de Postes Canada définit le timbre Permanent comme un timbre sans valeur nominale dont la valeur d’affranchissement est de 1,24 $, soit le prix du carnet. Voir [la valeur d’un timbre Permanent](/blog/permanent-stamp-value-canada) pour savoir ce que cela change pour vous."
+        }
+      ]
+    },
+    {
+      "h2": "La hausse proposée en 2027",
+      "blocks": [
+        {
+          "p": "Selon les médias, le budget fédéral de novembre 2026 prévoit de faire passer le timbre pour le service intérieur à 2,00 $ en 2027. Les pages de prix de Postes Canada affichent toujours 1,44 $ et 1,24 $; considérez donc les 2,00 $ comme une proposition tant que Postes Canada n’aura pas publié un nouveau tarif. Cette page sera mise à jour dès que ce sera fait."
+        },
+        {
+          "note": "Vérifiez le prix en vigueur sur la page des prix des timbres de Postes Canada avant d’en acheter en grande quantité; les chiffres ci-dessus sont à jour à la date de ce guide."
+        }
+      ]
+    },
+    {
+      "h2": "Faut-il plus d’un timbre?",
+      "blocks": [
+        {
+          "p": "Une lettre standard d’au plus 30 g en demande un seul. Les lettres plus lourdes ou surdimensionnées en demandent plusieurs; [combien de timbres pour une lettre](/blog/how-many-stamps-for-a-letter-in-canada) passe en revue chaque tranche de poids. Si vous préférez vous passer de timbre, [sendletter](/) imprime, affranchit et poste votre lettre à votre place."
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "label": "Postes Canada, prix des timbres",
+      "url": "https://www.canadapost-postescanada.ca/scp/fr/personnel/tarifs-affranchissement.page"
+    },
+    {
+      "label": "Postes Canada, prix pour les consommateurs (mis à jour le 7 septembre 2026)",
+      "url": "https://www.canadapost-postescanada.ca/scp/doc/fr/soutien/tarifs/tarifs-personnel.pdf"
+    },
+    {
+      "label": "Gazette du Canada, modifications des tarifs de la Poste-lettres (DORS/2024-262)",
+      "url": "https://gazette.gc.ca/rp-pr/p2/2024/2024-12-18/html/sor-dors262-eng.html"
+    },
+    {
+      "label": "Global News, le prix des timbres dans le budget fédéral de 2026",
+      "url": "https://globalnews.ca/news/12138831/stamp-prices-budget-2026/"
+    }
+  ]
+}

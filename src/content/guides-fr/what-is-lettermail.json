@@ -1,0 +1,123 @@
+{
+  "id": "what-is-lettermail",
+  "slug": "qu-est-ce-que-la-poste-lettres-de-postes-canada",
+  "title": "Qu’est-ce que la Poste-lettres de Postes Canada?",
+  "description": "La Poste-lettres est le service de Postes Canada pour les lettres et cartes ordinaires : limites de taille et de poids, tarifs, délais et ce qu’elle n’offre pas.",
+  "keywords": [
+    "poste-lettres",
+    "qu’est-ce que la poste-lettres",
+    "poste-lettres postes canada",
+    "tarifs poste-lettres canada"
+  ],
+  "answer": "La Poste-lettres est le service de Postes Canada pour les lettres et cartes ordinaires : tout ce que vous postez sous enveloppe avec des timbres, jusqu’à 500 g. Une lettre standard de 30 g ou moins coûte 1,24 $ avec un timbre de carnet ou 1,44 $ avec un timbre à l’unité, et elle est livrée en deux à quatre jours ouvrables. Elle n’est ni repérable ni signée.",
+  "sections": [
+    {
+      "h2": "Ce qui compte comme Poste-lettres",
+      "blocks": [
+        {
+          "p": "La Poste-lettres comprend les lettres, les cartes et les articles plats affranchis avec des timbres ou une machine à affranchir et qui respectent les limites de taille et de poids de Postes Canada : jusqu’à 245 × 156 × 5 mm et 50 g pour une lettre standard, et jusqu’à 380 × 270 × 20 mm et 500 g pour les articles non standard et surdimensionnés. Tout ce qui est plus grand ou plus lourd passe aux services de colis. Les limites exactes et la façon de mesurer une enveloppe se trouvent dans [Limites de taille et de poids de la Poste-lettres](/blog/lettermail-size-and-weight-limits)."
+        }
+      ]
+    },
+    {
+      "h2": "Ce que ça coûte",
+      "blocks": [
+        {
+          "table": {
+            "headers": [
+              "Article au Canada",
+              "Timbre à l’unité",
+              "Timbre de carnet"
+            ],
+            "rows": [
+              [
+                "Lettre standard, jusqu’à 30 g",
+                "1,44 $",
+                "1,24 $"
+              ],
+              [
+                "Lettre standard, plus de 30 g jusqu’à 50 g",
+                "1,75 $",
+                "1,75 $"
+              ],
+              [
+                "Non standard ou surdimensionné, jusqu’à 100 g",
+                "2,61 $",
+                "s. o."
+              ],
+              [
+                "Jusqu’à 200 g",
+                "4,29 $",
+                "s. o."
+              ],
+              [
+                "Jusqu’à 300 g",
+                "5,98 $",
+                "s. o."
+              ],
+              [
+                "Jusqu’à 400 g",
+                "6,85 $",
+                "s. o."
+              ],
+              [
+                "Jusqu’à 500 g",
+                "7,36 $",
+                "s. o."
+              ]
+            ]
+          }
+        },
+        {
+          "p": "Ce sont les prix de Postes Canada avant taxes. Un timbre Permanent est toujours accepté au tarif intérieur en vigueur. Voyez les [tarifs des lettres selon le poids](/blog/canada-post-letter-rates-by-weight) et [ce que l’on sait d’une hausse en 2027](/blog/stamp-price-2027-what-we-know)."
+        }
+      ]
+    },
+    {
+      "h2": "Les délais de livraison",
+      "blocks": [
+        {
+          "p": "Les normes de livraison de Postes Canada pour les lettres sont de deux jours ouvrables à l’échelle locale, de trois à l’intérieur d’une province et de quatre d’un bout à l’autre du Canada. Elles ne sont pas garanties et peuvent être touchées par les jours fériés et le volume saisonnier. Voyez [combien de temps prend une lettre](/blog/how-long-does-a-letter-take-in-canada)."
+        }
+      ]
+    },
+    {
+      "h2": "Ce que la Poste-lettres n’inclut pas",
+      "blocks": [
+        {
+          "p": "Une lettre ordinaire n’a ni numéro de repérage, ni signature à la livraison, ni preuve de dépôt, et Postes Canada indique qu’elle ne peut pas faire de recherche sur une lettre individuelle sans numéro de repérage. Pour obtenir ces éléments, le Courrier recommandé ajoute 13,15 $ à l’affranchissement. Voyez [peut-on repérer une lettre au Canada](/blog/can-you-track-a-letter-canada) et [Courrier recommandé ou courrier ordinaire](/blog/registered-vs-regular-mail-canada)."
+        }
+      ]
+    },
+    {
+      "h2": "La Poste-lettres pour les entreprises",
+      "blocks": [
+        {
+          "p": "Les entreprises qui expédient plus de 1 000 articles peuvent être admissibles à la Poste-lettres à tarifs préférentiels, qui fait économiser environ un cent sur une lettre standard. La plupart des petits expéditeurs paient le prix ordinaire. Voyez les [rabais de Postes Canada sur les lettres](/blog/canada-post-bulk-letter-discount)."
+        }
+      ]
+    },
+    {
+      "h2": "Envoyer de la Poste-lettres sans acheter de timbres",
+      "blocks": [
+        {
+          "p": "Une lettre commandée en ligne est imprimée, affranchie et postée comme de la Poste-lettres ordinaire. Voyez [comment fonctionne l’envoi de lettres en ligne](/blog/how-online-letter-mailing-works)."
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "label": "Postes Canada, exigences relatives à la taille de la Poste-lettres",
+      "url": "https://www.canadapost-postescanada.ca/scp/fr/soutien/sujet/poste-lettres/dimensions.page"
+    },
+    {
+      "label": "Postes Canada, prix pour les entreprises (grille tarifaire de la Poste-lettres)",
+      "url": "https://www.canadapost-postescanada.ca/scp/doc/fr/soutien/tarifs/tarifs-entreprise.pdf"
+    },
+    {
+      "label": "Postes Canada, pourquoi ma lettre n’a-t-elle pas été livrée?",
+      "url": "https://www.canadapost-postescanada.ca/scp/fr/soutien/bc/recevoir/faq-livraison/comment-trouver-le-courrier-non-livre.page"
+    }
+  ]
+}

@@ -23,7 +23,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title,
     description: hub.description,
-    alternates: { canonical: `${SITE}${hubPath(hub)}` },
+    alternates: {
+      canonical: `${SITE}${hubPath(hub)}`,
+      ...(hub.fr && POSTS.filter((p) => p.hub === hub.id && p.fr).length >= 2
+        ? { languages: { "en-CA": `${SITE}${hubPath(hub, "en")}`, "fr-CA": `${SITE}${hubPath(hub, "fr")}`, "x-default": `${SITE}${hubPath(hub, "en")}` } }
+        : {}),
+    },
     openGraph: {
       title: hub.title,
       description: hub.description,

@@ -1,0 +1,76 @@
+{
+  "id": "letter-with-too-little-postage",
+  "slug": "lettre-insuffisamment-affranchie-que-se-passe-t-il",
+  "title": "Que devient une lettre insuffisamment affranchie?",
+  "description": "Au Canada, un affranchissement insuffisant peut faire renvoyer la lettre à l’expéditeur, et Postes Canada prévoit des frais de 1,24 $ en plus du manque.",
+  "keywords": [
+    "affranchissement insuffisant Canada",
+    "pas assez d’affranchissement Postes Canada",
+    "frais d’affranchissement insuffisant Postes Canada",
+    "lettre pas assez affranchie"
+  ],
+  "answer": "Postes Canada compte l’affranchissement insuffisant parmi les motifs de renvoi d’un article à l’expéditeur, pourvu qu’il porte une adresse de l’expéditeur valide. Sa grille de prix prévoit aussi des frais d’affranchissement insuffisant de 1,24 $, plus le montant d’affranchissement manquant. Sans adresse de l’expéditeur, l’article peut être ouvert et détruit.",
+  "sections": [
+    {
+      "h2": "Ce que dit Postes Canada",
+      "blocks": [
+        {
+          "ul": [
+            "**Renvoyé à l’expéditeur.** La page de Postes Canada sur le renvoi à l’expéditeur indique que « l’article est insuffisamment affranchi » figure parmi les motifs de renvoi du courrier.",
+            "**Seulement avec une adresse de l’expéditeur.** Sa page sur le courrier non livrable précise qu’elle ne renvoie un article à l’expéditeur que s’il porte une adresse de l’expéditeur valide.",
+            "**Des frais.** La grille de prix pour les consommateurs prévoit des frais d’affranchissement insuffisant de 1,24 $ plus le montant de l’affranchissement manquant."
+          ]
+        },
+        {
+          "p": "Les pages de Postes Canada ne précisent pas, pour la Poste-lettres ordinaire, qui doit payer les frais dans chaque cas; nous ne faisons donc aucune supposition. Vérifiez auprès de Postes Canada avant de compter sur un résultat en particulier."
+        }
+      ]
+    },
+    {
+      "h2": "Comment une lettre se retrouve insuffisamment affranchie",
+      "blocks": [
+        {
+          "ul": [
+            "La lettre pèse plus que vous ne pensiez, généralement un peu plus de 30 g.",
+            "L’enveloppe est plus grande ou plus épaisse que la normale et est donc tarifée comme surdimensionnée.",
+            "Le code postal est absent ou erroné, ce qui la fait passer au tarif supérieur.",
+            "Le timbre n’est pas un timbre Permanent et sa valeur imprimée est inférieure au tarif actuel."
+          ]
+        },
+        {
+          "p": "[Combien de timbres faut-il pour une lettre](/blog/how-many-stamps-for-a-letter-in-canada) indique l’affranchissement de chaque catégorie de poids."
+        }
+      ]
+    },
+    {
+      "h2": "À quoi sert l’adresse de l’expéditeur",
+      "blocks": [
+        {
+          "p": "Sans adresse de l’expéditeur valide, un article non livrable est ouvert. S’il n’a pas de valeur apparente, Postes Canada indique qu’elle le détruit. L’adresse de l’expéditeur fait la différence entre récupérer une lettre et la perdre; voir [l’adresse de l’expéditeur sur les lettres canadiennes](/blog/return-address-on-a-canadian-letter)."
+        }
+      ]
+    },
+    {
+      "h2": "Pourquoi nous affranchissons volontairement en trop",
+      "blocks": [
+        {
+          "p": "sendletter calcule l’affranchissement à partir d’une estimation volontairement élevée du poids du papier et de l’enveloppe, puis arrondit au-dessus. Un timbre de trop coûte 1,24 $; un timbre manquant peut coûter toute la lettre."
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "label": "Postes Canada, pourquoi le courrier est renvoyé à l’expéditeur",
+      "url": "https://www.canadapost-postescanada.ca/scp/fr/soutien/bc/recevoir/faq-livraison/votre-courrier-a-t-il-ete-renvoye.page"
+    },
+    {
+      "label": "Postes Canada, ce qui arrive au courrier non livrable",
+      "url": "https://www.canadapost-postescanada.ca/scp/fr/soutien/sujet/envois-non-distribuables/traitement-envois-non-distribuables.page"
+    },
+    {
+      "label": "Postes Canada, prix pour les consommateurs (mis à jour le 7 septembre 2026)",
+      "url": "https://www.canadapost-postescanada.ca/scp/doc/fr/soutien/tarifs/tarifs-personnel.pdf"
+    }
+  ]
+}

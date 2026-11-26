@@ -1,0 +1,113 @@
+{
+  "id": "what-an-online-letter-costs",
+  "slug": "cout-dune-lettre-en-ligne-ligne-par-ligne",
+  "title": "Ce que coûte une lettre en ligne, ligne par ligne",
+  "description": "Une lettre d’une page en noir et blanc coûte 3,49 $ tout compris : 2,00 $ de frais d’envoi, 0,10 $ l’enveloppe, 0,15 $ l’impression et un timbre de 1,24 $.",
+  "keywords": [
+    "combien coûte l’envoi d’une lettre en ligne",
+    "coût pour poster une lettre au canada",
+    "prix service de lettre en ligne",
+    "prix envoi de lettre"
+  ],
+  "answer": "Chez sendletter, une lettre d’une page en noir et blanc dans une enveloppe no 10 coûte 3,49 $ : 2,00 $ de frais d’envoi, 0,10 $ pour l’enveloppe, 0,15 $ pour l’impression et un timbre de 1,24 $, taxes comprises. L’impression en couleur coûte 0,50 $ la page, les enveloppes plates coûtent plus cher et les lettres plus lourdes exigent des timbres supplémentaires.",
+  "sections": [
+    {
+      "h2": "La formule",
+      "blocks": [
+        {
+          "p": "Chaque prix est la somme de quatre lignes : des frais d’envoi et une enveloppe, par enveloppe, plus l’impression par page, plus l’affranchissement par timbre. L’affranchissement est facturé au prix coûtant, sans marge."
+        },
+        {
+          "table": {
+            "headers": [
+              "Ligne",
+              "Tarif"
+            ],
+            "rows": [
+              [
+                "Frais d’envoi, par enveloppe",
+                "2,00 $"
+              ],
+              [
+                "Enveloppe : no 10 / 9 × 12 / 10 × 15",
+                "0,10 $ / 0,25 $ / 0,40 $"
+              ],
+              [
+                "Impression, par page",
+                "0,15 $ en noir et blanc, 0,50 $ en couleur"
+              ],
+              [
+                "Affranchissement, par timbre",
+                "1,24 $, un timbre Permanent"
+              ]
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "h2": "Exemples détaillés",
+      "blocks": [
+        {
+          "table": {
+            "headers": [
+              "Lettre",
+              "Total"
+            ],
+            "rows": [
+              [
+                "1 page, noir et blanc, enveloppe no 10, 1 timbre",
+                "3,49 $"
+              ],
+              [
+                "1 page, couleur, enveloppe no 10, 1 timbre",
+                "3,84 $"
+              ],
+              [
+                "3 pages, noir et blanc, recto verso, enveloppe no 10, 1 timbre",
+                "3,79 $"
+              ],
+              [
+                "3 pages, noir et blanc, recto seulement, enveloppe no 10, 2 timbres",
+                "5,03 $"
+              ]
+            ]
+          }
+        },
+        {
+          "p": "Ces exemples sont en recto verso, le réglage par défaut. L’impression est facturée par page, et non par feuille, mais c’est le poids qui détermine les timbres : en recto seulement, les mêmes trois pages plus la page d’adresse font quatre feuilles, soit environ 31 g, ce qui exige la tranche à 1,75 $ et deux timbres. La page d’adresse d’une enveloppe no 10 à fenêtre n’est pas facturée, mais elle ajoute du poids."
+        }
+      ]
+    },
+    {
+      "h2": "Ce qui fait varier le prix",
+      "blocks": [
+        {
+          "ul": [
+            "**Les pages.** Chaque page ajoute son tarif d’impression, et le poids finit par exiger plus de timbres. Voyez [combien de timbres il faut pour une lettre](/blog/how-many-stamps-for-a-letter-in-canada).",
+            "**L’enveloppe plate.** Les pochettes plus grandes coûtent plus cher et relèvent de la Poste-lettres surdimensionnée, qui exige au moins trois timbres : [l’affranchissement d’une grande enveloppe](/blog/postage-for-a-large-envelope-canada).",
+            "**Trop de pages pour une seule enveloppe.** Une lettre qui n’y entre pas est répartie en plusieurs envois, chacun avec ses propres frais et ses propres timbres."
+          ]
+        }
+      ]
+    },
+    {
+      "h2": "En grande quantité, par API",
+      "blocks": [
+        {
+          "p": "Si vous envoyez beaucoup de lettres par API, les frais d’envoi passent automatiquement de 0,99 $ à 0,20 $ dès votre 100e envoi sur n’importe quelle période de 30 jours, et la lettre la moins chère coûte à partir de 1,69 $ tout compris. L’affranchissement reste au prix coûtant. [La grille tarifaire et un calculateur](/blog/api-volume-pricing) montrent les autres nombres de pages et enveloppes."
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "label": "Postes Canada, prix pour les consommateurs (mis à jour le 7 septembre 2026)",
+      "url": "https://www.canadapost-postescanada.ca/scp/doc/fr/soutien/tarifs/tarifs-personnel.pdf"
+    },
+    {
+      "label": "Postes Canada, prix des timbres",
+      "url": "https://www.canadapost-postescanada.ca/scp/fr/personnel/tarifs-affranchissement.page"
+    }
+  ]
+}

@@ -1,0 +1,64 @@
+{
+  "id": "how-online-letter-mailing-works",
+  "slug": "comment-fonctionne-l-envoi-de-lettres-en-ligne",
+  "title": "Comment fonctionne l’envoi de lettres en ligne, étape par étape",
+  "description": "Du téléversement à la boîte aux lettres : ce que fait un service d’impression et d’envoi postal de votre lettre, ce que vous obtenez et ce qu’il ne peut pas faire.",
+  "keywords": [
+    "comment envoyer une lettre en ligne",
+    "imprimer et poster une lettre en ligne",
+    "service d’envoi postal en ligne canada",
+    "envoyer du vrai courrier en ligne"
+  ],
+  "answer": "Vous téléversez un fichier PDF ou Word, ou vous rédigez la lettre, puis vous inscrivez les adresses de l’expéditeur et du destinataire. Une fois le paiement fait, le service l’imprime, la plie dans une enveloppe, y appose des timbres de Postes Canada et la poste, habituellement en un jour ouvrable. Le courrier ordinaire n’a pas de repérage.",
+  "sections": [
+    {
+      "h2": "Les étapes",
+      "blocks": [
+        {
+          "ol": [
+            "**Fournissez la lettre.** Sur sendletter, vous téléversez un fichier PDF (jusqu’à 200 pages et 40 Mo) ou Word (.docx) (jusqu’à 40 pages), ou vous la rédigez dans l’éditeur intégré.",
+            "**Choisissez le format.** Une enveloppe à fenêtre no 10 pliée, ou une pochette plate de 9 × 12 ou de 10 × 15; noir et blanc ou couleur; recto ou recto verso.",
+            "**Inscrivez les adresses.** Le destinataire doit avoir une adresse au Canada. L’adresse de l’expéditeur peut être saisie en texte libre : elle peut donc être située à l’extérieur du Canada.",
+            "**Payez.** Le prix est recalculé sur le serveur d’après le nombre réel de pages de votre document et vous est présenté avant le paiement.",
+            "**Nous imprimons et postons.** La lettre est imprimée, mise sous enveloppe, affranchie du montant exact et postée en un jour ouvrable.",
+            "**Postes Canada livre.** Sa norme de livraison pour la Poste-lettres est de deux à quatre jours ouvrables après le dépôt, une estimation et non une garantie."
+          ]
+        }
+      ]
+    },
+    {
+      "h2": "Ce que vous obtenez",
+      "blocks": [
+        {
+          "p": "Une vraie lettre sur papier, dans une enveloppe affranchie d’un vrai timbre, qui arrive dans une boîte aux lettres ordinaire. Aucun compte à créer. Un courriel de confirmation contient un reçu détaillé."
+        }
+      ]
+    },
+    {
+      "h2": "Ce que le service ne fait pas",
+      "blocks": [
+        {
+          "ul": [
+            "**Ni repérage ni signature.** La Poste-lettres ordinaire n’offre ni l’un ni l’autre. Pour obtenir une preuve de livraison, il faut le [Courrier recommandé](/blog/registered-vs-regular-mail-canada).",
+            "**Destinataires canadiens seulement.** Il est impossible d’envoyer une lettre à une adresse située dans un autre pays.",
+            "**Pas un service de rédaction ni de révision.** Le service imprime et poste le document que vous fournissez; il ne le rédige pas et ne le vérifie pas."
+          ]
+        }
+      ]
+    },
+    {
+      "h2": "Ce qu’il advient de votre document",
+      "blocks": [
+        {
+          "p": "La lettre est conservée le temps de l’impression, puis supprimée après 30 jours. La [ventilation complète du prix](/blog/what-an-online-letter-costs) et les [conditions](/terms) décrivent le reste."
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "label": "Postes Canada, normes de livraison de la Poste-lettres",
+      "url": "https://www.canadapost-postescanada.ca/scp/fr/soutien/sujet/poste-lettres/normes-de-livraison.page"
+    }
+  ]
+}

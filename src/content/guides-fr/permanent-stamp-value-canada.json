@@ -1,0 +1,64 @@
+{
+  "id": "permanent-stamp-value-canada",
+  "slug": "valeur-timbre-permanent-canada",
+  "title": "Que vaut un timbre Permanent au Canada?",
+  "description": "Un timbre Permanent vaut 1,24 $, affranchit une lettre de 30 g ou moins partout au Canada et reste valide au tarif intérieur en vigueur après toute hausse.",
+  "keywords": [
+    "valeur timbre permanent postes canada",
+    "timbre permanent canada",
+    "timbre p postes canada",
+    "valeur des timbres canadiens"
+  ],
+  "answer": "Un timbre Permanent canadien a une valeur d’affranchissement de 1,24 $. Il ne porte aucun montant imprimé et paie toujours une lettre standard de 30 grammes ou moins partout au Canada. Postes Canada l’accepte au tarif intérieur en vigueur même après une hausse des prix : un timbre Permanent acheté aujourd’hui reste utilisable.",
+  "sections": [
+    {
+      "h2": "Ce qu’est ce timbre",
+      "blocks": [
+        {
+          "p": "Postes Canada décrit le timbre Permanent comme un timbre sans valeur nominale, dont la valeur d’affranchissement est de 1,24 $. Un seul timbre affranchit une lettre pesant jusqu’à 30 g partout au Canada."
+        }
+      ]
+    },
+    {
+      "h2": "Pourquoi il n’expire pas",
+      "blocks": [
+        {
+          "p": "Selon la page de Postes Canada sur les timbres, un timbre Permanent est toujours accepté au tarif d’affranchissement intérieur en vigueur et peut être utilisé en tout temps, maintenant ou plus tard, même si les tarifs ont augmenté. Une hausse de tarif change le prix d’un nouveau timbre, pas la valeur d’un ancien timbre Permanent."
+        },
+        {
+          "p": "Si le tarif intérieur augmente, un timbre Permanent acheté à 1,24 $ paie toujours une lettre standard. C’est une propriété du timbre, et non une prévision, et elle ne vaut que pour la lettre du régime intérieur de 30 g ou moins."
+        }
+      ]
+    },
+    {
+      "h2": "Utiliser un timbre Permanent pour du courrier plus lourd",
+      "blocks": [
+        {
+          "p": "Postes Canada indique que l’on peut combiner des timbres Permanents à un affranchissement additionnel pour envoyer des lettres plus grandes ou des colis, ou pour expédier du courrier à l’étranger. Pour une lettre au Canada, comptez les timbres selon le poids : [combien de timbres faut-il pour une lettre](/blog/how-many-stamps-for-a-letter-in-canada)."
+        }
+      ]
+    },
+    {
+      "h2": "Pourquoi c’est important pour un service d’envoi postal",
+      "blocks": [
+        {
+          "p": "sendletter affranchit les lettres avec des timbres Permanents en rouleau et facture exactement leur valeur, soit 1,24 $ chacun, sans marge sur l’affranchissement."
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "label": "Postes Canada, Qu’est-ce qu’un timbre Permanent?",
+      "url": "https://www.canadapost-postescanada.ca/scp/fr/soutien/bc/expedier/timbres-fournitures-emballage/quest-ce-quun-timbre-permanent.page"
+    },
+    {
+      "label": "Postes Canada, prix des timbres",
+      "url": "https://www.canadapost-postescanada.ca/scp/fr/personnel/tarifs-affranchissement.page"
+    },
+    {
+      "label": "Postes Canada, prix pour les consommateurs (mis à jour le 7 septembre 2026)",
+      "url": "https://www.canadapost-postescanada.ca/scp/doc/fr/soutien/tarifs/tarifs-personnel.pdf"
+    }
+  ]
+}

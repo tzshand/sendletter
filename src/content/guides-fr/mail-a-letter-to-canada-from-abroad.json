@@ -1,0 +1,113 @@
+{
+  "id": "mail-a-letter-to-canada-from-abroad",
+  "slug": "envoyer-une-lettre-au-canada-depuis-l-etranger",
+  "title": "Envoyer une lettre au Canada depuis l’étranger",
+  "description": "Deux façons d’envoyer une lettre à une adresse canadienne depuis un autre pays : la poster soi-même avec ses timbres ou la faire imprimer et poster au Canada.",
+  "keywords": [
+    "envoyer une lettre au canada depuis les états-unis",
+    "envoyer une lettre au canada depuis la france",
+    "envoyer une lettre au canada depuis l’étranger",
+    "poster une lettre vers le canada"
+  ],
+  "answer": "Depuis l’étranger, vous pouvez poster la lettre vous-même avec l’affranchissement international de votre pays, ou la commander en ligne et la faire imprimer et poster au Canada par un service. Dans les deux cas, l’adresse doit respecter le format canadien et se terminer par un code postal exact de six caractères : un code manquant ou erroné peut majorer l’affranchissement ou rendre l’envoi impossible à livrer.",
+  "sections": [
+    {
+      "h2": "Deux options",
+      "blocks": [
+        {
+          "table": {
+            "headers": [
+              "",
+              "La poster soi-même",
+              "La commander en ligne"
+            ],
+            "rows": [
+              [
+                "Qui fixe le prix",
+                "Votre service postal national",
+                "Le service; la lettre la moins chère de sendletter coûte 3,49 $ tout compris"
+              ],
+              [
+                "Affranchissement",
+                "Les timbres internationaux de votre pays",
+                "Des timbres canadiens, apposés au Canada"
+              ],
+              [
+                "Lieu de dépôt",
+                "Dans votre pays",
+                "Au Canada, en Poste-lettres ordinaire"
+              ],
+              [
+                "Délai de livraison",
+                "Le transit international de votre service postal, plus la livraison au Canada",
+                "Imprimée et postée en un jour ouvrable, puis la norme de livraison de la Poste-lettres de Postes Canada, soit de 2 à 4 jours ouvrables"
+              ],
+              [
+                "Suivi",
+                "Selon le service que vous achetez",
+                "Aucun; c’est du courrier ordinaire"
+              ],
+              [
+                "Destinataire",
+                "N’importe où au Canada",
+                "Une adresse canadienne seulement"
+              ]
+            ]
+          }
+        },
+        {
+          "p": "Les normes de livraison de la Poste-lettres de Postes Canada sont des estimations, non des garanties. Votre propre service postal fixe lui-même ses délais pour la partie du trajet qui précède l’arrivée de la lettre au Canada."
+        }
+      ]
+    },
+    {
+      "h2": "Commencez par bien rédiger l’adresse",
+      "blocks": [
+        {
+          "ul": [
+            "Suivez l’ordre canadien : destinataire, adresse municipale, puis municipalité, province et code postal. [Comment adresser une lettre au Canada](/blog/how-to-address-a-letter-to-canada) présente chaque variante.",
+            "Terminez par un code postal valide, selon le motif lettre-chiffre-lettre, chiffre-lettre-chiffre : [le format du code postal canadien](/blog/canadian-postal-code-format).",
+            "Ajoutez une adresse de l’expéditeur dans votre pays, afin que la lettre puisse y être renvoyée."
+          ]
+        },
+        {
+          "p": "Les erreurs propres à chaque pays, comme écrire le code postal à la manière d’un code ZIP ou placer le numéro civique au mauvais endroit, sont traitées dans les [pages sur l’envoi de courrier au Canada](/mail-to-canada), une par pays."
+        }
+      ]
+    },
+    {
+      "h2": "Si la lettre ne peut pas être livrée",
+      "blocks": [
+        {
+          "p": "Son retour dépend de la présence d’une adresse de l’expéditeur valide. [Pourquoi les lettres envoyées au Canada sont renvoyées](/blog/why-letters-to-canada-get-returned) en énumère les raisons et propose une liste de vérification."
+        }
+      ]
+    },
+    {
+      "h2": "Commander en ligne depuis l’étranger",
+      "blocks": [
+        {
+          "p": "sendletter accepte la lettre sous forme de PDF, de fichier Word ou de texte saisi, et l’envoie à une adresse canadienne. L’adresse de l’expéditeur peut être saisie en texte libre : elle peut donc se trouver à l’extérieur du Canada. [Comment fonctionne l’envoi de lettres en ligne](/blog/how-online-letter-mailing-works) détaille chaque étape."
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "label": "Postes Canada, adresses canadiennes",
+      "url": "https://www.canadapost-postescanada.ca/scp/fr/soutien/sujet/directives-adressage/adresses-canada.page"
+    },
+    {
+      "label": "Postes Canada, codes postaux",
+      "url": "https://www.canadapost-postescanada.ca/scp/fr/soutien/sujet/directives-adressage/codes-postaux.page"
+    },
+    {
+      "label": "Postes Canada, qu’arrive-t-il au courrier non livrable",
+      "url": "https://www.canadapost-postescanada.ca/scp/fr/soutien/sujet/envois-non-distribuables/traitement-envois-non-distribuables.page"
+    },
+    {
+      "label": "Postes Canada, normes de livraison de la Poste-lettres",
+      "url": "https://www.canadapost-postescanada.ca/scp/fr/soutien/sujet/poste-lettres/normes-de-livraison.page"
+    }
+  ]
+}

@@ -1,0 +1,130 @@
+{
+  "id": "mail-invoices-statements-small-business",
+  "slug": "poster-factures-releves-moins-de-1000-par-mois",
+  "title": "Poster des factures sous 1 000 par mois au Canada",
+  "description": "Sous le seuil de remise de 1 000 lettres de Postes Canada, comment une petite entreprise peut poster factures et relevés : à la main, par un service ou par logiciel.",
+  "keywords": [
+    "envoyer des factures par la poste au Canada",
+    "poster des relevés de compte petite entreprise",
+    "envoi de factures papier aux clients",
+    "sous-traiter l’envoi de factures"
+  ],
+  "answer": "Sous 1 000 lettres par mois, vous n’avez pas droit à la remise sur quantité de Postes Canada : chaque lettre coûte au moins un timbre de 1,24 $, peu importe la méthode. Vous pouvez imprimer et poster vous-même, passer par un service d’impression et d’envoi postal, ou envoyer par API depuis votre système de facturation, où une lettre d’une page descend jusqu’à 1,69 $ tout compris.",
+  "sections": [
+    {
+      "h2": "Pourquoi la remise sur quantité ne vous aide pas",
+      "blocks": [
+        {
+          "p": "La remise sur quantité de Postes Canada pour les lettres commence au-delà de 1 000 articles, et pour une lettre standard elle fait économiser environ un cent par rapport à un timbre de carnet. Voir [les remises de Postes Canada sur les lettres](/blog/canada-post-bulk-letter-discount). Sous ce volume, l’affranchissement est le même 1,24 $ quelle que soit la méthode; le vrai choix porte donc sur l’impression, le pliage, la mise sous enveloppe et l’envoi."
+        }
+      ]
+    },
+    {
+      "h2": "Trois façons de procéder",
+      "blocks": [
+        {
+          "table": {
+            "headers": [
+              "",
+              "Le faire soi-même",
+              "Impression et envoi sur le site",
+              "API depuis votre logiciel"
+            ],
+            "rows": [
+              [
+                "Coût par lettre en plus de l’affranchissement",
+                "Papier, enveloppe, toner et votre temps",
+                "2,25 $ pour une lettre d’une page (frais, enveloppe, impression)",
+                "1,24 $ pour la première lettre, puis jusqu’à 0,45 $ à la 100e"
+              ],
+              [
+                "Votre temps",
+                "Chaque lettre, chaque mois",
+                "Téléverser, adresser, payer",
+                "Aucun une fois la connexion établie"
+              ],
+              [
+                "Idéal quand",
+                "Quelques lettres par mois",
+                "Envois ponctuels",
+                "Relevés et avis récurrents"
+              ]
+            ]
+          }
+        },
+        {
+          "p": "Les prix sont ceux d’une lettre d’une page en noir et blanc dans une enveloppe no 10 avec un timbre. Sur le site Web, cela fait 3,49 $ au total; par API, la première lettre coûte 2,48 $ et un expéditeur régulier atteint 1,69 $ à partir de la 100e lettre sur 30 jours. L’affranchissement est facturé au coût."
+        }
+      ]
+    },
+    {
+      "h2": "Ce que cela donne au total",
+      "blocks": [
+        {
+          "table": {
+            "headers": [
+              "Lettres en 30 jours",
+              "Total sur le site",
+              "Total par API",
+              "Moyenne par lettre par API"
+            ],
+            "rows": [
+              [
+                "10",
+                "34,90 $",
+                "22,20 $",
+                "2,22 $"
+              ],
+              [
+                "100",
+                "349,00 $",
+                "185,59 $",
+                "1,86 $"
+              ],
+              [
+                "500",
+                "1 745,00 $",
+                "861,59 $",
+                "1,72 $"
+              ]
+            ]
+          }
+        },
+        {
+          "p": "Les totaux comprennent l’affranchissement. La remise par API compte les lettres sur une période mobile de 30 jours, de sorte que la moyenne baisse à mesure que votre volume augmente."
+        }
+      ]
+    },
+    {
+      "h2": "Avant de sous-traiter",
+      "blocks": [
+        {
+          "ul": [
+            "Vérifiez que les lettres doivent vraiment être en papier. Certains clients acceptent le courriel, qui ne coûte rien.",
+            "Décidez de ce qui arrive au courrier retourné et aux mauvaises adresses. Mettez une adresse de l’expéditeur sur chaque lettre.",
+            "Conservez une trace de ce qui a été envoyé, à qui et quand. Des relevés pour un litige exigent une date; voir [comment prouver que vous avez posté une lettre](/blog/proof-of-mailing-letter-canada).",
+            "Confirmez le format d’adresse que votre système de facturation enregistre, y compris un code postal complet de six caractères."
+          ]
+        }
+      ]
+    },
+    {
+      "h2": "Envoyer depuis votre système de facturation",
+      "blocks": [
+        {
+          "p": "Si vos factures sont produites par un logiciel, la meilleure façon est d’envoyer chacune par API avec une clé d’idempotence, afin qu’une nouvelle tentative ne fasse pas poster une deuxième copie. Voir [le calculateur de tarification au volume](/blog/api-volume-pricing) et [envoyer une lettre avec une API](/blog/send-a-letter-with-an-api-canada)."
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "label": "Postes Canada, prix pour les entreprises (grille de prix de la Poste-lettres et de la Poste-lettres à tarifs préférentiels)",
+      "url": "https://www.canadapost-postescanada.ca/scp/doc/fr/soutien/tarifs/tarifs-entreprise.pdf"
+    },
+    {
+      "label": "Postes Canada, obtenir des remises pour de grands volumes de courrier",
+      "url": "https://www.canadapost-postescanada.ca/scp/fr/comptes-commerciaux/services-postaux/reduction-courrier.page"
+    }
+  ]
+}

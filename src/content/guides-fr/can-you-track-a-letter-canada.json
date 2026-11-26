@@ -1,0 +1,94 @@
+{
+  "id": "can-you-track-a-letter-canada",
+  "slug": "peut-on-reperer-une-lettre-au-canada",
+  "title": "Peut-on repérer une lettre au Canada?",
+  "description": "Une lettre ordinaire n’a pas de numéro de repérage. Le Courrier recommandé est l’option avec repérage : son coût, ce qu’il offre et quand un timbre suffit.",
+  "keywords": [
+    "peut-on repérer une lettre au canada",
+    "repérer une lettre postes canada",
+    "numéro de repérage poste-lettres",
+    "repérer du courrier ordinaire canada"
+  ],
+  "answer": "Pas une lettre ordinaire. La Poste-lettres standard n’a pas de numéro de repérage, et Postes Canada indique qu’elle ne peut pas faire de recherche sur une lettre individuelle sans numéro. L’option avec repérage pour une lettre est le Courrier recommandé, qui ajoute 13,15 $ à l’affranchissement et offre un numéro de repérage, une signature à la livraison et un reçu de dépôt.",
+  "sections": [
+    {
+      "h2": "Les lettres ordinaires",
+      "blocks": [
+        {
+          "p": "Une lettre affranchie d’un timbre voyage comme de la Poste-lettres. Elle ne porte aucun numéro à consulter, donc il n’y a rien à repérer, et vous ne recevez aucune confirmation à la livraison. La page d’aide de Postes Canada est sans détour sur la conséquence : aucune recherche n’est possible sur une lettre individuelle sans numéro de repérage."
+        },
+        {
+          "p": "Pour la plupart des lettres, ce n’est pas un problème. Les lettres sont livrées en deux, trois ou quatre jours ouvrables selon la distance, mais ces normes ne sont pas garanties. Voyez [combien de temps prend une lettre](/blog/how-long-does-a-letter-take-in-canada)."
+        }
+      ]
+    },
+    {
+      "h2": "L’option avec repérage : le Courrier recommandé",
+      "blocks": [
+        {
+          "table": {
+            "headers": [
+              "",
+              "Courrier recommandé"
+            ],
+            "rows": [
+              [
+                "Coût additionnel",
+                "13,15 $ en plus de l’affranchissement, au Canada"
+              ],
+              [
+                "Repérage",
+                "Un numéro de repérage unique"
+              ],
+              [
+                "Preuve de dépôt",
+                "Un reçu portant la date d’achat, remis au bureau de poste"
+              ],
+              [
+                "Signature",
+                "Consignée à la livraison"
+              ],
+              [
+                "Couverture de responsabilité",
+                "100 $ incluse"
+              ],
+              [
+                "Où le poster",
+                "Un bureau de poste, pas une boîte aux lettres publique"
+              ]
+            ]
+          }
+        },
+        {
+          "p": "Un timbre de 1,44 $ plus les frais de 13,15 $ donnent 14,59 $ pour une lettre que l’on peut repérer. [Ce que coûte le Courrier recommandé](/blog/registered-mail-canada-cost) et [Courrier recommandé ou courrier ordinaire](/blog/registered-vs-regular-mail-canada) donnent plus de détails."
+        }
+      ]
+    },
+    {
+      "h2": "Et les colis et les petits paquets?",
+      "blocks": [
+        {
+          "p": "Les services de colis et de petits paquets comportent un numéro de repérage, mais une lettre sous enveloppe relève de la Poste-lettres, et l’envoyer comme petit paquet coûte plus cher que le timbre. Si vous voulez seulement savoir qu’une lettre est arrivée, le Courrier recommandé est la réponse habituelle."
+        }
+      ]
+    },
+    {
+      "h2": "Si vous avez commandé par sendletter",
+      "blocks": [
+        {
+          "p": "Une lettre commandée par sendletter est imprimée et postée comme de la Poste-lettres ordinaire, donc Postes Canada ne la repère pas non plus. Nous pouvons montrer notre propre étape : quand elle a été reçue, imprimée et remise à Postes Canada. Les clients de l’API obtiennent la même chose au moyen des statuts de lettre et des liens de rappel HTTP."
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "label": "Postes Canada, pourquoi ma lettre n’a-t-elle pas été livrée?",
+      "url": "https://www.canadapost-postescanada.ca/scp/fr/soutien/bc/recevoir/faq-livraison/comment-trouver-le-courrier-non-livre.page"
+    },
+    {
+      "label": "Postes Canada, Courrier recommandé",
+      "url": "https://www.canadapost-postescanada.ca/scp/fr/personnel/envois-au-canada/courrier-recommande.page"
+    }
+  ]
+}

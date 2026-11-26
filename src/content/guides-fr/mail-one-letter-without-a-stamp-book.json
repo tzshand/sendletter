@@ -1,0 +1,75 @@
+{
+  "id": "mail-one-letter-without-a-stamp-book",
+  "slug": "poster-une-lettre-sans-acheter-un-carnet-de-timbres",
+  "title": "Poster une lettre sans acheter un carnet de timbres",
+  "description": "Vous pouvez acheter un timbre à l’unité à 1,44 $, ou vous passer de timbres avec un service d’impression et d’envoi en ligne. Les coûts, et ce qu’il vous faut.",
+  "keywords": [
+    "envoyer une seule lettre",
+    "poster une lettre au Canada",
+    "un seul timbre Canada",
+    "acheter un timbre à l’unité Canada"
+  ],
+  "answer": "Pas besoin d’acheter un carnet de timbres. Postes Canada vend des timbres à l’unité à 1,44 $ pour une lettre standard, contre 1,24 $ le timbre en carnet. Ou encore, un service en ligne imprime, affranchit et poste la lettre pour vous, à partir de 3,49 $ tout compris. Le meilleur choix dépend de ce que vous avez comme imprimante et enveloppe.",
+  "sections": [
+    {
+      "h2": "Option 1 : un timbre à l’unité",
+      "blocks": [
+        {
+          "p": "Un timbre à l’unité pour une lettre standard jusqu’à 30 g coûte 1,44 $. Il vous faut encore la lettre imprimée, une enveloppe, et une boîte aux lettres ou un bureau de poste. La [comparaison complète des coûts](/blog/what-it-costs-to-mail-a-letter-in-canada) ajoute l’enveloppe et l’impression."
+        }
+      ]
+    },
+    {
+      "h2": "Option 2 : un service en ligne",
+      "blocks": [
+        {
+          "p": "Un service d’impression et d’envoi postal prend votre document et les adresses, l’imprime, le plie dans une enveloppe à fenêtre, applique les timbres et le poste. La lettre sendletter la moins chère coûte 3,49 $, affranchissement et taxes compris; [la ventilation](/blog/what-an-online-letter-costs) explique comment ce prix est établi."
+        }
+      ]
+    },
+    {
+      "h2": "Comment choisir",
+      "blocks": [
+        {
+          "table": {
+            "headers": [
+              "Votre situation",
+              "Meilleur choix"
+            ],
+            "rows": [
+              [
+                "Imprimante, enveloppe et boîte aux lettres sur votre trajet",
+                "Un timbre à l’unité"
+              ],
+              [
+                "Pas d’imprimante, ou pas de temps pour la course",
+                "Un service en ligne"
+              ],
+              [
+                "Vous êtes à l’extérieur du Canada",
+                "Un service en ligne : la lettre est affranchie et postée au Canada"
+              ],
+              [
+                "Plusieurs lettres par mois",
+                "Un carnet de timbres, ou un service si le temps économisé vaut la différence"
+              ]
+            ]
+          }
+        },
+        {
+          "note": "Si vous avez déjà l’imprimante, l’enveloppe et le timbre, la poster vous-même coûte moins cher. Un service justifie son prix quand il vous manque l’un de ces éléments."
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "label": "Postes Canada, prix des timbres",
+      "url": "https://www.canadapost-postescanada.ca/scp/fr/personnel/tarifs-affranchissement.page"
+    },
+    {
+      "label": "Postes Canada, prix pour les consommateurs (mis à jour le 7 septembre 2026)",
+      "url": "https://www.canadapost-postescanada.ca/scp/doc/fr/soutien/tarifs/tarifs-personnel.pdf"
+    }
+  ]
+}

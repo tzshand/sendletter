@@ -1,0 +1,113 @@
+{
+  "id": "how-many-stamps-for-a-letter-in-canada",
+  "slug": "combien-de-timbres-pour-une-lettre-au-canada",
+  "title": "Combien de timbres faut-il pour une lettre au Canada?",
+  "description": "Un timbre Permanent suffit pour une lettre jusqu’à 30 g. Les lettres plus lourdes et surdimensionnées en exigent de deux à six. Le nombre selon le poids.",
+  "keywords": [
+    "combien de timbres pour une lettre au Canada",
+    "combien de timbres me faut-il Canada",
+    "combien de timbres pour poster une lettre",
+    "combien de timbres Permanents"
+  ],
+  "answer": "Un timbre Permanent (1,24 $) permet de poster une lettre standard jusqu’à 30 grammes au Canada. Une lettre de 30 à 50 grammes en demande deux. Les lettres surdimensionnées en exigent trois jusqu’à 100 grammes, et jusqu’à six à 500 grammes. Pesez l’enveloppe si elle semble lourde; environ cinq feuilles de papier approchent la limite de 30 grammes.",
+  "sections": [
+    {
+      "h2": "Nombre de timbres selon le poids",
+      "blocks": [
+        {
+          "p": "Les tarifs de Postes Canada ne sont pas des multiples du timbre Permanent de 1,24 $; il faut donc arrondir au timbre entier supérieur. Le tableau montre l’affranchissement exigé et les timbres qui le couvrent."
+        },
+        {
+          "table": {
+            "headers": [
+              "Lettre",
+              "Affranchissement exigé",
+              "Timbres Permanents",
+              "Valeur sur l’enveloppe"
+            ],
+            "rows": [
+              [
+                "Standard, jusqu’à 30 g",
+                "1,24 $",
+                "1",
+                "1,24 $"
+              ],
+              [
+                "Standard, de 30 à 50 g",
+                "1,75 $",
+                "2",
+                "2,48 $"
+              ],
+              [
+                "Surdimensionnée, jusqu’à 100 g",
+                "2,61 $",
+                "3",
+                "3,72 $"
+              ],
+              [
+                "Surdimensionnée, de 100 à 200 g",
+                "4,29 $",
+                "4",
+                "4,96 $"
+              ],
+              [
+                "Surdimensionnée, de 200 à 300 g",
+                "5,98 $",
+                "5",
+                "6,20 $"
+              ],
+              [
+                "Surdimensionnée, de 300 à 400 g",
+                "6,85 $",
+                "6",
+                "7,44 $"
+              ],
+              [
+                "Surdimensionnée, de 400 à 500 g",
+                "7,36 $",
+                "6",
+                "7,44 $"
+              ]
+            ]
+          }
+        },
+        {
+          "p": "Deux timbres pour une lettre de 30 à 50 g, c’est payer 0,73 $ de plus que le tarif. Des timbres d’autres valeurs peuvent rapprocher le total de 1,75 $."
+        }
+      ]
+    },
+    {
+      "h2": "Combien pèse votre lettre?",
+      "blocks": [
+        {
+          "p": "Le papier ordinaire de 20 lb (75 g/m²) pèse environ 4,5 g la feuille au format lettre américain, et une enveloppe légère environ 6 g. Cinq feuilles dans une enveloppe font à peu près 28 g; une sixième feuille dépasse 30 g. Ce sont des estimations. Si le total est proche de la limite d’une catégorie, pesez la lettre sur une balance de cuisine, car une enveloppe qui dépasse d’un gramme est facturée à un autre prix."
+        },
+        {
+          "p": "Un papier épais, une enveloppe lourde ou un ajout comme un chèque ou une carte ajoutent tous du poids. Le papier de couleur et le papier de 24 lb sont plus lourds que celui de 20 lb."
+        }
+      ]
+    },
+    {
+      "h2": "Ce qui arrive quand il en manque",
+      "blocks": [
+        {
+          "p": "Une lettre insuffisamment affranchie peut être renvoyée à l’expéditeur. Voir [ce qui arrive à une lettre insuffisamment affranchie](/blog/letter-with-too-little-postage). C’est pourquoi sendletter compte les timbres à partir d’une estimation de poids volontairement élevée : un timbre de plus coûte 1,24 $, alors qu’un timbre manquant risque de faire revenir la lettre."
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "label": "Postes Canada, prix pour les consommateurs (mis à jour le 7 septembre 2026)",
+      "url": "https://www.canadapost-postescanada.ca/scp/doc/fr/soutien/tarifs/tarifs-personnel.pdf"
+    },
+    {
+      "label": "Postes Canada, prix des timbres",
+      "url": "https://www.canadapost-postescanada.ca/scp/fr/personnel/tarifs-affranchissement.page"
+    },
+    {
+      "label": "Postes Canada, Qu’est-ce qu’un timbre Permanent?",
+      "url": "https://www.canadapost-postescanada.ca/scp/fr/soutien/bc/expedier/timbres-fournitures-emballage/quest-ce-quun-timbre-permanent.page"
+    }
+  ]
+}

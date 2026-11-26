@@ -1,0 +1,106 @@
+{
+  "id": "stamp-price-2027-what-we-know",
+  "slug": "timbre-2-dollars-postes-canada-2027-ce-que-lon-sait",
+  "title": "Timbre à 2 $ de Postes Canada en 2027 : ce que l’on sait",
+  "description": "Ce que dit le budget fédéral sur un timbre à 2 $ en 2027, ce que Postes Canada n’a pas annoncé et que faire des timbres que vous avez déjà.",
+  "keywords": [
+    "prix du timbre postes canada 2027",
+    "timbre à 2 $ postes canada",
+    "hausse du prix des timbres canada 2027",
+    "est-ce que le prix des timbres va augmenter au canada"
+  ],
+  "answer": "Selon le budget fédéral de 2026, le prix d’un timbre à l’unité pour le courrier au Canada passera de 1,44 $ à 2,00 $ en 2027, puis augmentera d’environ sept pour cent par an. Aucun mois n’a été annoncé et Postes Canada n’a pas publié de nouvelle grille tarifaire. Le tarif actuel demeure de 1,44 $ pour un timbre à l’unité, ou de 1,24 $ chacun dans un carnet.",
+  "sections": [
+    {
+      "h2": "Ce que dit le budget",
+      "blocks": [
+        {
+          "p": "Selon les reportages sur le budget fédéral de novembre 2026, le prix d’un timbre à l’unité pour le courrier au Canada passera de 1,44 $ à 2,00 $ en 2027, avec des hausses d’environ sept pour cent par an par la suite. Le budget ne précise aucun mois pour la première hausse. Global News rapporte que l’objectif est de compenser en partie les pertes de Postes Canada attribuables à la baisse du nombre de lettres envoyées, et le budget évalue l’effet de ce changement à environ 6 $ par an pour un particulier et à 9 $ pour une petite entreprise."
+        },
+        {
+          "p": "Un porte-parole de Postes Canada a déclaré que les tarifs des lettres à destination des États-Unis et de l’étranger augmenteront aussi, mais que les montants n’ont pas encore été arrêtés."
+        }
+      ]
+    },
+    {
+      "h2": "Ce que l’on ignore encore",
+      "blocks": [
+        {
+          "ul": [
+            "Le mois d’entrée en vigueur du nouveau prix.",
+            "Le prix d’un timbre dans un carnet, un rouleau ou un feuillet (1,24 $ chacun aujourd’hui). On n’a pas annoncé s’il augmentera au même rythme que le prix du timbre à l’unité.",
+            "Le prix des lettres plus lourdes et des lettres à destination des États-Unis et de l’étranger.",
+            "Si Postes Canada publiera les nouveaux tarifs avant leur entrée en vigueur, ou quel préavis elle donnera."
+          ]
+        },
+        {
+          "p": "Les pages de prix de Postes Canada indiquent que les prix peuvent changer sans préavis. Considérez toute date ou tout prix de carnet que vous lisez ailleurs comme une supposition, tant que Postes Canada ne l’a pas publié."
+        }
+      ]
+    },
+    {
+      "h2": "Les tarifs actuels",
+      "blocks": [
+        {
+          "table": {
+            "headers": [
+              "Lettre au Canada",
+              "Prix"
+            ],
+            "rows": [
+              [
+                "Jusqu’à 30 g, timbre à l’unité",
+                "1,44 $"
+              ],
+              [
+                "Jusqu’à 30 g, timbre dans un carnet",
+                "1,24 $ chacun"
+              ],
+              [
+                "Plus de 30 g jusqu’à 50 g",
+                "1,75 $"
+              ]
+            ]
+          }
+        },
+        {
+          "p": "Consultez les [prix des timbres de Postes Canada](/blog/canada-post-stamp-price) et les [tarifs des lettres selon le poids](/blog/canada-post-letter-rates-by-weight) pour la grille complète."
+        }
+      ]
+    },
+    {
+      "h2": "Les timbres achetés maintenant restent-ils valides?",
+      "blocks": [
+        {
+          "p": "Selon Postes Canada, un timbre Permanent est toujours accepté au tarif d’affranchissement intérieur en vigueur; celui que vous achetez maintenant couvrira donc encore une lettre standard après la hausse. Voyez [ce que vaut un timbre Permanent](/blog/permanent-stamp-value-canada). Un timbre sur lequel est imprimée une valeur en dollars est différent\u00a0: il ne vaut que sa valeur nominale, de sorte qu’après une hausse, vous devriez ajouter de l’affranchissement pour atteindre le nouveau tarif."
+        }
+      ]
+    },
+    {
+      "h2": "Si vous n’envoyez qu’une lettre de temps en temps",
+      "blocks": [
+        {
+          "p": "Le timbre fait partie du coût de chaque lettre, peu importe la façon de l’envoyer. Un service d’impression et d’envoi postal refile l’affranchissement au prix coûtant\u00a0: un changement du prix du timbre modifie donc la ligne d’affranchissement, et rien d’autre. [Ce que coûte une lettre en ligne](/blog/what-an-online-letter-costs) présente le détail aux tarifs d’aujourd’hui."
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "label": "CTV News, Postes Canada augmentera le prix des timbres à 2 $ en 2027",
+      "url": "https://www.ctvnews.ca/ottawa/article/canada-post-to-increase-stamp-costs-to-2-in-2027/"
+    },
+    {
+      "label": "BNN Bloomberg, Postes Canada augmentera le prix des timbres à 2 $ en 2027",
+      "url": "https://www.bnnbloomberg.ca/business/2026/11/05/canada-post-to-increase-stamp-costs-to-2-in-2027/"
+    },
+    {
+      "label": "Postes Canada, tarifs d’affranchissement des lettres",
+      "url": "https://www.canadapost-postescanada.ca/scp/fr/personnel/tarifs-affranchissement.page"
+    },
+    {
+      "label": "Global News, prix des timbres dans le budget de 2026",
+      "url": "https://globalnews.ca/news/12138831/stamp-prices-budget-2026/"
+    }
+  ]
+}

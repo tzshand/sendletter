@@ -1,0 +1,108 @@
+{
+  "id": "print-and-mail-service-vs-diy",
+  "slug": "service-d-impression-et-d-envoi-postal-ou-soi-meme",
+  "title": "Service d’envoi postal ou faire soi-même : les coûts",
+  "description": "Ce que coûte l’impression et l’envoi d’une lettre soi-même par rapport à un service, avec le seuil de rentabilité pour une lettre, dix et cent.",
+  "keywords": [
+    "service d’impression et d’envoi postal ou faire soi-même",
+    "faire poster des lettres par un service",
+    "coût pour poster une lettre soi-même au Canada",
+    "service d’envoi de courrier en ligne est-il rentable"
+  ],
+  "answer": "Poster une lettre soi-même coûte le timbre de 1,24 $, plus le papier, l’enveloppe, le toner et votre temps. Un service ajoute des frais pour le reste : chez sendletter, 2,25 $ la lettre sur le site Web, ou de 1,24 $ à 0,45 $ par API selon le volume. Le service l’emporte quand votre temps par lettre vaut plus que ces frais.",
+  "sections": [
+    {
+      "h2": "Le coût de le faire soi-même",
+      "blocks": [
+        {
+          "p": "Chaque lettre exige un timbre : 1,24 $ à partir d’un carnet, 1,44 $ à l’unité. S’ajoutent le papier, l’enveloppe, le toner ou l’encre, et les minutes qu’il faut pour imprimer, plier, insérer, cacheter, affranchir et poster. Les fournitures coûtent ce que vous les payez, généralement quelques cents par lettre. C’est le temps qui fait la différence."
+        }
+      ]
+    },
+    {
+      "h2": "Le coût d’un service",
+      "blocks": [
+        {
+          "p": "Un service ajoute des frais pour le travail : sur le site Web de sendletter, une lettre d’une page en noir et blanc coûte 3,49 $, dont 1,24 $ d’affranchissement, ce qui laisse 2,25 $ pour le service. Par API, avec la tarification au volume, la part au-delà de l’affranchissement commence à 1,24 $ et descend à 0,45 $ à la 100e lettre en 30 jours. Voir [ce que coûte une lettre en ligne](/blog/what-an-online-letter-costs)."
+        }
+      ]
+    },
+    {
+      "h2": "Où se situe le seuil de rentabilité",
+      "blocks": [
+        {
+          "p": "Prenez ce que vous paieriez vous-même en fournitures, plus votre temps par lettre, selon ce que vaut une heure de votre temps. À titre d’exemple seulement : si poster une lettre prend deux minutes et qu’une heure de votre temps vaut 30 $, cela fait 1,00 $ de temps, plus les fournitures. Vos propres chiffres seront différents; le tableau montre comment la comparaison évolue."
+        },
+        {
+          "table": {
+            "headers": [
+              "Minutes par lettre, à 30 $ l’heure",
+              "Votre temps",
+              "Service en ligne (2,25 $)",
+              "API à 100 lettres et plus (0,45 $)"
+            ],
+            "rows": [
+              [
+                "1",
+                "0,50 $",
+                "Moins cher de le faire soi-même",
+                "À peu près égal"
+              ],
+              [
+                "2",
+                "1,00 $",
+                "Moins cher de le faire soi-même",
+                "Le service est moins cher"
+              ],
+              [
+                "5",
+                "2,50 $",
+                "À peu près égal",
+                "Le service est moins cher"
+              ],
+              [
+                "10",
+                "5,00 $",
+                "Le service est moins cher",
+                "Le service est moins cher"
+              ]
+            ]
+          }
+        },
+        {
+          "p": "Comparez la part du service avec votre temps plus les fournitures. L’affranchissement est le même dans les deux cas."
+        }
+      ]
+    },
+    {
+      "h2": "Ce que les chiffres ne disent pas",
+      "blocks": [
+        {
+          "ul": [
+            "Les erreurs coûtent de l’argent. Un timbre oublié ou un code postal erroné entraîne le renvoi ou le retard de la lettre; voir [lettre insuffisamment affranchie](/blog/letter-with-too-little-postage).",
+            "Un service n’exige ni imprimante, ni enveloppes, ni déplacement jusqu’à une boîte aux lettres, ce qui compte quand vous voyagez ou travaillez à distance.",
+            "Un service ne peut pas tout faire. Il poste de la Poste-lettres ordinaire; si vous avez besoin d’une signature ou d’une preuve de livraison, postez la lettre vous-même par Courrier recommandé. Voir [Courrier recommandé ou courrier ordinaire](/blog/registered-vs-regular-mail-canada)."
+          ]
+        }
+      ]
+    },
+    {
+      "h2": "Règle générale",
+      "blocks": [
+        {
+          "p": "Une ou deux lettres par année : faites-le vous-même ou utilisez le site Web pour plus de commodité. Quelques-unes par mois : le site Web est simple et le supplément est d’environ 2 $. Un envoi récurrent : utilisez l’API et laissez la remise sur quantité jouer en votre faveur. Voir [l’envoi de factures et de relevés sous 1 000 par mois](/blog/mail-invoices-statements-small-business)."
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "label": "Postes Canada, prix pour les entreprises (grille de prix de la Poste-lettres et de la Poste-lettres à tarifs préférentiels)",
+      "url": "https://www.canadapost-postescanada.ca/scp/doc/fr/soutien/tarifs/tarifs-entreprise.pdf"
+    },
+    {
+      "label": "sendletter, grille tarifaire",
+      "url": "https://sendletter.app/blog/what-an-online-letter-costs"
+    }
+  ]
+}

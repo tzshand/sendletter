@@ -1,0 +1,97 @@
+{
+  "id": "how-to-address-a-letter-to-canada",
+  "slug": "comment-adresser-une-lettre-au-canada",
+  "title": "Comment adresser une lettre au Canada",
+  "description": "Le bloc d’adresse canadien : destinataire, rue, puis municipalité, province et code postal, avec les formes pour case postale, route rurale et poste restante.",
+  "keywords": [
+    "comment adresser une lettre au canada",
+    "format d’adresse canadienne",
+    "lignes directrices d’adressage postes canada",
+    "comment écrire une adresse canadienne"
+  ],
+  "answer": "Écrivez une adresse canadienne sur six lignes tout au plus : le destinataire d’abord, puis l’adresse municipale, puis la municipalité, la province ou le territoire et le code postal sur la dernière ligne. Postes Canada prévoit une deuxième ligne différente pour une case postale, une route rurale et la poste restante. Pour une adresse municipale, les renseignements de livraison supplémentaires se placent entre le nom et la rue.",
+  "sections": [
+    {
+      "h2": "Le bloc d’adresse standard",
+      "blocks": [
+        {
+          "ol": [
+            "**Destinataire.** La personne ou l’organisation.",
+            "**Renseignements de livraison supplémentaires, s’il y a lieu.** Pour une adresse municipale, ils se placent entre le nom et l’adresse municipale.",
+            "**Adresse municipale.** Numéro et nom de la rue.",
+            "**Dernière ligne.** Municipalité, province ou territoire, et code postal."
+          ]
+        },
+        {
+          "p": "Un exemple avec des valeurs fictives :"
+        },
+        {
+          "ol": [
+            "Jane Smith",
+            "123 Example Street",
+            "Anytown ON A1A 1A1"
+          ]
+        },
+        {
+          "p": "Postes Canada indique que le bloc d’adresse ne doit pas dépasser six lignes."
+        }
+      ]
+    },
+    {
+      "h2": "Les autres types d’adresses",
+      "blocks": [
+        {
+          "table": {
+            "headers": [
+              "Type",
+              "Ligne après le destinataire"
+            ],
+            "rows": [
+              [
+                "Case postale",
+                "Numéro de la case postale et renseignements sur la succursale"
+              ],
+              [
+                "Route rurale",
+                "Identificateur de la route rurale et renseignements sur la succursale; l’adresse municipale du secteur rural se place au-dessus"
+              ],
+              [
+                "Poste restante",
+                "Identificateur de la poste restante et renseignements sur la succursale"
+              ]
+            ]
+          }
+        },
+        {
+          "p": "Dans chaque cas, la dernière ligne demeure la municipalité, la province ou le territoire, et le code postal."
+        }
+      ]
+    },
+    {
+      "h2": "Les adresses bilingues",
+      "blocks": [
+        {
+          "p": "Lorsqu’une adresse est écrite dans les deux langues, la ligne directrice de Postes Canada prévoit une ligne verticale noire pleine d’au moins 0,7 mm d’épaisseur entre les deux versions, avec environ 10 mm d’espace de chaque côté."
+        }
+      ]
+    },
+    {
+      "h2": "L’adresse de l’expéditeur",
+      "blocks": [
+        {
+          "p": "Inscrivez votre propre adresse selon la même présentation. Le courrier sans adresse de l’expéditeur valide ne peut pas être retourné; voir [l’adresse de l’expéditeur sur les lettres canadiennes](/blog/return-address-on-a-canadian-letter). La dernière ligne exige un code postal exact : [le format du code postal canadien](/blog/canadian-postal-code-format)."
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "label": "Postes Canada, adresses canadiennes",
+      "url": "https://www.canadapost-postescanada.ca/scp/fr/soutien/sujet/directives-adressage/adresses-canada.page"
+    },
+    {
+      "label": "Postes Canada, codes postaux",
+      "url": "https://www.canadapost-postescanada.ca/scp/fr/soutien/sujet/directives-adressage/codes-postaux.page"
+    }
+  ]
+}

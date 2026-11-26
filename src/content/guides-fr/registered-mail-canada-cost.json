@@ -1,0 +1,99 @@
+{
+  "id": "registered-mail-canada-cost",
+  "slug": "courrier-recommande-canada-prix",
+  "title": "Courrier recommandé au Canada : combien ça coûte",
+  "description": "Le Courrier recommandé coûte 13,15 $ plus l’affranchissement de la lettre au Canada, avec signature, preuve de dépôt, suivi et 100 $ de protection inclus.",
+  "keywords": [
+    "prix courrier recommandé postes canada",
+    "coût courrier recommandé canada",
+    "combien coûte un courrier recommandé",
+    "prix lettre recommandée postes canada"
+  ],
+  "answer": "Selon le guide des prix de Postes Canada, le Courrier recommandé coûte 13,15 $ plus l’affranchissement de la Poste-lettres applicable : une lettre standard affranchie d’un timbre à 1,24 $ revient donc à 14,39 $. Les frais comprennent la signature à la livraison, la preuve de dépôt, la confirmation de livraison et une protection jusqu’à 100 $, sauf exceptions. L’envoi doit être déposé dans un bureau de poste ou remis à un facteur rural.",
+  "sections": [
+    {
+      "h2": "Le prix",
+      "blocks": [
+        {
+          "table": {
+            "headers": [
+              "Lettre",
+              "Affranchissement",
+              "Frais de recommandation",
+              "Total"
+            ],
+            "rows": [
+              [
+                "Standard, jusqu’à 30 g, timbre de carnet",
+                "1,24 $",
+                "13,15 $",
+                "14,39 $"
+              ],
+              [
+                "Standard, jusqu’à 30 g, timbre à l’unité",
+                "1,44 $",
+                "13,15 $",
+                "14,59 $"
+              ],
+              [
+                "Standard, de 30 à 50 g",
+                "1,75 $",
+                "13,15 $",
+                "14,90 $"
+              ],
+              [
+                "Surdimensionnée, jusqu’à 100 g",
+                "2,61 $",
+                "13,15 $",
+                "15,76 $"
+              ]
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "h2": "Ce que comprennent les frais",
+      "blocks": [
+        {
+          "p": "Les 13,15 $ couvrent la signature, la preuve de dépôt, la confirmation de livraison et 100 $ de protection en cas de perte ou de dommage, sauf exceptions."
+        }
+      ]
+    },
+    {
+      "h2": "Options et limites",
+      "blocks": [
+        {
+          "ul": [
+            "Une copie papier de la signature (avis de réception) demandée après l’envoi coûte 7,25 $.",
+            "La protection supplémentaire coûte 2,75 $ par tranche de 100 $, jusqu’à 5 000 $.",
+            "Postes Canada précise que le Courrier recommandé doit être déposé dans un bureau de poste autorisé ou remis à un facteur rural, et qu’il ne peut pas être glissé dans une boîte aux lettres.",
+            "Le Courrier recommandé à destination d’un pays autre que les États-Unis fait l’objet d’un prix distinct, soit 26,25 $ plus l’affranchissement de la Poste aux lettres, avec une protection jusqu’à 60 $."
+          ]
+        }
+      ]
+    },
+    {
+      "h2": "Est-ce le bon outil?",
+      "blocks": [
+        {
+          "p": "Le Courrier recommandé convient lorsque vous avez besoin d’une preuve qu’une lettre a été livrée et que quelqu’un a signé pour la recevoir. Pour la correspondance ordinaire, c’est bien plus que nécessaire. [Courrier recommandé ou courrier ordinaire](/blog/registered-vs-regular-mail-canada) explique la différence."
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "label": "Postes Canada, prix pour les consommateurs (mis à jour le 7 septembre 2026)",
+      "url": "https://www.canadapost-postescanada.ca/scp/doc/fr/soutien/tarifs/tarifs-personnel.pdf"
+    },
+    {
+      "label": "Postes Canada, caractéristiques du Courrier recommandé",
+      "url": "https://www.canadapost-postescanada.ca/scp/fr/soutien/sujet/courrier-recommande-regime-interieur/caracteristiques.page"
+    },
+    {
+      "label": "Postes Canada, dépôt du Courrier recommandé",
+      "url": "https://www.canadapost-postescanada.ca/scp/fr/soutien/sujet/courrier-recommande-regime-interieur/depot.page"
+    }
+  ]
+}

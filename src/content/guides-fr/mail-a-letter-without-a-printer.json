@@ -1,0 +1,55 @@
+{
+  "id": "mail-a-letter-without-a-printer",
+  "slug": "poster-une-lettre-sans-imprimante",
+  "title": "Comment poster une lettre sans imprimante",
+  "description": "Ni imprimante, ni enveloppe, ni timbres? Rédigez ou téléversez la lettre en ligne et faites-la imprimer et poster. Les types de fichiers acceptés et quoi vérifier.",
+  "keywords": [
+    "poster une lettre sans imprimante",
+    "envoyer une lettre sans imprimante",
+    "imprimer et envoyer une lettre en ligne",
+    "envoyer une lettre imprimée en ligne"
+  ],
+  "answer": "Rédigez la lettre dans un document ou dans l’éditeur d’un service d’envoi postal en ligne, ajoutez les adresses et payez. Le service l’imprime, la met sous enveloppe, l’affranchit et la poste. Il vous faut un fichier PDF ou Word, ou simplement du texte saisi sur le site, mais ni imprimante, ni enveloppe, ni timbre.",
+  "sections": [
+    {
+      "h2": "Ce que vous pouvez fournir",
+      "blocks": [
+        {
+          "ul": [
+            "**Un PDF.** Jusqu’à 200 pages et 40 Mo.",
+            "**Un fichier Word (.docx).** Jusqu’à 40 pages. Il est converti en pages : vérifiez l’aperçu, car la mise en page Word peut changer à la conversion.",
+            "**Du texte saisi sur le site.** Un éditeur intégré avec mise en forme de base, pour une lettre simple.",
+            "**Aperçu.** Le site montre ce qui sera imprimé avant le paiement."
+          ]
+        }
+      ]
+    },
+    {
+      "h2": "À vérifier avant de payer",
+      "blocks": [
+        {
+          "ol": [
+            "Ouvrez l’aperçu et lisez chaque page : il montre ce qui sera imprimé.",
+            "Assurez-vous que le code postal du destinataire est exact. Un code erroné fait augmenter l’affranchissement et peut retarder la livraison.",
+            "Inscrivez votre propre adresse dans les champs de l’expéditeur, pour qu’une lettre non livrable puisse vous revenir : voir [l’adresse de l’expéditeur](/blog/return-address-on-a-canadian-letter).",
+            "Choisissez le noir et blanc, sauf si la couleur compte; la couleur coûte 0,50 $ la page, contre 0,15 $."
+          ]
+        }
+      ]
+    },
+    {
+      "h2": "Les autres façons de la faire imprimer",
+      "blocks": [
+        {
+          "p": "Une bibliothèque ou une imprimerie imprimera une page moyennant de petits frais, mais il vous faudra ensuite une enveloppe et un timbre. [Ce qu’il en coûte pour une lettre en ligne](/blog/what-an-online-letter-costs) donne le total tout compris, et [comment fonctionne l’envoi en ligne](/blog/how-online-letter-mailing-works) en explique les étapes."
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "label": "Postes Canada, prix pour les consommateurs (mis à jour le 7 septembre 2026)",
+      "url": "https://www.canadapost-postescanada.ca/scp/doc/fr/soutien/tarifs/tarifs-personnel.pdf"
+    }
+  ]
+}
