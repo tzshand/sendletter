@@ -22,7 +22,6 @@ export function PdfCanvasPreview({
 
   useEffect(() => {
     let cancelled = false;
-    setLoading(true);
 
     async function render() {
       const container = containerRef.current;

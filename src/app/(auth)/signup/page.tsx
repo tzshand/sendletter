@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useState, useEffect } from "react";
+import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { SnowGoose } from "@/components/SnowGoose";
 import { Loader2 } from "lucide-react";
@@ -30,16 +30,10 @@ function SignupForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
-  const [error, setError] = useState("");
+  // An OAuth failure arrives as ?error=...; it is the starting error, not a later update.
+  const [error, setError] = useState(() => GOOGLE_ERROR_MESSAGES[searchParams.get("error") ?? ""] ?? "");
   const [loading, setLoading] = useState(false);
   const [enrolling, setEnrolling] = useState(false);
-
-  useEffect(() => {
-    const oauthError = searchParams.get("error");
-    if (oauthError && GOOGLE_ERROR_MESSAGES[oauthError]) {
-      setError(GOOGLE_ERROR_MESSAGES[oauthError]);
-    }
-  }, [searchParams]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();

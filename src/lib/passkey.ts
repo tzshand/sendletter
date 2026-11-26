@@ -12,6 +12,7 @@
 // to that RP ID permanently, so the ceremony will fail on any other host,
 // including the *.canner.app preview domain.
 
+import { useSyncExternalStore } from "react";
 import { startRegistration, startAuthentication } from "@simplewebauthn/browser";
 
 const CANNER_API = "https://api.canner.ca";
@@ -23,6 +24,13 @@ function publishableKey(): string {
 }
 
 /** True when this browser can do WebAuthn at all. */
+const noSubscribe = () => () => {};
+
+/** passkeysSupported() as a hook: false on the server and first paint, then the browser's answer. */
+export function usePasskeysSupported(): boolean {
+  return useSyncExternalStore(noSubscribe, passkeysSupported, () => false);
+}
+
 export function passkeysSupported(): boolean {
   return typeof window !== "undefined" && !!window.PublicKeyCredential;
 }

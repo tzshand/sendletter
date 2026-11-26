@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { enrollPasskey, passkeysSupported, wasDismissed } from "@/lib/passkey";
+import { enrollPasskey, usePasskeysSupported, wasDismissed } from "@/lib/passkey";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements, PaymentElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import { SnowGoose } from "@/components/SnowGoose";
@@ -151,13 +151,11 @@ export function ProfileClient({
   const [hasPasskey, setHasPasskey] = useState(account.hasPasskey);
   const [passkeyLoading, setPasskeyLoading] = useState(false);
   const [passkeyError, setPasskeyError] = useState("");
-  const [canUsePasskeys, setCanUsePasskeys] = useState(false);
+  const canUsePasskeys = usePasskeysSupported();
   const [removeKeyConfirm, setRemoveKeyConfirm] = useState(false);
   const [sessions, setSessions] = useState(initialSessions);
   const [sessionBusy, setSessionBusy] = useState<string | null>(null);
   const [sessionError, setSessionError] = useState("");
-
-  useEffect(() => setCanUsePasskeys(passkeysSupported()), []);
 
   async function refreshSessions() {
     try {

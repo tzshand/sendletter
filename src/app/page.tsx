@@ -293,17 +293,12 @@ export default function Home() {
 
   const canSend = isAddressValid(from) && isAddressValid(to) && hasContent;
 
-  // Clear validation errors reactively as fields are corrected
-  useEffect(() => {
-    setValidationErrors((prev) => {
-      const next = { ...prev };
-      if (prev.content && hasContent) next.content = false;
-      if (prev.from && isAddressValid(from)) next.from = false;
-      if (prev.to && isAddressValid(to)) next.to = false;
-      if (next.content === prev.content && next.from === prev.from && next.to === prev.to) return prev;
-      return next;
-    });
-  }, [hasContent, from, to]);
+  // A highlight set by a failed submit clears itself as the field is corrected.
+  const shownErrors = {
+    content: !!validationErrors.content && !hasContent,
+    from: !!validationErrors.from && !isAddressValid(from),
+    to: !!validationErrors.to && !isAddressValid(to),
+  };
 
   const isFr = settings.language === "fr";
   const price = q ? formatCents(q.totalCents, settings.language) : "—";
@@ -648,7 +643,7 @@ export default function Home() {
             </div>
 
             {/* Content area */}
-            <div ref={contentRef} className={`rounded-xl transition-all ${validationErrors.content ? "ring-2 ring-red-400 bg-red-50/40 p-3 -mx-3" : ""}`}>
+            <div ref={contentRef} className={`rounded-xl transition-all ${shownErrors.content ? "ring-2 ring-red-400 bg-red-50/40 p-3 -mx-3" : ""}`}>
               {mode === "upload" && (
                 <FileUpload
                   onContent={(html, name) => {
@@ -761,7 +756,7 @@ export default function Home() {
                 onFromChange={setFrom}
                 onToChange={setTo}
                 language={settings.language}
-                errors={validationErrors.from || validationErrors.to ? { from: validationErrors.from, to: validationErrors.to } : undefined}
+                errors={shownErrors.from || shownErrors.to ? { from: shownErrors.from, to: shownErrors.to } : undefined}
               />
             </div>
 

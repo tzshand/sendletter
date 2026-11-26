@@ -37,6 +37,37 @@ const PageBreak = TiptapNode.create({
   },
 });
 
+/** A toolbar button. mousedown (not click) keeps focus in the editor. */
+function Btn({
+  active,
+  onClick,
+  children,
+  title,
+}: {
+  active?: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
+  title?: string;
+}) {
+  return (
+    <button
+      type="button"
+      title={title}
+      onMouseDown={(e) => {
+        e.preventDefault();
+        onClick();
+      }}
+      className={`p-1.5 rounded-md transition-all ${
+        active
+          ? "bg-gray-900 text-white shadow-sm"
+          : "text-gray-400 hover:text-gray-700 hover:bg-gray-100"
+      }`}
+    >
+      {children}
+    </button>
+  );
+}
+
 export function LetterEditor({
   content,
   onChange,
@@ -107,34 +138,6 @@ export function LetterEditor({
   }, [editor, settings.fontFamily, settings.fontSize]);
 
   if (!editor) return null;
-
-  const Btn = ({
-    active,
-    onClick,
-    children,
-    title,
-  }: {
-    active?: boolean;
-    onClick: () => void;
-    children: React.ReactNode;
-    title?: string;
-  }) => (
-    <button
-      type="button"
-      title={title}
-      onMouseDown={(e) => {
-        e.preventDefault();
-        onClick();
-      }}
-      className={`p-1.5 rounded-md transition-all ${
-        active
-          ? "bg-gray-900 text-white shadow-sm"
-          : "text-gray-400 hover:text-gray-700 hover:bg-gray-100"
-      }`}
-    >
-      {children}
-    </button>
-  );
 
   return (
     <div>

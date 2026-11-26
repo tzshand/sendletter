@@ -12,11 +12,11 @@
 // existing credential — a lost device that later resurfaces must not still
 // work.
 
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { SnowGoose } from "@/components/SnowGoose";
 import { Loader2, KeyRound, Check } from "lucide-react";
-import { enrollPasskey, passkeysSupported, wasDismissed } from "@/lib/passkey";
+import { enrollPasskey, usePasskeysSupported, wasDismissed } from "@/lib/passkey";
 import Link from "next/link";
 
 type State = "idle" | "working" | "done" | "error" | "unsupported" | "no-token";
@@ -29,10 +29,9 @@ function EnrollInner() {
 
   const token = params.get("canner_auth_token");
 
-  useEffect(() => {
-    if (!token) setState("no-token");
-    else if (!passkeysSupported()) setState("unsupported");
-  }, [token]);
+  const supported = usePasskeysSupported();
+  // What to show: derived from the URL and the browser, until the user acts.
+  const view: State = !token ? "no-token" : state === "idle" && !supported ? "unsupported" : state;
 
   async function run() {
     if (!token) return;
@@ -72,7 +71,7 @@ function EnrollInner() {
         </div>
 
         <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm text-center">
-          {state === "done" ? (
+          {view === "done" ? (
             <>
               <div className="w-11 h-11 rounded-2xl bg-emerald-50 ring-1 ring-emerald-200/60 flex items-center justify-center mx-auto mb-4">
                 <Check className="w-5 h-5 text-emerald-600" />
@@ -80,7 +79,7 @@ function EnrollInner() {
               <h1 className="text-lg font-semibold text-gray-900 mb-1">Passkey ready</h1>
               <p className="text-sm text-gray-500">Taking you to your dashboard…</p>
             </>
-          ) : state === "no-token" ? (
+          ) : view === "no-token" ? (
             <>
               <h1 className="text-lg font-semibold text-gray-900 mb-1">Link expired</h1>
               <p className="text-sm text-gray-500 mb-4">
@@ -91,7 +90,7 @@ function EnrollInner() {
                 Back to sign in
               </Link>
             </>
-          ) : state === "unsupported" ? (
+          ) : view === "unsupported" ? (
             <>
               <h1 className="text-lg font-semibold text-gray-900 mb-1">
                 This browser can&apos;t use passkeys

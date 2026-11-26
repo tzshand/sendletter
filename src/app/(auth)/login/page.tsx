@@ -1,10 +1,10 @@
 "use client";
 
-import { Suspense, useState, useEffect } from "react";
+import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { SnowGoose } from "@/components/SnowGoose";
 import { Loader2, KeyRound } from "lucide-react";
-import { authenticatePasskey, passkeysSupported, wasDismissed } from "@/lib/passkey";
+import { authenticatePasskey, usePasskeysSupported, wasDismissed } from "@/lib/passkey";
 import Link from "next/link";
 
 function GoogleIcon() {
@@ -29,22 +29,14 @@ function LoginForm() {
   const searchParams = useSearchParams();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  // An OAuth failure arrives as ?error=...; it is the starting error, not a later update.
+  const [error, setError] = useState(() => GOOGLE_ERROR_MESSAGES[searchParams.get("error") ?? ""] ?? "");
   const [loading, setLoading] = useState(false);
   const [passkeyLoading, setPasskeyLoading] = useState(false);
-  const [canUsePasskeys, setCanUsePasskeys] = useState(false);
+  const canUsePasskeys = usePasskeysSupported();
   const [recoverySent, setRecoverySent] = useState(false);
 
   // Feature-detected on the client only — rendering the passkey button during
-  // SSR would flash it for browsers that cannot use it.
-  useEffect(() => setCanUsePasskeys(passkeysSupported()), []);
-
-  useEffect(() => {
-    const oauthError = searchParams.get("error");
-    if (oauthError && GOOGLE_ERROR_MESSAGES[oauthError]) {
-      setError(GOOGLE_ERROR_MESSAGES[oauthError]);
-    }
-  }, [searchParams]);
 
   /** Exchange a Canner passkey token for a sendletter session. */
   async function finishWithPasskey(token: string, pendingToken?: string) {
