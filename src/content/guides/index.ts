@@ -25,21 +25,24 @@ import g16 from "./send-a-letter-to-canada-from-the-uk.json";
 import g17 from "./send-a-letter-to-canada-from-the-us.json";
 import g18 from "./why-letters-to-canada-get-returned.json";
 import g19 from "./can-you-track-a-letter-canada.json";
-import g20 from "./holiday-mailing-deadlines-2026.json";
-import g21 from "./letter-not-delivered-what-to-do.json";
-import g22 from "./proof-of-mailing-letter-canada.json";
-import g23 from "./registered-mail-canada-cost.json";
-import g24 from "./registered-vs-regular-mail-canada.json";
-import g25 from "./stamp-price-2027-what-we-know.json";
-import g26 from "./cancel-a-contract-or-membership-by-mail.json";
-import g27 from "./how-to-write-a-complaint-letter.json";
-import g28 from "./canada-post-address-validation-api.json";
-import g29 from "./canada-post-api-send-letters.json";
-import g30 from "./idempotency-for-physical-mail.json";
-import g31 from "./send-a-letter-with-an-api-canada.json";
-import g32 from "./sendletter-vs-lob.json";
-import g33 from "./sendletter-vs-postgrid.json";
-import g34 from "./test-mode-for-a-mail-api.json";
+import g20 from "./canada-post-bulk-letter-discount.json";
+import g21 from "./holiday-mailing-deadlines-2026.json";
+import g22 from "./letter-not-delivered-what-to-do.json";
+import g23 from "./mail-invoices-statements-small-business.json";
+import g24 from "./print-and-mail-service-vs-diy.json";
+import g25 from "./proof-of-mailing-letter-canada.json";
+import g26 from "./registered-mail-canada-cost.json";
+import g27 from "./registered-vs-regular-mail-canada.json";
+import g28 from "./stamp-price-2027-what-we-know.json";
+import g29 from "./cancel-a-contract-or-membership-by-mail.json";
+import g30 from "./how-to-write-a-complaint-letter.json";
+import g31 from "./canada-post-address-validation-api.json";
+import g32 from "./canada-post-api-send-letters.json";
+import g33 from "./idempotency-for-physical-mail.json";
+import g34 from "./send-a-letter-with-an-api-canada.json";
+import g35 from "./sendletter-vs-lob.json";
+import g36 from "./sendletter-vs-postgrid.json";
+import g37 from "./test-mode-for-a-mail-api.json";
 
 export const GUIDES: GuideData[] = [
   // Wave 1
@@ -71,15 +74,18 @@ export const GUIDES: GuideData[] = [
   g23 as GuideData,
   g24 as GuideData,
   g25 as GuideData,
-  // Wave 4
   g26 as GuideData,
   g27 as GuideData,
-  // Wave 5
   g28 as GuideData,
+  // Wave 4
   g29 as GuideData,
   g30 as GuideData,
+  // Wave 5
   g31 as GuideData,
   g32 as GuideData,
   g33 as GuideData,
   g34 as GuideData,
+  g35 as GuideData,
+  g36 as GuideData,
+  g37 as GuideData,
 ];

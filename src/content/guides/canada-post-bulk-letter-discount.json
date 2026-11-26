@@ -1,0 +1,123 @@
+{
+  "id": "canada-post-bulk-letter-discount",
+  "slug": "canada-post-bulk-letter-discount",
+  "hub": "postage",
+  "title": "Canada Post Letter Discounts: Who Qualifies",
+  "description": "Canada Post's volume discount on letters starts above 1,000 items. What it is worth on a standard letter, what it requires, and what small senders can do.",
+  "keywords": [
+    "canada post bulk mail 1000 letters",
+    "canada post bulk letter discount",
+    "incentive lettermail",
+    "canada post letter discounts"
+  ],
+  "answer": "Canada Post advertises letter discounts for businesses that send more than 1,000 items in Canada, or more than 100 internationally. On a standard letter up to 30 g the saving is small: Incentive Lettermail is $1.23 a letter, against $1.24 for a booklet stamp and $1.44 for a single stamp. It also requires Canada Post's electronic shipping tools.",
+  "sections": [
+    {
+      "h2": "The threshold",
+      "blocks": [
+        {
+          "p": "Canada Post's page on letter discounts says you can save money when you send more than 1,000 items in Canada or more than 100 internationally, with Canada Post quoting postage from $1.23 a piece in Canada. Its price sheet lists the discounted letter product, Incentive Lettermail, with a minimum volume of 1,000 for machineable letters. Below that, you pay the ordinary Lettermail prices."
+        }
+      ]
+    },
+    {
+      "h2": "What the discount is worth",
+      "blocks": [
+        {
+          "table": {
+            "headers": [
+              "Standard letter, within Canada",
+              "Up to 30 g",
+              "30 g to 50 g"
+            ],
+            "rows": [
+              [
+                "Single stamp",
+                "$1.44",
+                "$1.75"
+              ],
+              [
+                "Stamp from a booklet, coil or pane",
+                "$1.24",
+                "$1.75"
+              ],
+              [
+                "Postal indicia",
+                "$1.24",
+                "$1.75"
+              ],
+              [
+                "Postage meter",
+                "$1.23",
+                "$1.75"
+              ],
+              [
+                "Incentive Lettermail (minimum volume 1,000)",
+                "$1.23",
+                "$1.74"
+              ]
+            ]
+          }
+        },
+        {
+          "p": "For an ordinary letter the gap between the discounted price and a booklet stamp is one cent. The discount is real against single stamps ($0.21 a letter), but most small senders already pay the booklet or meter price. Do the sum on your own mix of weights before building a process around it."
+        }
+      ]
+    },
+    {
+      "h2": "What it requires",
+      "blocks": [
+        {
+          "ul": [
+            "A Lettermail or Incentive Lettermail agreement with Canada Post, since the price sheet is part of that agreement.",
+            "Canada Post's electronic shipping tools to prepare and submit each order. A manually prepared order is charged at the meter or indicia price instead.",
+            "The minimum volume on each mailing. If a mailing falls short, additional postage is payable for the difference between the actual and the minimum volume.",
+            "Letters that are machineable, meaning standard-size and suitable for Canada Post's sorting equipment."
+          ]
+        }
+      ]
+    },
+    {
+      "h2": "Lower prices exist, in other products",
+      "blocks": [
+        {
+          "p": "Canada Post's price sheet lists other mail products with much lower per-item prices, such as Personalized Mail from about $0.56 for a standard item with a minimum volume of 100, under their own agreements. Those products have their own rules about the kind of mail they carry, so ask Canada Post's commercial service network whether your mail qualifies before you plan around them. This page does not cover them."
+        }
+      ]
+    },
+    {
+      "h2": "If you send fewer than 1,000",
+      "blocks": [
+        {
+          "p": "Most businesses mailing statements, notices or invoices are below the threshold. Your realistic choices are to post them yourself at the booklet-stamp or meter price, or to have a service print and post them. See [mailing invoices and statements under 1,000 a month](/blog/mail-invoices-statements-small-business) and [print-and-mail service or do it yourself](/blog/print-and-mail-service-vs-diy)."
+        }
+      ]
+    },
+    {
+      "h2": "Rates change",
+      "blocks": [
+        {
+          "p": "The federal budget proposes a $2.00 single stamp in 2027, with later annual increases. What is and is not known is on [the 2027 stamp page](/blog/stamp-price-2027-what-we-know). Confirm current figures on Canada Post's price sheets before you commit."
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "label": "Canada Post, Get discounts for large volumes of mail",
+      "url": "https://www.canadapost-postescanada.ca/cpc/en/commercial/mailing-services/letter-discounts.page"
+    },
+    {
+      "label": "Canada Post, Business prices (Lettermail and Incentive Lettermail price sheet)",
+      "url": "https://www.canadapost-postescanada.ca/cpc/doc/en/support/prices/business-prices.pdf"
+    }
+  ],
+  "related": [
+    "canada-post-stamp-price",
+    "mail-invoices-statements-small-business",
+    "print-and-mail-service-vs-diy"
+  ],
+  "wave": 3,
+  "live": true,
+  "published": "2026-11-26"
+}

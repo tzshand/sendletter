@@ -1,0 +1,117 @@
+{
+  "id": "print-and-mail-service-vs-diy",
+  "slug": "print-and-mail-service-vs-diy",
+  "hub": "send-online",
+  "title": "Print-and-Mail Service or DIY? A Cost Comparison",
+  "description": "What it costs to print and post a letter yourself against paying a service, with the break-even worked out for one letter, ten and a hundred.",
+  "keywords": [
+    "print and mail service vs diy",
+    "outsource mailing letters",
+    "cost to mail a letter yourself canada",
+    "online mail service worth it"
+  ],
+  "answer": "Posting a letter yourself costs the $1.24 stamp plus your paper, envelope, toner and time. A service adds a fee for the rest: on sendletter $2.25 a letter on the website, or $1.24 falling to $0.45 by API at volume. The service wins when your time per letter is worth more than that fee.",
+  "sections": [
+    {
+      "h2": "The cost of doing it yourself",
+      "blocks": [
+        {
+          "p": "Every letter needs a stamp: $1.24 from a booklet, $1.44 as a single stamp. On top of that come the paper, the envelope, the toner or ink, and the minutes it takes to print, fold, stuff, seal, stamp and post. Materials are whatever you pay, usually cents a letter. Time is what makes the difference."
+        }
+      ]
+    },
+    {
+      "h2": "The cost of a service",
+      "blocks": [
+        {
+          "p": "A service adds a fee for the work: on the sendletter website a one-page black-and-white letter is $3.49, of which $1.24 is postage, so the service portion is $2.25. By API, with volume pricing, the portion beyond postage starts at $1.24 and falls to $0.45 by the 100th letter in 30 days. See [what an online letter costs](/blog/what-an-online-letter-costs)."
+        }
+      ]
+    },
+    {
+      "h2": "Where they break even",
+      "blocks": [
+        {
+          "p": "Take what you would pay yourself in materials, plus your time per letter at what an hour of your time is worth. As an illustration only: if posting a letter takes two minutes and an hour of your time is worth $30, that is $1.00 of time, plus materials. Your own numbers will differ; the table shows how the comparison moves."
+        },
+        {
+          "table": {
+            "headers": [
+              "Minutes per letter, at $30 an hour",
+              "Your time",
+              "Website service ($2.25)",
+              "API at 100+ ($0.45)"
+            ],
+            "rows": [
+              [
+                "1",
+                "$0.50",
+                "Cheaper to DIY",
+                "About even"
+              ],
+              [
+                "2",
+                "$1.00",
+                "Cheaper to DIY",
+                "Service is cheaper"
+              ],
+              [
+                "5",
+                "$2.50",
+                "About even",
+                "Service is cheaper"
+              ],
+              [
+                "10",
+                "$5.00",
+                "Service is cheaper",
+                "Service is cheaper"
+              ]
+            ]
+          }
+        },
+        {
+          "p": "Compare the service portion with your time plus materials. Postage is the same either way."
+        }
+      ]
+    },
+    {
+      "h2": "What the numbers leave out",
+      "blocks": [
+        {
+          "ul": [
+            "Mistakes cost money. A forgotten stamp or a wrong postal code means a returned or delayed letter; see [letter with too little postage](/blog/letter-with-too-little-postage).",
+            "A service does not need a printer, envelopes or a trip to a mailbox, which matters when you are travelling or working remotely.",
+            "A service cannot do everything. It posts ordinary Lettermail, so if you need a signature or proof of delivery, post it yourself by Registered Mail. See [Registered versus regular mail](/blog/registered-vs-regular-mail-canada)."
+          ]
+        }
+      ]
+    },
+    {
+      "h2": "Rule of thumb",
+      "blocks": [
+        {
+          "p": "One or two letters a year: do it yourself or use the website for convenience. A few a month: the website is easy and the extra is about $2. A recurring batch: use the API and let the volume discount work. See [mailing invoices and statements under 1,000 a month](/blog/mail-invoices-statements-small-business)."
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "label": "Canada Post, Business prices (Lettermail and Incentive Lettermail price sheet)",
+      "url": "https://www.canadapost-postescanada.ca/cpc/doc/en/support/prices/business-prices.pdf"
+    },
+    {
+      "label": "sendletter, rate table",
+      "url": "https://sendletter.app/blog/what-an-online-letter-costs"
+    }
+  ],
+  "related": [
+    "what-an-online-letter-costs",
+    "mail-invoices-statements-small-business",
+    "canada-post-bulk-letter-discount"
+  ],
+  "wave": 3,
+  "live": true,
+  "published": "2026-11-26"
+}
