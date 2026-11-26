@@ -37,6 +37,8 @@ export type InvoiceEmailData = {
   taxes: TaxLine[];
   taxCollected: boolean;
   lines: { description: string; amount_cents: number; tax_cents: number }[];
+  /** Name, address and email to print under "Billed to". */
+  billedToLines?: string[];
 };
 
 export function invoiceEmail(inv: InvoiceEmailData): { subject: string; html: string } {
@@ -53,6 +55,7 @@ export function invoiceEmail(inv: InvoiceEmailData): { subject: string; html: st
   const taxNote = inv.taxCollected ? "" : ` ${TAX_NOTE_UNREGISTERED}`;
   const body = `<h1 style="font-size:20px;margin:0 0 6px 0;">Invoice ${esc(inv.number)}</h1>
 <p style="margin:0 0 16px 0;color:#6b7280;">${esc(inv.date)} &middot; <strong style="color:#166534;">Paid</strong></p>
+${inv.billedToLines?.length ? `<p style="margin:0 0 14px 0;font-size:13px;color:#4b5563;line-height:1.45;"><span style="font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:#9ca3af;">Billed to</span><br>${inv.billedToLines.map(esc).join("<br>")}</p>` : ""}
 <p>We charged your card on file ${money(inv.totalCents)} CAD for ${what}. This is your receipt; nothing more is owed.</p>
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:14px 0;"><tr style="color:#6b7280;font-size:12px;text-transform:uppercase;letter-spacing:.04em;"><td style="padding:0 0 6px 0;">Description</td><td align="right" style="padding:0 0 6px 12px;">Amount</td><td align="right" style="padding:0 0 6px 12px;">Tax</td></tr>${rows}${totals}</table>
 ${more}

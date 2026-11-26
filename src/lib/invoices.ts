@@ -17,6 +17,7 @@ import { getDb } from "@/lib/db";
 import { getStripe } from "@/lib/stripe";
 import { torontoMonthStart } from "@/lib/api-limits";
 import { sendPaidInvoiceEmails } from "@/lib/invoice-mail";
+import { ADDRESS_COLUMNS, addressFromRow, seedBillingAddressFromCard } from "@/lib/billing-address";
 import { sumTax, taxCollecting, taxForLine, taxProvince, totalsByCode, type TaxLine } from "@/lib/tax";
 
 export const invoiceNumber = (seq: number, createdAt: string) =>
@@ -56,7 +57,13 @@ export async function chargeUsage(opts: {
   } catch (e) {
     return { ok: false, error: e instanceof Error ? e.message : "could not look up the card" };
   }
-  const province = taxProvince(account.tax_province as string | null, cardState);
+  // Existing accounts get their card's billing address copied across the first time they are charged.
+  await seedBillingAddressFromCard(opts.accountId, getStripe(), paymentMethod ?? "").catch(() => undefined);
+  const { data: addrRow } = await db.from("sendletter_accounts").select(ADDRESS_COLUMNS).eq("id", opts.accountId).single();
+  const billTo = addressFromRow(addrRow);
+  // Tax province: an admin override on the account, else the customer's billing address
+  // (when Canadian), else the card's, else Quebec.
+  const province = taxProvince(account.tax_province as string | null, billTo.country === "CA" ? billTo.state : null, cardState);
   const collecting = taxCollecting();
   const taxByRow = new Map<string, TaxLine[]>(rows.map((r: { id: string; amount_cents: number }) => [r.id, taxForLine(r.amount_cents, province, collecting)]));
   const taxTotals = totalsByCode([...taxByRow.values()], province);
@@ -74,7 +81,7 @@ export async function chargeUsage(opts: {
     .from("sendletter_invoices")
     .insert({
       account_id: opts.accountId, kind: opts.kind, letters: rows.length, total_cents: total,
-      subtotal_cents: subtotal, tax_cents: taxCents, tax_province: province, tax_collected: collecting, tax_detail: taxTotals,
+      subtotal_cents: subtotal, tax_cents: taxCents, tax_province: province, tax_collected: collecting, tax_detail: taxTotals, billing_snapshot: { ...billTo, email: account.email ?? "" },
       period_start: opts.periodStart?.toISOString() ?? null, period_end: opts.periodEnd?.toISOString() ?? null,
     })
     .select("id, seq, created_at")

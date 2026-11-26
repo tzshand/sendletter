@@ -5,6 +5,7 @@ import { getDb } from "@/lib/db";
 import { invoiceNumber } from "@/lib/invoices";
 import { isUuid } from "@/lib/api-route";
 import { PrintButton } from "./PrintButton";
+import { addressLines, type BillingAddress } from "@/lib/billing-address";
 import { FALLBACK_PROVINCE, TAX_NOTE_UNREGISTERED, taxForLine, taxLabel, type TaxLine } from "@/lib/tax";
 
 export const metadata = { title: "Invoice | sendletter", robots: { index: false } };
@@ -53,7 +54,7 @@ export default async function InvoicePage({ params }: { params: Promise<{ id: st
 
         <div className="grid grid-cols-2 gap-6 text-sm mb-8">
           <div><p className="text-xs uppercase tracking-wide text-gray-400 mb-1">From</p><p className="font-semibold">sendletter</p><p className="text-gray-600">sendletter.app<br />support@sendletter.app</p></div>
-          <div><p className="text-xs uppercase tracking-wide text-gray-400 mb-1">Billed to</p><p className="font-semibold">{acct?.email}</p></div>
+          <div><p className="text-xs uppercase tracking-wide text-gray-400 mb-1">Billed to</p>{addressLines(inv.billing_snapshot as BillingAddress | null).map((l, i) => <p key={i} className={i === 0 ? "font-semibold" : "text-gray-600"}>{l}</p>)}<p className={inv.billing_snapshot ? "text-gray-600" : "font-semibold"}>{acct?.email}</p></div>
         </div>
 
         <table className="w-full text-sm mb-6">

@@ -1046,7 +1046,7 @@ test("tax: with TAX_COLLECTING=1 the tax is added to the charge, on each line, a
     assert.equal(stripeMock.intents[0].amount, 248 + gst + qst);
     assert.equal(pg.rows("sendletter_invoice_lines")[0].tax_cents, gst + qst);
     const mails = resend.sent.filter((m) => m.to === "dev@example.com");
-    assert.doesNotMatch(mails[0].html, /not currently registered/);
+    assert.doesNotMatch(mails[0].html, /tax-exempt/);
     const order = pg.rows("sendletter_orders").find((o) => o.id !== "00000000-0000-4000-8000-000000000001") ?? pg.rows("sendletter_orders")[0];
     const del = await (await import("../src/app/api/v1/letters/[id]/route.ts")).DELETE(
       new Request("http://x/api/v1/letters/" + order.id, { method: "DELETE", headers: { authorization: `Bearer ${LIVE}` } }),
@@ -1065,7 +1065,7 @@ test("tax: the unregistered note is on the invoice email, and old invoices witho
   resend.clear();
   await bill.POST(cronReq());
   const html = resend.sent.find((m) => m.to === "dev@example.com")!.html;
-  assert.match(html, /not currently registered to collect GST\/HST or QST/);
+  assert.match(html, /currently tax-exempt as a small supplier/);
   assert.match(html, /Subtotal/);
   // an invoice recorded before tax existed
   const { loadInvoiceData } = await import("../src/lib/invoice-mail.ts");
@@ -1083,4 +1083,51 @@ test("tax: province names and codes are recognised", async () => {
   assert.equal(normalizeProvince("Texas"), null);
   assert.equal(taxProvince(null, "", "Texas"), "QC");
   assert.equal(taxProvince(undefined, "ON"), "ON");
+});
+
+// ── Billing address: defaults from the card, then the customer's own ───
+
+test("billing address: copied from the card on the first charge, snapshotted on the invoice, and drives the tax province", async () => {
+  setup({ firstOrder: true });
+  stripeMock.setCustomer("cus_1", { default: "pm_default", cards: ["pm_default"], state: "ON" });
+  await send.POST(post(draft()));
+  const acct = pg.rows("sendletter_accounts")[0];
+  assert.equal(acct.billing_state, "ON");
+  assert.equal(acct.billing_source, "stripe");
+  const inv = pg.rows("sendletter_invoices")[0];
+  assert.equal((inv.billing_snapshot as { state: string; email: string }).state, "ON");
+  assert.equal((inv.billing_snapshot as { email: string }).email, "dev@example.com");
+  assert.equal(inv.tax_province, "ON");
+});
+
+test("billing address: the customer's edit is never overwritten by the card, and it decides the tax province", async () => {
+  setup({ firstOrder: true });
+  Object.assign(pg.rows("sendletter_accounts")[0], { billing_name: "Colin Painting Inc", billing_line1: "1 Rue Exemple", billing_city: "Montreal", billing_state: "QC", billing_postal_code: "H2X 1Y4", billing_country: "CA", billing_source: "customer" });
+  stripeMock.setCustomer("cus_1", { default: "pm_default", cards: ["pm_default"], state: "ON" });
+  await send.POST(post(draft()));
+  const acct = pg.rows("sendletter_accounts")[0];
+  assert.equal(acct.billing_state, "QC");
+  assert.equal(acct.billing_source, "customer");
+  const inv = pg.rows("sendletter_invoices")[0];
+  assert.equal(inv.tax_province, "QC", "the edited address wins over the card's");
+  const mails = resend.sent.filter((m) => m.to === "dev@example.com");
+  assert.match(mails[0].html, /Colin Painting Inc/);
+  assert.match(mails[0].html, /Montreal QC/);
+});
+
+test("billing address: input is cleaned and validated", async () => {
+  const { cleanBillingAddress, addressLines } = await import("../src/lib/billing-address.ts");
+  const ok = cleanBillingAddress({ name: " A\nB ", line1: "1  Main\tSt", city: "Montréal", state: "quebec", postal_code: " h2x 1y4 ", country: "ca" });
+  assert.ok(ok.ok);
+  if (ok.ok) {
+    assert.equal(ok.address.name, "A B");
+    assert.equal(ok.address.line1, "1 Main St");
+    assert.equal(ok.address.state, "QC");
+    assert.equal(ok.address.country, "CA");
+  }
+  assert.equal(cleanBillingAddress({ state: "Atlantis", country: "CA" }).ok, false);
+  assert.equal(cleanBillingAddress({ country: "Canada" }).ok, false);
+  assert.equal(cleanBillingAddress({ name: "x".repeat(500) }).ok, false);
+  assert.ok(cleanBillingAddress({ state: "Texas", country: "US" }).ok, "non-Canadian provinces are free text");
+  assert.deepEqual(addressLines({ name: "A", line1: "1 St", line2: "", city: "Ottawa", state: "ON", postal_code: "K1A 0B1", country: "CA" }), ["A", "1 St", "Ottawa ON  K1A 0B1"]);
 });

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getSession } from "@/lib/auth";
 import { getStripe } from "@/lib/stripe";
 import { getDb } from "@/lib/db";
+import { seedBillingAddressFromCard } from "@/lib/billing-address";
 
 export async function POST() {
   const session = await getSession();
@@ -37,6 +38,8 @@ export async function POST() {
       .from("sendletter_accounts")
       .update({ has_payment_method: true, updated_at: new Date().toISOString() })
       .eq("id", session.accountId);
+    // Default the account's billing address to the card's. Customers can change it later without touching Stripe.
+    await seedBillingAddressFromCard(session.accountId, stripe, pm.id);
   }
 
   return NextResponse.json({ ok: true });

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getStripe } from "@/lib/stripe";
 import { getDb } from "@/lib/db";
+import { seedBillingAddressFromCard } from "@/lib/billing-address";
 
 export async function POST(req: Request) {
   const body = await req.text();
@@ -43,6 +44,8 @@ export async function POST(req: Request) {
         .from("sendletter_accounts")
         .update({ has_payment_method: true, updated_at: new Date().toISOString() })
         .eq("stripe_customer_id", customerId);
+      const { data: acct } = await db.from("sendletter_accounts").select("id").eq("stripe_customer_id", customerId).single();
+      if (acct?.id) await seedBillingAddressFromCard(acct.id as string, stripe, paymentMethodId);
     }
   }
 

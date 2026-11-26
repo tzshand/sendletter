@@ -9,7 +9,7 @@ const money = (c: number) => `$${(c / 100).toFixed(2)}`;
 // Standard PDF fonts cover Latin-1 only: anything else (a name in another script) becomes "?".
 const safe = (s: string) => s.replace(/[\r\n\t]+/g, " ").replace(/[^\x20-\x7e -ÿ]/g, "?");
 
-export type InvoicePdfData = InvoiceEmailData & { billedTo: string; paidAt?: string | null; reference?: string | null };
+export type InvoicePdfData = InvoiceEmailData & { billedTo: string; billedToLines?: string[]; paidAt?: string | null; reference?: string | null };
 
 export async function invoicePdf(inv: InvoicePdfData): Promise<Uint8Array> {
   const doc = await PDFDocument.create();
@@ -39,7 +39,8 @@ export async function invoicePdf(inv: InvoicePdfData): Promise<Uint8Array> {
   text(`Invoice ${inv.number}`, M, 16, bold);
   y -= 16; text(`${inv.date}${inv.paidAt ? `   |   Paid ${inv.paidAt}` : ""}`, M, 10, font, grey);
   y -= 22; text("Billed to", M, 9, font, grey);
-  y -= 13; text(inv.billedTo, M, 11, bold);
+  const billed = inv.billedToLines?.length ? inv.billedToLines : [inv.billedTo];
+  billed.forEach((l, i) => { y -= i === 0 ? 13 : 12; text(l, M, i === 0 ? 11 : 10, i === 0 ? bold : font, i === 0 ? ink : grey); });
   y -= 32;
   rule();
   text("Description", M, 9, bold, grey); right("Amount", colAmount, 9, bold, grey); right("Tax", colTax, 9, bold, grey);
@@ -64,7 +65,10 @@ export async function invoicePdf(inv: InvoicePdfData): Promise<Uint8Array> {
   total("Total (CAD)", inv.totalCents, bold, 12);
   y -= 14;
   text(`${inv.letters} letter${inv.letters === 1 ? "" : "s"}. Postage is included at cost.`, M, 9, font, grey);
-  if (!inv.taxCollected) { y -= 13; text(TAX_NOTE_UNREGISTERED, M, 8, font, grey); }
+  if (!inv.taxCollected) {
+    const cut = TAX_NOTE_UNREGISTERED.indexOf(" Tax is shown");
+    for (const part of [TAX_NOTE_UNREGISTERED.slice(0, cut), TAX_NOTE_UNREGISTERED.slice(cut + 1)]) { y -= 11; text(part, M, 8, font, grey); }
+  }
   if (inv.reference) { y -= 13; text(`Paid by card (reference ${inv.reference}).`, M, 9, font, grey); }
   return doc.save();
 }

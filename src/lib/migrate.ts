@@ -237,6 +237,16 @@ create index if not exists idx_sendletter_invoice_lines_invoice
 -- but charged as $0 until TAX_COLLECTING=1 (lib/tax.ts). total_cents is what was
 -- charged (subtotal + tax); older invoices have no subtotal and are treated as untaxed.
 alter table sendletter_accounts add column if not exists tax_province text;
+-- Billing address: copied once from the card (billing_source 'stripe'), then the customer's own ('customer').
+alter table sendletter_accounts add column if not exists billing_name text;
+alter table sendletter_accounts add column if not exists billing_line1 text;
+alter table sendletter_accounts add column if not exists billing_line2 text;
+alter table sendletter_accounts add column if not exists billing_city text;
+alter table sendletter_accounts add column if not exists billing_state text;
+alter table sendletter_accounts add column if not exists billing_postal_code text;
+alter table sendletter_accounts add column if not exists billing_country text;
+alter table sendletter_accounts add column if not exists billing_source text;
+alter table sendletter_invoices add column if not exists billing_snapshot jsonb;
 alter table sendletter_invoices add column if not exists subtotal_cents integer;
 alter table sendletter_invoices add column if not exists tax_cents integer not null default 0;
 alter table sendletter_invoices add column if not exists tax_province text;

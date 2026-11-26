@@ -84,4 +84,4 @@ export function totalsByCode(perLine: TaxLine[][], province: string): TaxLine[] 
 export const taxLabel = (t: { code: TaxCode; rate: number }) => `${t.code} (${t.rate}%)`;
 
 export const TAX_NOTE_UNREGISTERED =
-  "We are not currently registered to collect GST/HST or QST, so no sales tax is charged. Tax is shown at $0.00 for the customer's province.";
+  "We are currently tax-exempt as a small supplier, so no sales tax is charged. Tax is shown at $0.00 for your province, and we may charge sales tax in the future without notice.";

@@ -4,6 +4,7 @@ import { Resend } from "resend";
 import { getDb } from "@/lib/db";
 import { invoiceEmail, welcomeEmail, type InvoiceEmailData } from "@/lib/emails";
 import { invoicePdf, type InvoicePdfData } from "@/lib/invoice-pdf";
+import { addressLines } from "@/lib/billing-address";
 import { FALLBACK_PROVINCE, taxForLine, type TaxLine } from "@/lib/tax";
 
 const FROM = "sendletter <noreply@sendletter.app>";
@@ -33,7 +34,9 @@ export async function loadInvoiceData(invoiceId: string): Promise<{ email: strin
     taxCollected: Boolean(inv.tax_collected),
     lines: ((lines ?? []) as { description: string; amount_cents: number; tax_cents: number | null }[]).map((l) => ({ ...l, tax_cents: l.tax_cents ?? 0 })),
   };
-  return { email, pdf: { ...data, billedTo: email, paidAt: inv.paid_at ? day(inv.paid_at, "medium") : null, reference: (inv.stripe_payment_intent_id as string | null) ?? null } };
+  const snap = inv.billing_snapshot as ({ email?: string } & Record<string, string>) | null;
+  const billedToLines = [...addressLines(snap as never), email].filter(Boolean);
+  return { email, pdf: { ...data, billedTo: email, billedToLines, paidAt: inv.paid_at ? day(inv.paid_at, "medium") : null, reference: (inv.stripe_payment_intent_id as string | null) ?? null } };
 }
 
 /**
