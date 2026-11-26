@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
-import { POSTS, postPath, SITE } from "@/lib/blog";
+import { POSTS, hasLocale, liveHubs, postPath, SITE } from "@/lib/blog";
+import { hubPath } from "@/lib/hubs";
 import { ORIGINS, originUrl } from "@/lib/origins";
 
 export default function sitemap(): MetadataRoute.Sitemap {
@@ -10,19 +11,20 @@ export default function sitemap(): MetadataRoute.Sitemap {
   // language alternates. Search engines need the pair to be reciprocal, so
   // both are generated from the same source rather than maintained by hand.
   const posts: MetadataRoute.Sitemap = POSTS.flatMap((post) => {
+    const bilingual = hasLocale(post, "fr");
     const languages = {
       "en-CA": `${SITE}${postPath(post, "en")}`,
       "fr-CA": `${SITE}${postPath(post, "fr")}`,
     };
     const lastModified = new Date(`${post.updated ?? post.published}T00:00:00Z`);
-    return (["en", "fr"] as const).map((locale) => ({
+    return (bilingual ? (["en", "fr"] as const) : (["en"] as const)).map((locale) => ({
       url: `${SITE}${postPath(post, locale)}`,
       // Real publish dates, not new Date() — a sitemap claiming everything
       // changed today teaches crawlers to ignore the field entirely.
       lastModified,
       changeFrequency: "yearly" as const,
       priority: 0.6,
-      alternates: { languages },
+      ...(bilingual ? { alternates: { languages } } : {}),
     }));
   });
 
@@ -58,6 +60,15 @@ export default function sitemap(): MetadataRoute.Sitemap {
       alternates: blogIndexAlternates,
     },
     ...posts,
+    // Hubs with at least one live guide.
+    ...liveHubs().map((h) => ({
+      url: `${SITE}${hubPath(h)}`,
+      lastModified: new Date(
+        `${POSTS.filter((p) => p.hub === h.id).map((p) => p.updated ?? p.published).sort().pop()}T00:00:00Z`,
+      ),
+      changeFrequency: "weekly" as const,
+      priority: 0.7,
+    })),
     {
       url: `${SITE}/mail-to-canada`,
       lastModified: new Date(),

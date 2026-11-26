@@ -16,10 +16,12 @@
 // 2027 (not confirmed): when it lands, change stampCents and the postage tiers
 // here, bump RATES_VERSION, and nothing else needs to move.
 
+import { VOLUME, volumeBaseCents } from "./volume-curve";
+
 export type LetterSize = "standard" | "large" | "legal";
 export type Channel = "web" | "api";
 
-export const RATES_VERSION = "2026-11-25";
+export const RATES_VERSION = "2026-11-26";
 
 /** Most pages in one order. */
 export const MAX_PAGES = 200;
@@ -35,7 +37,7 @@ export const RATES = {
    * Per mailing. Web is set so the cheapest letter (one B&W page, one stamp) is
    * $3.49 all in; API orders have more of the work automated.
    */
-  baseCents: { web: 200, api: 99 } as Record<Channel, number>,
+  baseCents: { web: 200, api: VOLUME.listCents } as Record<Channel, number>,
   /** Per printed page (a side). Double-sided does not change the page count. */
   pageCents: { colour: 50, bw: 15 },
   /** Per envelope or mailer. Flat mailers cost more than a #10. */
@@ -95,6 +97,8 @@ export type QuoteLine = {
 
 export type Quote = {
   version: string;
+  /** API channel only: where the mailing fee sat on the volume curve (lib/volume.ts). */
+  volume?: { priorMailings: number; listBaseCents: number; discountCents: number };
   channel: Channel;
   size: LetterSize;
   colour: boolean;
@@ -182,6 +186,12 @@ export function quote(input: {
   colour: boolean;
   duplex: boolean;
   channel: Channel;
+  /**
+   * API channel: mailings the account already has in its trailing 30 days. When
+   * given, each mailing's fee comes off the volume curve (lib/volume.ts). When
+   * absent, the list price applies.
+   */
+  priorMailings?: number;
 }): Quote {
   const { pages, size, colour, duplex, channel } = input;
   if (!Number.isInteger(pages) || pages < 1 || pages > MAX_PAGES) {
@@ -194,8 +204,19 @@ export function quote(input: {
   const stamps = mailings.reduce((s, m) => s + m.stamps, 0);
   const pageRate = colour ? RATES.pageCents.colour : RATES.pageCents.bw;
 
+  // Volume discount: API only, and only when the caller knows the account's volume.
+  const listBase = k * RATES.baseCents[channel];
+  let baseTotal = listBase;
+  let volume: Quote["volume"];
+  if (channel === "api" && input.priorMailings !== undefined) {
+    const prior = Math.max(0, Math.floor(input.priorMailings));
+    baseTotal = 0;
+    for (let j = 1; j <= k; j++) baseTotal += volumeBaseCents(prior + j);
+    volume = { priorMailings: prior, listBaseCents: listBase, discountCents: listBase - baseTotal };
+  }
+
   const lines: QuoteLine[] = [
-    { key: "base", qty: k, unitCents: RATES.baseCents[channel], totalCents: k * RATES.baseCents[channel] },
+    { key: "base", qty: k, unitCents: Math.round(baseTotal / k), totalCents: baseTotal },
     { key: "envelope", qty: k, unitCents: RATES.envelopeCents[size], totalCents: k * RATES.envelopeCents[size] },
     { key: "pages", qty: pages, unitCents: pageRate, totalCents: pages * pageRate },
     { key: "postage", qty: stamps, unitCents: RATES.stampCents, totalCents: stamps * RATES.stampCents },
@@ -203,6 +224,7 @@ export function quote(input: {
 
   return {
     version: RATES_VERSION,
+    ...(volume ? { volume } : {}),
     channel,
     size,
     colour,
@@ -219,7 +241,7 @@ export function quote(input: {
 // ── Marketing numbers, derived so they cannot drift from the rates ──
 
 const cheapest = quote({ pages: 1, size: "standard", colour: false, duplex: true, channel: "web" });
-const dflt = quote({ pages: 1, size: "standard", colour: true, duplex: true, channel: "web" });
+const colourSingle = quote({ pages: 1, size: "standard", colour: true, duplex: true, channel: "web" });
 
 /**
  * The advertised "From" price: the cheapest letter anyone can actually buy, all
@@ -228,8 +250,8 @@ const dflt = quote({ pages: 1, size: "standard", colour: true, duplex: true, cha
  * mandatory (Competition Act drip-pricing rules).
  */
 export const FROM_ALL_IN_CENTS = cheapest.totalCents;
-/** What the default single-page colour tri-fold costs: $3.84. */
-export const DEFAULT_SINGLE_CENTS = dflt.totalCents;
+/** What a single-page colour tri-fold costs: $3.84. (Black and white is the default; this is the colour price.) */
+export const COLOUR_SINGLE_CENTS = colourSingle.totalCents;
 
 export function formatCents(cents: number, lang: "en" | "fr" = "en"): string {
   const s = (cents / 100).toFixed(2);

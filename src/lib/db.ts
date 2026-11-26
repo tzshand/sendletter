@@ -112,8 +112,8 @@ function identList(cols: string): string {
     .join(", ");
 }
 
-type Filter = { col: string; op: "eq" | "in" | "lt" | "notnull"; val: unknown };
-type Op = "select" | "insert" | "update";
+type Filter = { col: string; op: "eq" | "neq" | "in" | "lt" | "lte" | "gt" | "gte" | "notnull" | "isnull"; val: unknown };
+type Op = "select" | "insert" | "update" | "delete";
 
 // The default thenable resolves a list result (`data: any[]`), matching the
 // untyped Supabase client — so `.map`/`.reduce`/`.filter` on results stay
@@ -133,7 +133,7 @@ class QueryBuilder implements PromiseLike<DbResult<any[]>> {
 
   select(cols = "*"): this {
     this.selectCols = cols;
-    if (this.op === "insert" || this.op === "update") {
+    if (this.op === "insert" || this.op === "update" || this.op === "delete") {
       this.hasReturning = true; // .insert(...).select(...) -> RETURNING
     } else {
       this.op = "select";
@@ -150,6 +150,37 @@ class QueryBuilder implements PromiseLike<DbResult<any[]>> {
   update(values: Record<string, unknown>): this {
     this.op = "update";
     this.payload = values;
+    return this;
+  }
+
+  delete(): this {
+    this.op = "delete";
+    return this;
+  }
+
+  neq(col: string, val: unknown): this {
+    this.filters.push({ col, op: "neq", val });
+    return this;
+  }
+
+  lte(col: string, val: unknown): this {
+    this.filters.push({ col, op: "lte", val });
+    return this;
+  }
+
+  gt(col: string, val: unknown): this {
+    this.filters.push({ col, op: "gt", val });
+    return this;
+  }
+
+  gte(col: string, val: unknown): this {
+    this.filters.push({ col, op: "gte", val });
+    return this;
+  }
+
+  /** col IS NULL */
+  isNull(col: string): this {
+    this.filters.push({ col, op: "isnull", val: null });
     return this;
   }
 
@@ -205,9 +236,14 @@ class QueryBuilder implements PromiseLike<DbResult<any[]>> {
     if (this.filters.length === 0) return "";
     const clauses = this.filters.map((f) => {
       if (f.op === "notnull") return `${ident(f.col)} IS NOT NULL`;
+      if (f.op === "isnull") return `${ident(f.col)} IS NULL`;
       params.push(f.val);
       if (f.op === "in") return `${ident(f.col)} = ANY($${params.length})`;
       if (f.op === "lt") return `${ident(f.col)} < $${params.length}`;
+      if (f.op === "lte") return `${ident(f.col)} <= $${params.length}`;
+      if (f.op === "gt") return `${ident(f.col)} > $${params.length}`;
+      if (f.op === "gte") return `${ident(f.col)} >= $${params.length}`;
+      if (f.op === "neq") return `${ident(f.col)} <> $${params.length}`;
       return `${ident(f.col)} = $${params.length}`;
     });
     return ` WHERE ${clauses.join(" AND ")}`;
@@ -258,6 +294,14 @@ class QueryBuilder implements PromiseLike<DbResult<any[]>> {
       };
     }
 
+    if (this.op === "delete") {
+      // A DELETE with no filter would empty the table. Refuse to build one.
+      if (this.filters.length === 0) throw new Error("Refusing an unfiltered DELETE");
+      const where = this.buildWhere(params);
+      const returning = this.hasReturning ? ` RETURNING ${identList(this.selectCols)}` : "";
+      return { text: `DELETE FROM ${ident(this.table)}${where}${returning}`, params };
+    }
+
     // select
     const where = this.buildWhere(params);
     const order = this.orderBy
@@ -279,7 +323,7 @@ class QueryBuilder implements PromiseLike<DbResult<any[]>> {
       const rows = res.rows ?? [];
 
       // Inserts/updates without a .select() return no data (matches PostgREST).
-      if ((this.op === "insert" || this.op === "update") && !this.hasReturning) {
+      if ((this.op === "insert" || this.op === "update" || this.op === "delete") && !this.hasReturning) {
         return { data: null, error: null };
       }
 

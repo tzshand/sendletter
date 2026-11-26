@@ -1,0 +1,121 @@
+{
+  "id": "how-many-stamps-for-a-letter-in-canada",
+  "hub": "postage",
+  "wave": 1,
+  "slug": "how-many-stamps-for-a-letter-in-canada",
+  "title": "How Many Stamps Does a Letter Need in Canada?",
+  "description": "One Permanent stamp covers a letter up to 30 g. Heavier and oversize letters need two to six. The stamp count for each weight band.",
+  "keywords": [
+    "how many stamps for a letter canada",
+    "how many stamps do i need canada",
+    "how many stamps to mail a letter in canada",
+    "how many permanent stamps"
+  ],
+  "answer": "One Permanent stamp ($1.24) mails a standard letter up to 30 grams within Canada. A 30 to 50 gram letter needs two. Oversize letters need three stamps up to 100 grams and up to six at 500 grams. Weigh the envelope if it feels heavy; about five sheets of paper is near the 30 gram line.",
+  "sections": [
+    {
+      "h2": "Stamps needed by weight",
+      "blocks": [
+        {
+          "p": "Canada Post's rates are not multiples of the $1.24 Permanent stamp, so you round up to the next whole stamp. The table shows the postage required and the stamps that cover it."
+        },
+        {
+          "table": {
+            "headers": [
+              "Letter",
+              "Postage required",
+              "Permanent stamps",
+              "Value on the envelope"
+            ],
+            "rows": [
+              [
+                "Standard, up to 30 g",
+                "$1.24",
+                "1",
+                "$1.24"
+              ],
+              [
+                "Standard, 30 to 50 g",
+                "$1.75",
+                "2",
+                "$2.48"
+              ],
+              [
+                "Oversize, up to 100 g",
+                "$2.61",
+                "3",
+                "$3.72"
+              ],
+              [
+                "Oversize, 100 to 200 g",
+                "$4.29",
+                "4",
+                "$4.96"
+              ],
+              [
+                "Oversize, 200 to 300 g",
+                "$5.98",
+                "5",
+                "$6.20"
+              ],
+              [
+                "Oversize, 300 to 400 g",
+                "$6.85",
+                "6",
+                "$7.44"
+              ],
+              [
+                "Oversize, 400 to 500 g",
+                "$7.36",
+                "6",
+                "$7.44"
+              ]
+            ]
+          }
+        },
+        {
+          "p": "Two stamps for a 30 to 50 g letter means paying $0.73 more than the rate. Stamps in other denominations can bring that closer to $1.75."
+        }
+      ]
+    },
+    {
+      "h2": "How heavy is your letter?",
+      "blocks": [
+        {
+          "p": "Ordinary 20 lb paper (75 g/m²) weighs about 4.5 g a sheet in US Letter size, and a light envelope about 6 g. Five sheets in an envelope come to roughly 28 g; a sixth sheet pushes it past 30 g. These are estimates. If the total is close to a band edge, weigh it on a kitchen scale, because an envelope that is one gram over is a different price."
+        },
+        {
+          "p": "Thick paper, a heavy envelope, or an insert such as a cheque or a card all add weight. Coloured stock and 24 lb paper are heavier than 20 lb."
+        }
+      ]
+    },
+    {
+      "h2": "What goes wrong when you are short",
+      "blocks": [
+        {
+          "p": "A letter with too little postage can come back to the sender. See [what happens to a letter with too little postage](/blog/letter-with-too-little-postage). It is the reason sendletter counts stamps from a deliberately heavy weight estimate: one extra stamp costs $1.24, and a short one risks the letter coming back."
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "label": "Canada Post, Consumer prices (updated September 7, 2026)",
+      "url": "https://www.canadapost-postescanada.ca/cpc/doc/en/support/prices/consumer-prices.pdf"
+    },
+    {
+      "label": "Canada Post, Stamp prices",
+      "url": "https://www.canadapost-postescanada.ca/cpc/en/personal/stamp-prices.page"
+    },
+    {
+      "label": "Canada Post, What are Permanent stamps?",
+      "url": "https://www.canadapost-postescanada.ca/cpc/en/support/kb/sending/stamps-packaging/what-are-permanent-stamps"
+    }
+  ],
+  "related": [
+    "canada-post-stamp-price",
+    "canada-post-letter-rates-by-weight",
+    "letter-with-too-little-postage"
+  ],
+  "published": "2026-11-26"
+}

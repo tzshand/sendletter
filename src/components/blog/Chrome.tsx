@@ -6,9 +6,8 @@
 import Link from "next/link";
 import { SnowGoose } from "@/components/SnowGoose";
 import { CTA } from "@/components/blog/Prose";
-import { POSTS, type Locale, type PostMeta, postPath, blogIndexPath } from "@/lib/blog";
-
-const POSTS_BY_ID = new Map(POSTS.map((p) => [p.id, p]));
+import { type Locale, type PostMeta, postPath, blogIndexPath, hasLocale, relatedFor } from "@/lib/blog";
+import { HUBS_BY_ID, hubPath } from "@/lib/hubs";
 
 const T = {
   en: {
@@ -94,30 +93,40 @@ export function PostShell({
   children: React.ReactNode;
 }) {
   const t = T[locale];
-  const meta = post[locale];
+  const meta = post[locale]!;
   const other: Locale = locale === "fr" ? "en" : "fr";
-  const related = post.related
-    .map((id) => POSTS_BY_ID.get(id))
-    .filter((p): p is PostMeta => Boolean(p));
+  const related = relatedFor(post, locale, 6);
+  const hub = locale === "en" && post.hub ? HUBS_BY_ID.get(post.hub) : undefined;
 
   return (
     <article className="max-w-2xl mx-auto px-5 py-12">
       <nav className="mb-6 flex items-center justify-between">
-        <Link
-          href={blogIndexPath(locale)}
-          className="text-xs font-medium text-gray-400 hover:text-gray-600 transition-colors"
-        >
-          {t.allPosts}
-        </Link>
+        {hub ? (
+          <Link
+            href={hubPath(hub)}
+            className="text-xs font-medium text-gray-400 hover:text-gray-600 transition-colors"
+          >
+            ← {hub.title}
+          </Link>
+        ) : (
+          <Link
+            href={blogIndexPath(locale)}
+            className="text-xs font-medium text-gray-400 hover:text-gray-600 transition-colors"
+          >
+            {t.allPosts}
+          </Link>
+        )}
         {/* Real link, not a client-side toggle — the alternate has to be
             crawlable for hreflang to mean anything. */}
-        <Link
-          href={postPath(post, other)}
-          hrefLang={other === "fr" ? "fr-CA" : "en-CA"}
-          className="text-xs font-medium text-gray-400 hover:text-gray-600 transition-colors"
-        >
-          {t.otherLang}
-        </Link>
+        {hasLocale(post, other) && (
+          <Link
+            href={postPath(post, other)}
+            hrefLang={other === "fr" ? "fr-CA" : "en-CA"}
+            className="text-xs font-medium text-gray-400 hover:text-gray-600 transition-colors"
+          >
+            {t.otherLang}
+          </Link>
+        )}
       </nav>
 
       <h1 className="text-2xl font-bold text-gray-900 leading-snug mb-2">{meta.title}</h1>
@@ -144,7 +153,7 @@ export function PostShell({
                 href={postPath(r, locale)}
                 className="block text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors"
               >
-                {r[locale].title}
+                {r[locale]!.title}
               </Link>
             ))}
           </div>

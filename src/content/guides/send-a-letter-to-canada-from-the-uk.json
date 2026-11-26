@@ -1,0 +1,95 @@
+{
+  "id": "send-a-letter-to-canada-from-the-uk",
+  "hub": "from-abroad",
+  "wave": 2,
+  "published": "2026-12-03",
+  "slug": "send-a-letter-to-canada-from-the-uk",
+  "title": "Sending a Letter to Canada From the UK",
+  "description": "Posting a letter from the UK to Canada: Royal Mail's international services, what to check before you post, and a route that needs no international stamp.",
+  "keywords": [
+    "send a letter to canada from uk",
+    "post letter to canada from uk",
+    "cost of sending a letter to canada from uk",
+    "uk to canada postage"
+  ],
+  "answer": "From the UK you can post a letter to Canada with Royal Mail's international services, whose prices and weight limits are set by Royal Mail. Or you can order it online and have it printed and posted inside Canada, so it travels as ordinary Canadian mail. Either way, the Canadian address needs a correct postal code.",
+  "sections": [
+    {
+      "h2": "Posting it with Royal Mail",
+      "blocks": [
+        {
+          "p": "Royal Mail sells several international letter services. Its Canada country guide shows which are available for Canada, with prices and weight limits, and its prices changed on 7 April 2026. Check that page on the day you post, because a figure copied from an older article may be out of date."
+        },
+        {
+          "ul": [
+            "Weigh the letter, and the envelope, before you buy postage.",
+            "Choose a tracked service if you need to know it arrived.",
+            "Write the Canadian address in Canadian order, and add the country name as Royal Mail instructs.",
+            "Add your UK return address."
+          ]
+        }
+      ]
+    },
+    {
+      "h2": "Ordering it online instead",
+      "blocks": [
+        {
+          "p": "A print-and-mail service in Canada can take the letter as a file and post it to the recipient. You pay online, with no UK stamp, and the letter goes into the Canadian mail stream. Canada Post's Lettermail standard is 2 to 4 business days from posting, an estimate and not a guarantee, and the service needs about a business day to print and post. sendletter works this way, for Canadian recipients only. It does not provide tracking."
+        },
+        {
+          "table": {
+            "headers": [
+              "",
+              "Royal Mail international",
+              "Online, mailed in Canada"
+            ],
+            "rows": [
+              [
+                "You pay",
+                "Royal Mail's international rate",
+                "From $3.49 all in, in Canadian dollars"
+              ],
+              [
+                "Tracking",
+                "Depends on service",
+                "None"
+              ],
+              [
+                "Letter format",
+                "You print and pack it",
+                "You send a PDF, Word file or text"
+              ]
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "h2": "Before you send",
+      "blocks": [
+        {
+          "p": "Get the address right: [how to address a letter to Canada](/blog/how-to-address-a-letter-to-canada) and [the Canadian postal code format](/blog/canadian-postal-code-format). The wider picture is in [mailing to Canada from abroad](/blog/mail-a-letter-to-canada-from-abroad)."
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "label": "Royal Mail, Postage and shipping to Canada",
+      "url": "https://www.royalmail.com/sending/international/country-guides/canada"
+    },
+    {
+      "label": "Royal Mail, Prices 2026",
+      "url": "https://www.royalmail.com/prices2026"
+    },
+    {
+      "label": "Canada Post, Lettermail delivery standards",
+      "url": "https://www.canadapost-postescanada.ca/cpc/en/support/articles/lettermail/delivery-standards.page"
+    }
+  ],
+  "related": [
+    "mail-a-letter-to-canada-from-abroad",
+    "send-a-letter-to-canada-from-the-us",
+    "how-to-address-a-letter-to-canada"
+  ]
+}

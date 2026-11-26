@@ -651,6 +651,18 @@ export function ProfileClient({
             >
               Full API Reference &rarr;
             </Link>
+            <Link
+              href="/account/developers"
+              className="inline-block mt-2 ml-4 text-xs text-blue-600 hover:text-blue-800 font-medium transition-colors"
+            >
+              Test keys, webhooks &amp; spending limits &rarr;
+            </Link>
+            <Link
+              href="/account/orders"
+              className="inline-block mt-2 ml-4 text-xs text-blue-600 hover:text-blue-800 font-medium transition-colors"
+            >
+              Orders &amp; invoices &rarr;
+            </Link>
           </div>
         </section>
 

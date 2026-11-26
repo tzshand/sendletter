@@ -1,0 +1,145 @@
+{
+  "id": "canada-post-api-send-letters",
+  "hub": "api",
+  "wave": 5,
+  "live": true,
+  "slug": "canada-post-api-send-letters",
+  "title": "Canada Post API: Can You Send Letters With It?",
+  "description": "Canada Post's developer APIs cover parcels, rates, tracking and addresses, not letters. How to send a letter by API instead, from as low as $1.69.",
+  "keywords": [
+    "canada post api",
+    "canada post developer api",
+    "canada post api documentation",
+    "canada post api letters",
+    "send letter api canada"
+  ],
+  "answer": "No. Canada Post's developer catalog lists nine APIs for parcel shipping, rating, tracking, returns, pickups, post offices and address lookup. None is for Lettermail or sending letters. To send a letter programmatically in Canada, use a print-and-mail API such as sendletter's, with letters from as low as $1.69 all in.",
+  "sections": [
+    {
+      "h2": "What Canada Post's APIs cover",
+      "blocks": [
+        {
+          "p": "Canada Post's Developer Portal lists nine API products. Its catalog shows no products in its Mailing category."
+        },
+        {
+          "table": {
+            "headers": [
+              "API",
+              "What Canada Post says it does"
+            ],
+            "rows": [
+              [
+                "AddressComplete",
+                "Enable intelligent, fast searching to increase address accuracy and relevancy."
+              ],
+              [
+                "Customer Information Services",
+                "Get details on customer contract numbers, authorized payers, and methods of payment."
+              ],
+              [
+                "Pickup",
+                "Determine package pickup availability or request different types of pickups."
+              ],
+              [
+                "Post Office Services",
+                "Get a list of nearby post offices or set up convenient post office delivery for your customers."
+              ],
+              [
+                "Rating",
+                "Get all available options and costs for your package shipments."
+              ],
+              [
+                "Returns",
+                "Create shipping labels for authorized and open returns."
+              ],
+              [
+                "Service Information",
+                "Inform your merchant customers about scheduled outages to web services."
+              ],
+              [
+                "Shipping",
+                "Manage and process your orders, create shipments, generate labels, and print manifests."
+              ],
+              [
+                "Tracking",
+                "Track shipments in real-time to ensure packages are delivered successfully."
+              ]
+            ]
+          }
+        },
+        {
+          "p": "Every one of these is about packages, addresses, post offices or account information. The words Lettermail and letter do not appear on the API pages we read."
+        }
+      ]
+    },
+    {
+      "h2": "Why that leaves letters out",
+      "blocks": [
+        {
+          "p": "Canada Post's Shipping API creates shipments and labels, and its Tracking API follows a parcel by its identification number. An ordinary letter has neither: it is paid for with stamps, as set out in the [Lettermail price table](/blog/canada-post-letter-rates-by-weight), and it is not tracked. So there is no Canada Post endpoint that takes a letter and mails it."
+        },
+        {
+          "note": "Canada Post may add one. Check its API catalog before you build, because this guide reflects the catalog as we read it in November 2026."
+        }
+      ]
+    },
+    {
+      "h2": "How to send a letter by API instead",
+      "blocks": [
+        {
+          "p": "A print-and-mail API sits in the gap: you send the text and the two addresses, and it prints the letter, folds it into an envelope, stamps it and puts it in the mail. With sendletter that is one request:"
+        },
+        {
+          "ul": [
+            "**Try it free.** A test key validates and prices a letter but prints, mails and bills nothing, and needs no card.",
+            "**Price.** A one-page black-and-white letter is $2.48 all in on your first letter and falls automatically to as low as $1.69 from your 100th mailing in 30 days. Postage is passed through at cost. See [how the volume discount works](/blog/api-volume-pricing).",
+            "**Safe to retry.** Send an Idempotency-Key and a retry returns the original result instead of mailing a second letter.",
+            "**Status.** A letter moves from queued to printed to mailed, and a webhook tells you when."
+          ]
+        },
+        {
+          "p": "The step-by-step is in [how to send a letter with an API in Canada](/blog/send-a-letter-with-an-api-canada)."
+        },
+        {
+          "p": "The honest limits: it delivers to Canadian addresses only, and ordinary mail has no delivery tracking, so mailed is the last status we can report."
+        }
+      ]
+    },
+    {
+      "h2": "If you came for something else",
+      "blocks": [
+        {
+          "p": "Canada Post's APIs are the right tool for parcel rates, labels and tracking. For checking an address as a user types it, see [Canada Post's AddressComplete](/blog/canada-post-address-validation-api). To register, you create an app in the Developer Portal and choose Test or Production; Canada Post says test apps use stubbed data and do not trigger billing."
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "label": "Canada Post, Developer Portal API catalog",
+      "url": "https://developer-developpeur.canadapost-postescanada.ca/devportal-portaildesdeveloppeurs/api-catalog"
+    },
+    {
+      "label": "Canada Post, Integrate with our APIs",
+      "url": "https://www.canadapost-postescanada.ca/cpc/en/business/ecommerce/integrate-apis.page"
+    },
+    {
+      "label": "Canada Post, Developer Portal: get started",
+      "url": "https://developer-developpeur.canadapost-postescanada.ca/devportal-portaildesdeveloppeurs/developer-guide"
+    },
+    {
+      "label": "Canada Post, Consumer prices (updated September 7, 2026)",
+      "url": "https://www.canadapost-postescanada.ca/cpc/doc/en/support/prices/consumer-prices.pdf"
+    },
+    {
+      "label": "sendletter API reference",
+      "url": "https://sendletter.app/docs"
+    }
+  ],
+  "related": [
+    "send-a-letter-with-an-api-canada",
+    "canada-post-address-validation-api",
+    "api-volume-pricing"
+  ],
+  "published": "2026-11-26"
+}

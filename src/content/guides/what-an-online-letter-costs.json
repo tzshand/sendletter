@@ -1,0 +1,121 @@
+{
+  "id": "what-an-online-letter-costs",
+  "hub": "send-online",
+  "wave": 1,
+  "slug": "what-an-online-letter-costs",
+  "title": "What an Online Letter Costs, Line by Line",
+  "description": "A one-page black-and-white letter is $3.49 all in: $2.00 mailing fee, $0.10 envelope, $0.15 printing and a $1.24 stamp. How each option changes the total.",
+  "keywords": [
+    "how much does it cost to send a letter online",
+    "cost to mail a letter canada",
+    "online letter service price",
+    "send letter cost"
+  ],
+  "answer": "At sendletter, a one-page black-and-white letter in a #10 envelope costs $3.49: a $2.00 mailing fee, $0.10 for the envelope, $0.15 for printing and one $1.24 stamp, with tax included. Colour printing is $0.50 a page, flat mailers cost more, and heavier letters need extra stamps.",
+  "sections": [
+    {
+      "h2": "The formula",
+      "blocks": [
+        {
+          "p": "Every price is the sum of four lines: a mailing fee and an envelope, per envelope, plus printing per page, plus postage per stamp. Postage is passed through at cost, with no margin."
+        },
+        {
+          "table": {
+            "headers": [
+              "Line",
+              "Rate"
+            ],
+            "rows": [
+              [
+                "Mailing fee, per envelope",
+                "$2.00"
+              ],
+              [
+                "Envelope: #10 / 9 × 12 / 10 × 15",
+                "$0.10 / $0.25 / $0.40"
+              ],
+              [
+                "Printing, per page",
+                "$0.15 black and white, $0.50 colour"
+              ],
+              [
+                "Postage, per stamp",
+                "$1.24, one Permanent stamp"
+              ]
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "h2": "Worked examples",
+      "blocks": [
+        {
+          "table": {
+            "headers": [
+              "Letter",
+              "Total"
+            ],
+            "rows": [
+              [
+                "1 page, B&W, #10 envelope, 1 stamp",
+                "$3.49"
+              ],
+              [
+                "1 page, colour, #10 envelope, 1 stamp",
+                "$3.84"
+              ],
+              [
+                "3 pages, B&W, double-sided, #10 envelope, 1 stamp",
+                "$3.79"
+              ],
+              [
+                "3 pages, B&W, single-sided, #10 envelope, 2 stamps",
+                "$5.03"
+              ]
+            ]
+          }
+        },
+        {
+          "p": "These examples are double-sided, the default. Printing is priced per page, not per sheet, but weight sets the stamps: single-sided, the same three pages plus the address page are four sheets, about 31 g, which needs the $1.75 band and two stamps. The address page on a #10 window envelope is not billed, though it adds weight."
+        }
+      ]
+    },
+    {
+      "h2": "What moves the price",
+      "blocks": [
+        {
+          "ul": [
+            "**Pages.** Each page adds its printing rate, and the weight eventually needs more stamps; see [how many stamps a letter needs](/blog/how-many-stamps-for-a-letter-in-canada).",
+            "**Flat envelope.** Larger mailers cost more and are oversize Lettermail, which needs three stamps minimum: [postage for a large envelope](/blog/postage-for-a-large-envelope-canada).",
+            "**Too many pages for one envelope.** A letter that will not fit is split into several mailings, each with its own fee and stamps."
+          ]
+        }
+      ]
+    },
+    {
+      "h2": "In volume, by API",
+      "blocks": [
+        {
+          "p": "Sending many letters by API, the mailing fee falls automatically from $0.99 to $0.20 by your 100th mailing in any 30 days, and the cheapest letter costs as low as $1.69 all in. Postage stays at cost. [The rate table and a calculator](/blog/api-volume-pricing) show other page counts and envelopes."
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "label": "Canada Post, Consumer prices (updated September 7, 2026)",
+      "url": "https://www.canadapost-postescanada.ca/cpc/doc/en/support/prices/consumer-prices.pdf"
+    },
+    {
+      "label": "Canada Post, Stamp prices",
+      "url": "https://www.canadapost-postescanada.ca/cpc/en/personal/stamp-prices.page"
+    }
+  ],
+  "related": [
+    "mail-one-letter-without-a-stamp-book",
+    "how-online-letter-mailing-works",
+    "how-many-stamps-for-a-letter-in-canada"
+  ],
+  "published": "2026-11-26"
+}

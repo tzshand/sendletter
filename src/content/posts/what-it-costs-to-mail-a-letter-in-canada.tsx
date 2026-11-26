@@ -91,6 +91,12 @@ export default function Post() {
       </P>
 
       <P>
+        In volume the price falls. Sending by API, a letter can cost as low as{" "}
+        <strong>$1.69</strong> all in: the mailing fee drops automatically with every letter you send, and postage stays at cost.{" "}
+        <A href="/blog/api-volume-pricing">See the rates and a calculator</A>.
+      </P>
+
+      <P>
         For a business sending a handful of letters a month, that premium is almost always
         smaller than the staff time it replaces. For one birthday card a year, it is not.
         Both are fine answers.

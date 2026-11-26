@@ -41,12 +41,15 @@ export default async function ProfilePage() {
     .limit(20);
 
   // Fetch billing history
-  const { data: billing } = await db
-    .from("sendletter_billing_runs")
-    .select("id, amount_cents, usage_count, status, created_at")
+  const { data: invoices } = await db
+    .from("sendletter_invoices")
+    .select("id, total_cents, letters, status, created_at")
     .eq("account_id", session.accountId)
     .order("created_at", { ascending: false })
     .limit(10);
+  const billing = (invoices ?? []).map((i: { id: string; total_cents: number; letters: number; status: string; created_at: string }) => ({
+    id: i.id, amount_cents: i.total_cents, usage_count: i.letters, status: i.status === "paid" ? "succeeded" : i.status, created_at: i.created_at,
+  }));
 
   // Get card info and billing address from Stripe if payment method is on file
   let cardInfo: { brand: string; last4: string } | null = null;
@@ -114,7 +117,7 @@ export default async function ProfilePage() {
       cardInfo={cardInfo}
       billingAddress={billingAddress}
       usage={usage || []}
-      billing={billing || []}
+      billing={billing}
     />
   );
 }

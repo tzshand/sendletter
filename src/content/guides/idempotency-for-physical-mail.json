@@ -1,0 +1,112 @@
+{
+  "id": "idempotency-for-physical-mail",
+  "hub": "api",
+  "wave": 5,
+  "live": true,
+  "slug": "idempotency-for-physical-mail",
+  "title": "Idempotency Keys for Physical Mail",
+  "description": "Why a retried mail API request can post a second letter you cannot recall, and how an idempotency key prevents it. How to use one, and what to check.",
+  "keywords": [
+    "mail api idempotency",
+    "idempotency key letter api",
+    "duplicate letters api",
+    "retry mail api safely"
+  ],
+  "answer": "An idempotency key makes a retried request return the original result instead of repeating it. For physical mail that matters more than for email: a duplicate request prints and posts a second letter you cannot recall. Send a unique key with every create request, and reuse that same key on every retry of the same request.",
+  "sections": [
+    {
+      "h2": "Why letters are different",
+      "blocks": [
+        {
+          "p": "A network timeout leaves you not knowing whether your request arrived. With email, sending twice is an annoyance. With a letter, a second request can mean a second piece of paper in someone's mailbox and a second charge, and once it is printed it cannot be recalled. The safe pattern is to retry, but only in a way the API recognises as the same request."
+        }
+      ]
+    },
+    {
+      "h2": "How it works with sendletter",
+      "blocks": [
+        {
+          "table": {
+            "headers": [
+              "Situation",
+              "Result"
+            ],
+            "rows": [
+              [
+                "Same key, same request, already finished",
+                "The original response again, marked Idempotent-Replayed: true. No second letter, no second charge."
+              ],
+              [
+                "Same key, same request, still running",
+                "409 request_in_progress. Retry shortly with the same key."
+              ],
+              [
+                "Same key, different request",
+                "422 idempotency_key_reuse."
+              ],
+              [
+                "The first attempt failed validation or payment",
+                "The key is released, so you can fix the request and retry with it. Only successful responses are stored and replayed, not errors."
+              ]
+            ]
+          }
+        },
+        {
+          "p": "Keys are remembered for 7 days, test and live keys are separate, and the order of fields in your JSON does not matter. A batch requires a key and creates item i under the key plus the index, so the whole batch can be re-sent safely."
+        }
+      ]
+    },
+    {
+      "h2": "How to use a key",
+      "blocks": [
+        {
+          "ul": [
+            "**Tie it to your own record.** Use the invoice, order or statement number, not a fresh random value per attempt. Then a process that crashes and restarts sends the same key.",
+            "**Reuse it on every retry** of the same request. A new key on a retry is exactly how a duplicate letter is made.",
+            "**Retry on timeouts, 5xx and rate-limit 429s**, with backoff, and honour Retry-After. A 429 for the daily spending limit will not clear until tomorrow, and other 4xx responses need the request fixed first.",
+            "**Store the letter id** as soon as you have it, as a second safeguard."
+          ]
+        },
+        {
+          "p": "This is a header on the create request: Idempotency-Key, one to 255 printable characters with no spaces. A UUID works well."
+        }
+      ]
+    },
+    {
+      "h2": "What other providers do",
+      "blocks": [
+        {
+          "p": "Idempotency is standard on the established mail APIs, but retention differs, so read the window. PostGrid's documentation says subsequent requests with an identical idempotency key made up to 24 hours after the initial one return the same response without creating any orders. Lob's letter endpoint takes an Idempotency-Key header and an idempotency_key query parameter. If you may retry after a longer gap, tie the key to your own record and check the provider's window."
+        }
+      ]
+    },
+    {
+      "h2": "If you cannot use a key",
+      "blocks": [
+        {
+          "p": "Some pipelines cannot carry a header. Then keep one row per logical letter in your own database, mark it sent only after you hold the letter id, and check that row before every retry. It is more work, and an idempotency key is the better tool where it is available."
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "label": "sendletter API reference",
+      "url": "https://sendletter.app/docs"
+    },
+    {
+      "label": "PostGrid, Response codes and retry logic",
+      "url": "https://postgrid.readme.io/docs/response-codes-and-retry-logic"
+    },
+    {
+      "label": "Lob, API reference",
+      "url": "https://docs.lob.com/"
+    }
+  ],
+  "related": [
+    "send-a-letter-with-an-api-canada",
+    "test-mode-for-a-mail-api",
+    "canada-post-api-send-letters"
+  ],
+  "published": "2026-11-26"
+}

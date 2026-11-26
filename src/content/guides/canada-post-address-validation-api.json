@@ -1,0 +1,95 @@
+{
+  "id": "canada-post-address-validation-api",
+  "hub": "api",
+  "wave": 5,
+  "live": true,
+  "slug": "canada-post-address-validation-api",
+  "title": "Canada Post Address Validation: AddressComplete",
+  "description": "Canada Post's address tool for developers is AddressComplete. What it does, how to get access, and how it differs from the check a mail API does.",
+  "keywords": [
+    "canada post address validation api",
+    "canada post addresscomplete",
+    "canada post address verification api",
+    "address verification api canada",
+    "canada post address lookup api"
+  ],
+  "answer": "Canada Post's address tool for developers is AddressComplete. It suggests addresses as a user types and, according to Canada Post, delivers real-time address verification. It is separate from sending mail. A mail API such as sendletter only checks that a postal code's first letter matches the province, so use AddressComplete if you need real verification.",
+  "sections": [
+    {
+      "h2": "What AddressComplete does",
+      "blocks": [
+        {
+          "p": "Canada Post describes AddressComplete as the next generation of address finders: start typing an address or postal code and it suggests results as you go. It also says it delivers real-time address verification. You add it to a web form with a few lines of code."
+        },
+        {
+          "p": "It is listed in Canada Post's developer catalog with the description: Enable intelligent, fast searching to increase address accuracy and relevancy."
+        }
+      ]
+    },
+    {
+      "h2": "How to get access",
+      "blocks": [
+        {
+          "ul": [
+            "Canada Post links a sign-up page from the AddressComplete overview.",
+            "In its Developer Portal you create an app and choose Test or Production. Canada Post says test apps use static, stubbed data and do not trigger billing.",
+            "Canada Post's pages we read do not state AddressComplete pricing or credit limits. Check the sign-up pages before you build."
+          ]
+        }
+      ]
+    },
+    {
+      "h2": "What a mail API checks",
+      "blocks": [
+        {
+          "p": "A print-and-mail API checks that your request is complete and well formed. sendletter validates the postal code format and compares the first letter of the postal code with the province you wrote, using Canada Post's own table: K, L, M, N and P are Ontario, for example, and V is British Columbia. A mismatch is returned as a warning, not a refusal."
+        },
+        {
+          "p": "That catches a typo. It cannot tell you that the street exists or that the address receives mail. For that you need a verification service."
+        },
+        {
+          "p": "The first-letter table is in [Canadian postal code format](/blog/canadian-postal-code-format)."
+        }
+      ]
+    },
+    {
+      "h2": "Putting them together",
+      "blocks": [
+        {
+          "ol": [
+            "Use AddressComplete in your form, so the user picks a verified address.",
+            "Store the result with its postal code and province.",
+            "Send it to the mail API as the recipient. Any warning you still get points to a bug in how you stored it."
+          ]
+        },
+        {
+          "p": "If you need to know whether a letter reached its destination, no address check gives you that. See [Canada Post's API and letters](/blog/canada-post-api-send-letters) for what its developer APIs do and do not cover."
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "label": "Canada Post, AddressComplete overview",
+      "url": "https://developer-developpeur.canadapost-postescanada.ca/devportal-portaildesdeveloppeurs/api/overview/addresscomplete"
+    },
+    {
+      "label": "Canada Post, Developer Portal API catalog",
+      "url": "https://developer-developpeur.canadapost-postescanada.ca/devportal-portaildesdeveloppeurs/api-catalog"
+    },
+    {
+      "label": "Canada Post, Developer Portal: get started",
+      "url": "https://developer-developpeur.canadapost-postescanada.ca/devportal-portaildesdeveloppeurs/developer-guide"
+    },
+    {
+      "label": "sendletter API reference",
+      "url": "https://sendletter.app/docs"
+    }
+  ],
+  "related": [
+    "canada-post-api-send-letters",
+    "send-a-letter-with-an-api-canada",
+    "test-mode-for-a-mail-api"
+  ],
+  "published": "2026-11-26"
+}

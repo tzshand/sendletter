@@ -3,14 +3,14 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import {
   quote, planMailings, maxSheetsPerMailing, weightGrams, requiredPostageCents, stampsFor,
-  FROM_ALL_IN_CENTS, DEFAULT_SINGLE_CENTS, MAX_PAGES, RATES, PricingError,
+  FROM_ALL_IN_CENTS, COLOUR_SINGLE_CENTS, MAX_PAGES, RATES, PricingError,
 } from "../src/lib/pricing.ts";
 
 const q = (pages: number, size: "standard" | "large" | "legal" = "standard", colour = true, duplex = true, channel: "web" | "api" = "web") =>
   quote({ pages, size, colour, duplex, channel });
 
 test("the agreed headline numbers", () => {
-  assert.equal(DEFAULT_SINGLE_CENTS, 384); // 1 page, colour, double-sided, #10
+  assert.equal(COLOUR_SINGLE_CENTS, 384); // 1 page, colour, double-sided, #10
   assert.equal(FROM_ALL_IN_CENTS, 349); // same, black and white: the advertised "From" price, postage included
 });
 
@@ -112,4 +112,88 @@ test("rejects bad input", () => {
   assert.throws(() => q(MAX_PAGES + 1), PricingError);
   assert.throws(() => q(1.5), PricingError);
   assert.throws(() => quote({ pages: 1, size: "nope" as never, colour: true, duplex: true, channel: "web" }), PricingError);
+});
+
+// ── Volume discount (API) ───────────────────────────────────────
+
+const { volumeBaseCents, VOLUME } = await import("../src/lib/volume-curve.ts");
+const { estimateVolume } = await import("../src/lib/volume.ts");
+const { letterEconomics, MIN_NET_CENTS } = await import("../src/lib/margin.ts");
+
+test("volume: the fee starts at list, reaches the floor on the 100th mailing, and never rises", () => {
+  assert.equal(volumeBaseCents(1), 99);
+  assert.equal(volumeBaseCents(100), VOLUME.floorCents);
+  assert.equal(volumeBaseCents(5000), VOLUME.floorCents);
+  let prev = Infinity;
+  for (let n = 1; n <= 300; n++) {
+    const f = volumeBaseCents(n);
+    assert.ok(f <= prev, `fee rose at ${n}`);
+    assert.ok(f >= VOLUME.floorCents && f <= VOLUME.listCents);
+    prev = f;
+  }
+});
+
+test("volume: quote() without a prior count charges list; with one it follows the curve", () => {
+  const list = quote({ pages: 1, size: "standard", colour: false, duplex: true, channel: "api" });
+  assert.equal(list.volume, undefined);
+  assert.equal(list.lines[0].totalCents, 99);
+  const tenth = quote({ pages: 1, size: "standard", colour: false, duplex: true, channel: "api", priorMailings: 9 });
+  assert.equal(tenth.lines[0].totalCents, volumeBaseCents(10));
+  assert.equal(tenth.volume!.discountCents, 99 - volumeBaseCents(10));
+  const floor = quote({ pages: 1, size: "standard", colour: false, duplex: true, channel: "api", priorMailings: 500 });
+  assert.equal(floor.totalCents, VOLUME.floorCents + 10 + 15 + 124);
+});
+
+test("volume: the web channel is never discounted", () => {
+  const w = quote({ pages: 1, size: "standard", colour: false, duplex: true, channel: "web", priorMailings: 500 });
+  assert.equal(w.totalCents, 349);
+  assert.equal(w.volume, undefined);
+});
+
+test("volume: a letter split into several mailings walks down the curve one mailing at a time", () => {
+  const q = quote({ pages: 40, size: "standard", colour: false, duplex: true, channel: "api", priorMailings: 0 });
+  assert.ok(q.mailings.length > 1);
+  let expected = 0;
+  for (let j = 1; j <= q.mailings.length; j++) expected += volumeBaseCents(j);
+  assert.equal(q.lines[0].totalCents, expected);
+});
+
+test("volume: the calculator steady state beats its first month, and both beat list", () => {
+  const e = estimateVolume({ lettersPerMonth: 60, pages: 1, size: "standard", colour: false, duplex: true });
+  assert.ok(e.steady_state_letter_cents < e.list_letter_cents);
+  assert.ok(e.first_30_days_average_cents >= e.steady_state_letter_cents);
+  assert.ok(e.first_30_days_average_cents < e.list_letter_cents);
+  const floor = estimateVolume({ lettersPerMonth: 100, pages: 1, size: "standard", colour: false, duplex: true });
+  assert.equal(floor.steady_state_letter_cents, 20 + 10 + 15 + 124);
+});
+
+// ── Margin: every price on the curve has to earn something ──────
+
+test("margin: the cheapest letter nets at least the minimum at every volume", () => {
+  for (let n = 1; n <= 300; n++) {
+    const q = quote({ pages: 1, size: "standard", colour: false, duplex: true, channel: "api", priorMailings: n - 1 });
+    // Letters share a monthly charge, so the $0.30 fixed fee is spread over the n letters before it.
+    const shared = letterEconomics(q, n);
+    assert.ok(shared.netCents >= MIN_NET_CENTS, `n=${n} net ${shared.netCents.toFixed(1)}c`);
+  }
+});
+
+test("margin: flat mailers and colour also clear the minimum at the floor", () => {
+  for (const size of ["standard", "large", "legal"] as const) {
+    for (const colour of [false, true]) {
+      const q = quote({ pages: 1, size, colour, duplex: true, channel: "api", priorMailings: 999 });
+      const e = letterEconomics(q, 100);
+      assert.ok(e.netCents >= MIN_NET_CENTS, `${size} colour=${colour} net ${e.netCents.toFixed(1)}c`);
+    }
+  }
+});
+
+test("margin: the first order, charged alone with the $0.30 fixed fee, still earns", () => {
+  const q = quote({ pages: 1, size: "standard", colour: false, duplex: true, channel: "api", priorMailings: 0 });
+  assert.ok(letterEconomics(q, 1).netCents >= MIN_NET_CENTS);
+});
+
+test("volume: the advertised API floor is $1.69 and is derived from the rates", async () => {
+  const { API_FROM_ALL_IN_CENTS } = await import("../src/lib/volume.ts");
+  assert.equal(API_FROM_ALL_IN_CENTS, 169);
 });

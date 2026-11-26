@@ -1,0 +1,104 @@
+{
+  "id": "how-to-address-a-letter-to-canada",
+  "hub": "from-abroad",
+  "wave": 2,
+  "published": "2026-12-03",
+  "slug": "how-to-address-a-letter-to-canada",
+  "title": "How to Address a Letter to Canada",
+  "description": "The Canadian address block: addressee, street, then municipality, province and postal code, with the forms for PO boxes, rural routes and general delivery.",
+  "keywords": [
+    "how to address a letter to canada",
+    "canadian address format",
+    "canada post addressing guidelines"
+  ],
+  "answer": "Write a Canadian address on no more than six lines: the addressee first, then the street address, then the municipality, province or territory, and postal code on the last line. Canada Post sets different second lines for a PO box, rural route and general delivery. For a civic address, extra delivery information goes between the name and street.",
+  "sections": [
+    {
+      "h2": "The standard block",
+      "blocks": [
+        {
+          "ol": [
+            "**Addressee.** The person or organisation.",
+            "**Extra delivery information, if any.** For a civic address, it goes between the name and the street address.",
+            "**Civic address.** Street number and name.",
+            "**Last line.** Municipality, province or territory, and postal code."
+          ]
+        },
+        {
+          "p": "An example with placeholder values:"
+        },
+        {
+          "ol": [
+            "Jane Smith",
+            "123 Example Street",
+            "Anytown ON A1A 1A1"
+          ]
+        },
+        {
+          "p": "Canada Post says the address block may not exceed six lines."
+        }
+      ]
+    },
+    {
+      "h2": "Other address types",
+      "blocks": [
+        {
+          "table": {
+            "headers": [
+              "Type",
+              "Line after the addressee"
+            ],
+            "rows": [
+              [
+                "Postal box",
+                "Postal box number and station information"
+              ],
+              [
+                "Rural route",
+                "Rural route identifier and station information; a civic address for the rural area goes above it"
+              ],
+              [
+                "General delivery",
+                "General delivery identifier and station information"
+              ]
+            ]
+          }
+        },
+        {
+          "p": "In each case the last line is still municipality, province or territory, and postal code."
+        }
+      ]
+    },
+    {
+      "h2": "Bilingual addresses",
+      "blocks": [
+        {
+          "p": "When an address is written in both languages, Canada Post's guideline is a solid black vertical line at least 0.7 mm thick between the two versions, with about 10 mm of space on either side."
+        }
+      ]
+    },
+    {
+      "h2": "The return address",
+      "blocks": [
+        {
+          "p": "Write your own address in the same form. Mail without a valid return address cannot be sent back; see [return addresses on Canadian letters](/blog/return-address-on-a-canadian-letter). The last line needs a correct postal code: [Canadian postal code format](/blog/canadian-postal-code-format)."
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "label": "Canada Post, Canadian addresses",
+      "url": "https://www.canadapost-postescanada.ca/cpc/en/support/articles/addressing-guidelines/canadian-addresses.page"
+    },
+    {
+      "label": "Canada Post, Postal codes",
+      "url": "https://www.canadapost-postescanada.ca/cpc/en/support/articles/addressing-guidelines/postal-codes.page"
+    }
+  ],
+  "related": [
+    "canadian-postal-code-format",
+    "mail-a-letter-to-canada-from-abroad",
+    "return-address-on-a-canadian-letter"
+  ]
+}

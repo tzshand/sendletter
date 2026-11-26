@@ -1,0 +1,63 @@
+{
+  "id": "mail-a-letter-without-a-printer",
+  "hub": "send-online",
+  "wave": 1,
+  "slug": "mail-a-letter-without-a-printer",
+  "title": "How to Mail a Letter Without a Printer",
+  "description": "No printer, envelope or stamps? Write or upload the letter online and have it printed and mailed for you. What file types work and what to check first.",
+  "keywords": [
+    "mail a letter without a printer",
+    "send a letter without a printer",
+    "print and send letter online",
+    "send a printed letter online"
+  ],
+  "answer": "Write the letter in a document or the editor on an online mailing service, add the addresses, and pay. The service prints it, puts it in an envelope, stamps it and mails it. You need a PDF or Word file, or just type it into the site, but no printer, envelope or stamp.",
+  "sections": [
+    {
+      "h2": "What you can hand over",
+      "blocks": [
+        {
+          "ul": [
+            "**A PDF.** Up to 200 pages and 40 MB.",
+            "**A Word (.docx) file.** Up to 40 pages. It is converted to pages, so check the preview: Word layouts can shift in conversion.",
+            "**Text typed on the site.** A built-in editor with basic formatting, for a plain letter.",
+            "**Preview.** The site shows what will print before you pay."
+          ]
+        }
+      ]
+    },
+    {
+      "h2": "Check before you pay",
+      "blocks": [
+        {
+          "ol": [
+            "Open the preview and read every page; it shows what will print.",
+            "Make sure the recipient's postal code is correct. A wrong one raises the postage and can delay delivery.",
+            "Put your own return address in the sender fields, so an undeliverable letter can come back: see [return addresses](/blog/return-address-on-a-canadian-letter).",
+            "Pick black and white unless colour matters; colour costs $0.50 a page against $0.15."
+          ]
+        }
+      ]
+    },
+    {
+      "h2": "Other ways to get it printed",
+      "blocks": [
+        {
+          "p": "A library or print shop will print a page for a small fee, and you would then still need an envelope and a stamp. [What an online letter costs](/blog/what-an-online-letter-costs) shows the all-in figure, and [how online mailing works](/blog/how-online-letter-mailing-works) walks through the steps."
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "label": "Canada Post, Consumer prices (updated September 7, 2026)",
+      "url": "https://www.canadapost-postescanada.ca/cpc/doc/en/support/prices/consumer-prices.pdf"
+    }
+  ],
+  "related": [
+    "how-online-letter-mailing-works",
+    "what-an-online-letter-costs",
+    "mail-one-letter-without-a-stamp-book"
+  ],
+  "published": "2026-11-26"
+}

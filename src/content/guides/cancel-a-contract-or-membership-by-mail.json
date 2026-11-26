@@ -1,0 +1,123 @@
+{
+  "id": "cancel-a-contract-or-membership-by-mail",
+  "hub": "everyday",
+  "wave": 4,
+  "published": "2026-12-17",
+  "slug": "cancel-a-contract-or-membership-by-mail",
+  "title": "Cancelling a Contract or Membership by Mail",
+  "description": "How to cancel a gym membership, subscription or contract in writing: what the letter says, how to keep proof, and when ordinary mail is enough.",
+  "keywords": [
+    "cancel gym membership by mail",
+    "cancel membership letter",
+    "written notice to cancel contract",
+    "cancel insurance policy letter"
+  ],
+  "answer": "Check the contract for how notice must be given, then write a short cancellation with your account details, the date you want it to end and a request for written confirmation. Keep a copy. If proof matters, send it in a way that proves delivery, such as Registered Mail.",
+  "sections": [
+    {
+      "h2": "Check the contract first",
+      "blocks": [
+        {
+          "p": "The contract decides how cancellation works. Look for the notice period, the address notices must go to, and the method required. If it says notice must be sent by registered mail, or to a head-office address rather than the branch, do exactly that. A letter that follows the contract is much harder to dispute."
+        }
+      ]
+    },
+    {
+      "h2": "What the letter says",
+      "blocks": [
+        {
+          "ul": [
+            "Your name, address and account or membership number.",
+            "That you are cancelling, and the contract or plan it applies to.",
+            "The date you want it to end.",
+            "A request for written confirmation, with a reply date.",
+            "A request that billing stops, if it is automatic."
+          ]
+        },
+        {
+          "p": "Keep it to a few lines. A cancellation is a statement, not an argument."
+        }
+      ]
+    },
+    {
+      "h2": "Keeping proof",
+      "blocks": [
+        {
+          "p": "Consumer Protection BC, on cancelling a distance sale, says to send the cancellation in a way that gives you proof of delivery, such as email, fax or registered mail, to keep copies, and to follow up to confirm the business received it. That guidance is specific to that kind of sale, but the habit is sound for any cancellation."
+        },
+        {
+          "table": {
+            "headers": [
+              "",
+              "Regular mail",
+              "Registered Mail"
+            ],
+            "rows": [
+              [
+                "Cost",
+                "Postage only",
+                "$13.15 on top of the postage"
+              ],
+              [
+                "Proof you sent it",
+                "None",
+                "A date-stamped receipt from the post office"
+              ],
+              [
+                "Proof it arrived",
+                "None",
+                "Signature and delivery confirmation"
+              ]
+            ]
+          }
+        },
+        {
+          "p": "[Registered versus regular mail](/blog/registered-vs-regular-mail-canada) has the detail. sendletter sends ordinary mail, so use a post office if you need the right-hand column."
+        }
+      ]
+    },
+    {
+      "h2": "Timing",
+      "blocks": [
+        {
+          "p": "Canada Post's Lettermail standard is two to four business days after posting, an estimate and not a guarantee, and a service that prints your letter needs about a business day first. If the contract counts from the date the business receives notice, mail well before the deadline. Check what the contract says. [How long a letter takes in Canada](/blog/how-long-does-a-letter-take-in-canada) has the standards."
+        }
+      ]
+    },
+    {
+      "h2": "After you send it",
+      "blocks": [
+        {
+          "ul": [
+            "Keep your copy and the posting date.",
+            "Follow up if you get no confirmation by the date you asked for.",
+            "Watch the next statement. If you are still charged, send the confirmation request again with your first letter enclosed."
+          ]
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "label": "Consumer Protection BC, Problem with an online purchase",
+      "url": "https://www.consumerprotectionbc.ca/consumer-help/problem-with-an-online-purchase/"
+    },
+    {
+      "label": "Canada Post, Consumer prices (updated September 7, 2026)",
+      "url": "https://www.canadapost-postescanada.ca/cpc/doc/en/support/prices/consumer-prices.pdf"
+    },
+    {
+      "label": "Canada Post, Registered Mail features",
+      "url": "https://www.canadapost-postescanada.ca/cpc/en/support/articles/registered-mail-canada/features.page"
+    },
+    {
+      "label": "Canada Post, Lettermail delivery standards",
+      "url": "https://www.canadapost-postescanada.ca/cpc/en/support/articles/lettermail/delivery-standards.page"
+    }
+  ],
+  "related": [
+    "how-to-write-a-complaint-letter",
+    "registered-vs-regular-mail-canada",
+    "how-long-does-a-letter-take-in-canada"
+  ]
+}

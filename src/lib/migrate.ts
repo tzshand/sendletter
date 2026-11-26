@@ -170,6 +170,136 @@ alter table sendletter_orders add column if not exists from_lines text;
 -- Where the print-ready PDFs for this order live in the project files store.
 alter table sendletter_orders add column if not exists print_files text;
 alter table sendletter_api_usage add column if not exists price_breakdown jsonb;
+
+-- API v2 (2026-11): test keys, delivery status, cancellation, idempotency,
+-- webhooks, invoices, spend limits and volume pricing.
+
+-- Keys: a test key (sl_test_) validates and prices a letter but mails nothing.
+alter table sendletter_api_keys add column if not exists livemode boolean not null default true;
+alter table sendletter_api_keys add column if not exists last_used_at timestamptz;
+
+-- Per-account daily spend. limit is what the customer chose; cap is the
+-- ceiling we have approved. Both start at $500. A customer may set the limit
+-- anywhere up to the cap; raising the cap is a request we answer by email.
+alter table sendletter_accounts add column if not exists daily_spend_limit_cents integer not null default 50000;
+alter table sendletter_accounts add column if not exists daily_spend_cap_cents integer not null default 50000;
+
+-- Orders: which key placed it, the caller's own reference and metadata, and
+-- whether it was a test letter. Status moves pending -> printed -> mailed, or to cancelled.
+alter table sendletter_orders add column if not exists livemode boolean not null default true;
+alter table sendletter_orders add column if not exists api_key_id uuid;
+alter table sendletter_orders add column if not exists reference text;
+alter table sendletter_orders add column if not exists metadata jsonb;
+alter table sendletter_orders add column if not exists cancelled_at timestamptz;
+create index if not exists idx_sendletter_orders_api_account
+  on sendletter_orders(api_account_id, created_at desc) where api_account_id is not null;
+
+-- Usage: how many mailings it covers (for the volume window), whether it was
+-- voided by a cancellation, how much of it was refunded, and its invoice.
+alter table sendletter_api_usage add column if not exists mailings integer not null default 1;
+alter table sendletter_api_usage add column if not exists voided_at timestamptz;
+alter table sendletter_api_usage add column if not exists refunded_cents integer not null default 0;
+alter table sendletter_api_usage add column if not exists invoice_id uuid;
+
+-- Invoices: what a customer sees. One per charge. A first order is charged up
+-- front on its own invoice; after that usage is invoiced monthly.
+create sequence if not exists sendletter_invoice_seq;
+create table if not exists sendletter_invoices (
+  id uuid primary key default gen_random_uuid(),
+  seq bigint not null default nextval('sendletter_invoice_seq'),
+  account_id uuid not null references sendletter_accounts(id),
+  kind text not null default 'monthly',
+  status text not null default 'open',
+  letters integer not null default 0,
+  total_cents integer not null,
+  period_start timestamptz,
+  period_end timestamptz,
+  stripe_payment_intent_id text,
+  error_message text,
+  paid_at timestamptz,
+  created_at timestamptz not null default now()
+);
+create index if not exists idx_sendletter_invoices_account
+  on sendletter_invoices(account_id, created_at desc);
+
+create table if not exists sendletter_invoice_lines (
+  id uuid primary key default gen_random_uuid(),
+  invoice_id uuid not null references sendletter_invoices(id) on delete cascade,
+  order_id uuid,
+  description text not null,
+  amount_cents integer not null,
+  created_at timestamptz not null default now()
+);
+create index if not exists idx_sendletter_invoice_lines_invoice
+  on sendletter_invoice_lines(invoice_id);
+
+-- Idempotency: a retried request with the same Idempotency-Key returns the
+-- original response instead of mailing a second letter.
+create table if not exists sendletter_idempotency (
+  id uuid primary key default gen_random_uuid(),
+  account_id uuid not null references sendletter_accounts(id) on delete cascade,
+  key text not null,
+  request_hash text not null,
+  status text not null default 'in_progress',
+  response_status integer,
+  response_body jsonb,
+  order_id uuid,
+  created_at timestamptz not null default now(),
+  unique (account_id, key)
+);
+
+-- Webhooks: signed event delivery with retries.
+create table if not exists sendletter_webhook_endpoints (
+  id uuid primary key default gen_random_uuid(),
+  account_id uuid not null references sendletter_accounts(id) on delete cascade,
+  url text not null,
+  secret text not null,
+  events text,
+  description text,
+  livemode boolean not null default true,
+  active boolean not null default true,
+  created_at timestamptz not null default now()
+);
+create index if not exists idx_sendletter_webhook_endpoints_account
+  on sendletter_webhook_endpoints(account_id);
+
+create table if not exists sendletter_webhook_events (
+  id uuid primary key default gen_random_uuid(),
+  account_id uuid not null references sendletter_accounts(id) on delete cascade,
+  type text not null,
+  livemode boolean not null default true,
+  order_id uuid,
+  payload jsonb not null,
+  created_at timestamptz not null default now()
+);
+create index if not exists idx_sendletter_webhook_events_account
+  on sendletter_webhook_events(account_id, created_at desc);
+
+create table if not exists sendletter_webhook_deliveries (
+  id uuid primary key default gen_random_uuid(),
+  endpoint_id uuid not null references sendletter_webhook_endpoints(id) on delete cascade,
+  event_id uuid not null references sendletter_webhook_events(id) on delete cascade,
+  status text not null default 'pending',
+  attempts integer not null default 0,
+  last_status_code integer,
+  last_error text,
+  next_attempt_at timestamptz not null default now(),
+  delivered_at timestamptz,
+  created_at timestamptz not null default now()
+);
+create index if not exists idx_sendletter_webhook_deliveries_due
+  on sendletter_webhook_deliveries(next_attempt_at) where status = 'pending';
+
+-- Requests to raise the daily spend cap. Answered by email.
+create table if not exists sendletter_limit_requests (
+  id uuid primary key default gen_random_uuid(),
+  account_id uuid not null references sendletter_accounts(id) on delete cascade,
+  requested_daily_cents integer not null,
+  expected_volume text,
+  reason text,
+  status text not null default 'open',
+  created_at timestamptz not null default now()
+);
 `;
 
 let migrationPromise: Promise<void> | null = null;

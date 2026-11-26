@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { BlogHeader, BlogFooter, formatDate } from "@/components/blog/Chrome";
-import { POSTS, postPath, SITE } from "@/lib/blog";
+import { POSTS, liveHubs, postPath, SITE } from "@/lib/blog";
+import { hubPath } from "@/lib/hubs";
 
 export const metadata: Metadata = {
   title: "Blog — Sending Mail in Canada | sendletter",
@@ -49,6 +50,18 @@ export default function BlogIndex() {
           Short, specific guides to postage, delivery, and getting paper into the mail. No
           filler.
         </p>
+
+        <div className="mb-10 grid gap-2 sm:grid-cols-2">
+          {liveHubs().map((h) => (
+            <Link
+              key={h.id}
+              href={hubPath(h)}
+              className="rounded-xl border border-gray-200 bg-white px-4 py-3 text-[13px] font-semibold text-gray-800 hover:border-gray-300 transition-colors"
+            >
+              {h.title}
+            </Link>
+          ))}
+        </div>
 
         <div className="space-y-1">
           {posts.map((post) => (

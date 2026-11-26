@@ -30,8 +30,9 @@ export default function Post() {
       </UL>
 
       <P>
-        Ce à quoi elle ne convient <em>pas</em>, c&apos;est l&apos;urgence. La livraison au
-        Canada prend maintenant de trois à sept jours ouvrables. Si l&apos;envoi doit arriver
+        Ce à quoi elle ne convient <em>pas</em>, c&apos;est l&apos;urgence. La norme de livraison
+        de Postes Canada est de deux à quatre jours ouvrables après la mise à la poste, une estimation
+        et non une garantie. Si l&apos;envoi doit arriver
         demain, la poste est le mauvais canal, quelle que soit la qualité de l&apos;API.
       </P>
 
@@ -79,9 +80,9 @@ export default function Post() {
       <P>
         <strong>1. Une reprise imprime du vrai papier.</strong> C&apos;est le piège
         principal. Un appel repris après un échec partiel peut produire deux lettres
-        physiques, et vous ne pouvez pas rappeler la seconde. Générez une clé
-        d&apos;idempotence par lettre logique et enregistrez l&apos;identifiant retourné
-        avant toute reprise.
+        physiques, et vous ne pouvez pas rappeler la seconde. Envoyez un en-tête Idempotency-Key avec chaque création (liez-le à votre propre enregistrement,
+        par exemple un numéro de facture) et réutilisez la même clé à chaque reprise : sendletter renvoie alors
+        la lettre d&apos;origine au lieu d&apos;en poster une seconde. Enregistrez l&apos;identifiant retourné dès que vous l&apos;avez.
       </P>
 
       <P>
@@ -120,7 +121,7 @@ export default function Post() {
 
       <Note>
         <strong>Notre créneau :</strong> sendletter envoie une lettre à la fois, vers des
-        adresses canadiennes, facturée à l&apos;unité et sans frais mensuels. L&apos;adresse
+        adresses canadiennes, facturée à l&apos;unité, sans frais mensuels, avec des prix dégressifs automatiques qui ramènent la lettre à 1,69 $ tout compris (voir la <A href="/docs#volume">référence de l&apos;API</A>). L&apos;adresse
         d&apos;expéditeur peut se trouver n&apos;importe où dans le monde ; la livraison se
         fait au Canada seulement. S&apos;il vous faut des outils de campagne en masse ou une
         livraison hors Canada, prenez l&apos;une des plateformes ci-dessus : ce sera moins de

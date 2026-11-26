@@ -1,0 +1,97 @@
+{
+  "id": "how-to-write-a-complaint-letter",
+  "hub": "everyday",
+  "wave": 4,
+  "published": "2026-12-17",
+  "slug": "how-to-write-a-complaint-letter",
+  "title": "How to Write a Complaint Letter (and Mail It)",
+  "description": "What a complaint letter should say, how to keep it short and firm, and how to mail it so you can show what you sent and when.",
+  "keywords": [
+    "how to write a complaint letter",
+    "how to write a formal complaint letter",
+    "complaint letter to a company",
+    "how to start a complaint letter"
+  ],
+  "answer": "Open with who you are and what you are complaining about, give the facts in date order, say exactly what you want done and by when, and list what you enclose. Keep it to one page, keep a copy, and mail it in a way that lets you show when you sent it.",
+  "sections": [
+    {
+      "h2": "What to put in it",
+      "blocks": [
+        {
+          "ol": [
+            "**Your details and any reference number:** account, order or case number, so the right file is found.",
+            "**What happened, in date order.** Facts and amounts, not adjectives.",
+            "**What you want.** A refund, a repair, a replacement, a correction, an apology. One clear request.",
+            "**A deadline.** Give a reasonable date to respond, such as 14 days, and say what you will do next if you hear nothing.",
+            "**What you enclose.** Copies of receipts, photos and earlier messages, never originals.",
+            "**How to reach you.** Phone or email, and your mailing address."
+          ]
+        },
+        {
+          "p": "These are practical conventions, not legal requirements. If a contract or a law prescribes how a complaint must be made, follow that."
+        }
+      ]
+    },
+    {
+      "h2": "Keep it short",
+      "blocks": [
+        {
+          "ul": [
+            "One page is usually enough. A reader who can see the request in the first lines will act on it.",
+            "One problem per letter. A second issue belongs in a second letter.",
+            "Do not threaten anything you will not do. State the next step you will actually take, for example contacting your provincial consumer protection office."
+          ]
+        }
+      ]
+    },
+    {
+      "h2": "Start with the business",
+      "blocks": [
+        {
+          "p": "Consumer Protection BC, writing about problems with online purchases, advises starting by working with the business to reach a solution, and keeping copies and following up to confirm the business received what you sent. Its complaint process expects those earlier steps to have been tried first. Other provinces have their own consumer protection offices, and the right one depends on where you are and what you bought."
+        }
+      ]
+    },
+    {
+      "h2": "Mailing it",
+      "blocks": [
+        {
+          "p": "Ordinary Lettermail is cheap but gives you no proof of when it was sent or received. Registered Mail costs $13.15 plus postage and includes a signature and tracking; [what it costs](/blog/registered-mail-canada-cost) and [how it compares with regular mail](/blog/registered-vs-regular-mail-canada) are covered separately. For a first complaint, ordinary mail is usually enough; if you expect a dispute about whether it arrived, pay for proof."
+        },
+        {
+          "ul": [
+            "Keep your own copy of exactly what you sent, and note the date you mailed it.",
+            "If you use an online service, save the PDF yourself. sendletter deletes stored letters after 30 days.",
+            "Allow time. Canada Post's Lettermail standard is two to four business days, an estimate and not a guarantee."
+          ]
+        },
+        {
+          "p": "[How online letter mailing works](/blog/how-online-letter-mailing-works) explains the steps if you want a service to print and post it. The cheapest sendletter letter is $3.49 with postage included."
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "label": "Consumer Protection BC, Problem with an online purchase",
+      "url": "https://www.consumerprotectionbc.ca/consumer-help/problem-with-an-online-purchase/"
+    },
+    {
+      "label": "Canada Post, Consumer prices (updated September 7, 2026)",
+      "url": "https://www.canadapost-postescanada.ca/cpc/doc/en/support/prices/consumer-prices.pdf"
+    },
+    {
+      "label": "Canada Post, Registered Mail features",
+      "url": "https://www.canadapost-postescanada.ca/cpc/en/support/articles/registered-mail-canada/features.page"
+    },
+    {
+      "label": "Canada Post, Lettermail delivery standards",
+      "url": "https://www.canadapost-postescanada.ca/cpc/en/support/articles/lettermail/delivery-standards.page"
+    }
+  ],
+  "related": [
+    "registered-vs-regular-mail-canada",
+    "cancel-a-contract-or-membership-by-mail",
+    "how-online-letter-mailing-works"
+  ]
+}

@@ -1,0 +1,104 @@
+{
+  "id": "lettermail-size-and-weight-limits",
+  "hub": "postage",
+  "wave": 1,
+  "slug": "lettermail-size-and-weight-limits",
+  "title": "Lettermail Size and Weight Limits in Canada",
+  "description": "Standard letters go up to 245×156×5 mm and 50 g; non-standard and oversize to 380×270×20 mm and 500 g. Minimums and what raises the price.",
+  "keywords": [
+    "lettermail size limits canada",
+    "canada post standard envelope size",
+    "canada post envelope sizes and rates",
+    "lettermail weight limit"
+  ],
+  "answer": "Standard Canadian Lettermail is up to 245 × 156 × 5 millimetres and 50 grams. Non-standard and oversize Lettermail goes up to 380 × 270 × 20 millimetres and 500 grams. Larger or heavier items stop being Lettermail and must be sent as parcels, at parcel prices.",
+  "sections": [
+    {
+      "h2": "The limits",
+      "blocks": [
+        {
+          "table": {
+            "headers": [
+              "",
+              "Standard",
+              "Non-standard / oversize"
+            ],
+            "rows": [
+              [
+                "Maximum size",
+                "245 × 156 × 5 mm",
+                "380 × 270 × 20 mm"
+              ],
+              [
+                "Maximum weight",
+                "50 g",
+                "500 g"
+              ],
+              [
+                "Minimum weight",
+                "2 g",
+                "3 g (non-standard), 5 g (oversize)"
+              ],
+              [
+                "Minimum size",
+                "140 × 90 × 0.18 mm",
+                "140 × 90 × 0.18 mm"
+              ]
+            ]
+          }
+        },
+        {
+          "p": "In inches, a standard item is 9.6 × 6.1 × 0.2, and the largest Lettermail item is 14.9 × 10.6 × 0.8."
+        }
+      ]
+    },
+    {
+      "h2": "The square envelope exception",
+      "blocks": [
+        {
+          "p": "A square envelope between 140 × 140 mm and 156 × 156 mm is priced as standard. Other items outside the standard dimensions are priced as non-standard or oversize."
+        }
+      ]
+    },
+    {
+      "h2": "How to check your envelope",
+      "blocks": [
+        {
+          "ol": [
+            "Measure the sealed envelope itself, not the paper inside: length, height, then thickness at the thickest point.",
+            "Compare it with the standard limits. If any one dimension is over, it is non-standard or oversize.",
+            "Weigh it. Weight sets the price band; size decides which price table applies.",
+            "Seal it. An unsealed item is not priced as a standard letter."
+          ]
+        },
+        {
+          "p": "A standard letter will usually hit a weight line long before it hits the 5 mm thickness limit, because paper is thin. A card with a bump, a key or a padded insert is the usual way to exceed the thickness."
+        }
+      ]
+    },
+    {
+      "h2": "If it is too big",
+      "blocks": [
+        {
+          "p": "Canada Post says that a letter larger than the maximum dimensions must use its parcel services. Parcel services have their own prices and delivery standards. What each band costs is in [letter rates by weight](/blog/canada-post-letter-rates-by-weight)."
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "label": "Canada Post, Lettermail size requirements",
+      "url": "https://www.canadapost-postescanada.ca/cpc/en/support/articles/lettermail/size-requirements.page"
+    },
+    {
+      "label": "Canada Post, Consumer prices (updated September 7, 2026)",
+      "url": "https://www.canadapost-postescanada.ca/cpc/doc/en/support/prices/consumer-prices.pdf"
+    }
+  ],
+  "related": [
+    "canada-post-letter-rates-by-weight",
+    "postage-for-a-large-envelope-canada",
+    "letter-with-too-little-postage"
+  ],
+  "published": "2026-11-26"
+}

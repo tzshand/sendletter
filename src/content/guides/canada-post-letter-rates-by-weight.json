@@ -1,0 +1,147 @@
+{
+  "id": "canada-post-letter-rates-by-weight",
+  "hub": "postage",
+  "wave": 1,
+  "slug": "canada-post-letter-rates-by-weight",
+  "title": "Canada Post Letter Rates by Weight (2026)",
+  "description": "Lettermail rates for a domestic letter from 30 g to 500 g, with the standard, non-standard and oversize cut-offs, plus US and international letter rates.",
+  "keywords": [
+    "canada post letter postage rates",
+    "canada post lettermail rates",
+    "canada post letter price",
+    "canada post postage rates"
+  ],
+  "answer": "Canada Post charges $1.24 to $1.44 for a standard domestic letter up to 30 grams and $1.75 up to 50 grams. Non-standard and oversize letters cost $2.61 up to 100 grams, rising to $7.36 at 500 grams. Letters heavier than 500 grams are no longer Lettermail and move to parcel prices.",
+  "sections": [
+    {
+      "h2": "Domestic Lettermail",
+      "blocks": [
+        {
+          "table": {
+            "headers": [
+              "Weight",
+              "Standard envelope",
+              "Non-standard or oversize"
+            ],
+            "rows": [
+              [
+                "Up to 30 g",
+                "$1.44 single, $1.24 booklet",
+                "$2.61"
+              ],
+              [
+                "30 to 50 g",
+                "$1.75",
+                "$2.61"
+              ],
+              [
+                "50 to 100 g",
+                "n/a",
+                "$2.61"
+              ],
+              [
+                "100 to 200 g",
+                "n/a",
+                "$4.29"
+              ],
+              [
+                "200 to 300 g",
+                "n/a",
+                "$5.98"
+              ],
+              [
+                "300 to 400 g",
+                "n/a",
+                "$6.85"
+              ],
+              [
+                "400 to 500 g",
+                "n/a",
+                "$7.36"
+              ]
+            ]
+          }
+        },
+        {
+          "p": "Standard Lettermail stops at 50 g. A heavier item is priced in the non-standard or oversize column even if it would otherwise fit a standard envelope. What counts as standard is a matter of size; see [the size and weight limits](/blog/lettermail-size-and-weight-limits)."
+        }
+      ]
+    },
+    {
+      "h2": "Two pricing traps",
+      "blocks": [
+        {
+          "ul": [
+            "**A missing or incorrect postal code.** Canada Post's price guide says an item with a missing or incorrect postal code is charged at the other Lettermail prices, which starts at $2.61.",
+            "**An unsealed envelope.** Unsealed items such as brochures and newsletters are also priced at the other Lettermail rates."
+          ]
+        }
+      ]
+    },
+    {
+      "h2": "From Canada to the United States and abroad",
+      "blocks": [
+        {
+          "table": {
+            "headers": [
+              "Letter-post",
+              "United States",
+              "Other countries"
+            ],
+            "rows": [
+              [
+                "Standard, up to 30 g",
+                "$1.75",
+                "$3.65"
+              ],
+              [
+                "Standard, 30 to 50 g",
+                "$2.61",
+                "$5.21"
+              ],
+              [
+                "Non-standard, up to 100 g",
+                "$4.29",
+                "$8.60"
+              ],
+              [
+                "100 to 200 g",
+                "$7.49",
+                "$14.99"
+              ],
+              [
+                "200 to 500 g",
+                "$14.99",
+                "$29.96"
+              ]
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "h2": "Turning a rate into stamps",
+      "blocks": [
+        {
+          "p": "Rates in cents rarely match a stamp. [How many stamps a letter needs](/blog/how-many-stamps-for-a-letter-in-canada) converts each band into a stamp count."
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "label": "Canada Post, Consumer prices (updated September 7, 2026)",
+      "url": "https://www.canadapost-postescanada.ca/cpc/doc/en/support/prices/consumer-prices.pdf"
+    },
+    {
+      "label": "Canada Post, Lettermail size requirements",
+      "url": "https://www.canadapost-postescanada.ca/cpc/en/support/articles/lettermail/size-requirements.page"
+    }
+  ],
+  "related": [
+    "canada-post-stamp-price",
+    "how-many-stamps-for-a-letter-in-canada",
+    "lettermail-size-and-weight-limits"
+  ],
+  "published": "2026-11-26"
+}

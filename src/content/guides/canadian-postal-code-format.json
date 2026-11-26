@@ -1,0 +1,173 @@
+{
+  "id": "canadian-postal-code-format",
+  "hub": "from-abroad",
+  "wave": 2,
+  "live": true,
+  "published": "2026-11-26",
+  "slug": "canadian-postal-code-format",
+  "title": "Canadian Postal Code Format Explained",
+  "description": "A Canadian postal code is letter-number-letter, then number-letter-number. What each part means, what the first letter shows, and why it is not a ZIP code.",
+  "keywords": [
+    "canadian postal code format",
+    "canadian zip code format",
+    "canadian zip codes",
+    "canada post postal code format"
+  ],
+  "answer": "A Canadian postal code has six characters in the pattern letter, number, letter, space, number, letter, number. The first three, the forward sortation area, identify a major geographic area. The last three identify the smallest delivery unit. The first letter shows the region, so M means Metropolitan Toronto. It is called a postal code, not a ZIP code.",
+  "sections": [
+    {
+      "h2": "The structure",
+      "blocks": [
+        {
+          "p": "Canada Post describes a postal code as a six-character alphanumeric code in the form ANA NAN, where A is a letter and N is a digit. It is written in two groups of three."
+        },
+        {
+          "table": {
+            "headers": [
+              "Part",
+              "Pattern",
+              "What it identifies"
+            ],
+            "rows": [
+              [
+                "Forward sortation area (FSA)",
+                "Letter, number, letter",
+                "A major geographic area"
+              ],
+              [
+                "Local delivery unit (LDU)",
+                "Number, letter, number",
+                "The smallest delivery unit within the FSA"
+              ]
+            ]
+          }
+        },
+        {
+          "p": "The second character of the FSA is a digit from 1 to 9 for urban areas and 0 (zero) for rural ones."
+        }
+      ]
+    },
+    {
+      "h2": "What the first letter means",
+      "blocks": [
+        {
+          "table": {
+            "headers": [
+              "First letter",
+              "Area"
+            ],
+            "rows": [
+              [
+                "A",
+                "Newfoundland and Labrador"
+              ],
+              [
+                "B",
+                "Nova Scotia"
+              ],
+              [
+                "C",
+                "Prince Edward Island"
+              ],
+              [
+                "E",
+                "New Brunswick"
+              ],
+              [
+                "G",
+                "Eastern Quebec"
+              ],
+              [
+                "H",
+                "Metropolitan Montreal"
+              ],
+              [
+                "J",
+                "Western Quebec"
+              ],
+              [
+                "K",
+                "Eastern Ontario"
+              ],
+              [
+                "L",
+                "Central Ontario"
+              ],
+              [
+                "M",
+                "Metropolitan Toronto"
+              ],
+              [
+                "N",
+                "Southwestern Ontario"
+              ],
+              [
+                "P",
+                "Northern Ontario"
+              ],
+              [
+                "R",
+                "Manitoba"
+              ],
+              [
+                "S",
+                "Saskatchewan"
+              ],
+              [
+                "T",
+                "Alberta"
+              ],
+              [
+                "V",
+                "British Columbia"
+              ],
+              [
+                "X",
+                "Northwest Territories and Nunavut"
+              ],
+              [
+                "Y",
+                "Yukon"
+              ]
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "h2": "Postal code or ZIP code",
+      "blocks": [
+        {
+          "p": "ZIP code is the United States term. Canada's equivalent is the postal code, and it mixes letters and digits where a ZIP code is digits only. A five-digit number is not a Canadian postal code."
+        }
+      ]
+    },
+    {
+      "h2": "Why it matters for postage",
+      "blocks": [
+        {
+          "p": "Canada Post's price guide says an item with a missing or incorrect postal code must be paid at the other Lettermail prices, which start at $2.61 instead of $1.24 to $1.44. Canada Post also provides a free postal code lookup on its website. See [how to address a letter to Canada](/blog/how-to-address-a-letter-to-canada) for where the code goes."
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "label": "Canada Post, Postal codes",
+      "url": "https://www.canadapost-postescanada.ca/cpc/en/support/articles/addressing-guidelines/postal-codes.page"
+    },
+    {
+      "label": "Canada Post, Consumer prices (updated September 7, 2026)",
+      "url": "https://www.canadapost-postescanada.ca/cpc/doc/en/support/prices/consumer-prices.pdf"
+    },
+    {
+      "label": "Canada Post, Find a postal code",
+      "url": "https://www.canadapost-postescanada.ca/cpc/en/tools/find-a-postal-code.page"
+    }
+  ],
+  "related": [
+    "how-to-address-a-letter-to-canada",
+    "mail-a-letter-to-canada-from-abroad",
+    "why-letters-to-canada-get-returned"
+  ]
+}

@@ -1,0 +1,111 @@
+{
+  "id": "registered-vs-regular-mail-canada",
+  "hub": "legal",
+  "wave": 3,
+  "live": true,
+  "published": "2026-11-26",
+  "slug": "registered-vs-regular-mail-canada",
+  "title": "Registered Mail vs Regular Mail in Canada",
+  "description": "What ordinary letter mail does not give you, what Registered Mail adds, what each costs, and why the rule behind your notice decides which you need.",
+  "keywords": [
+    "registered mail vs regular mail canada",
+    "proof of mailing canada post",
+    "proof of delivery letter canada",
+    "serve notice by mail canada"
+  ],
+  "answer": "Regular Lettermail is cheap, untracked and unsigned. Registered Mail adds a signature, proof of mailing, tracking and $100 of liability coverage, for $13.15 on top of the postage. Which one you need depends on the rule behind your letter, and ordinary correspondence rarely needs proof of delivery.",
+  "sections": [
+    {
+      "h2": "Side by side",
+      "blocks": [
+        {
+          "table": {
+            "headers": [
+              "",
+              "Regular Lettermail",
+              "Registered Mail"
+            ],
+            "rows": [
+              [
+                "Cost",
+                "Postage only",
+                "A $13.15 fee on top of the postage"
+              ],
+              [
+                "Signature on delivery",
+                "No",
+                "Yes, included"
+              ],
+              [
+                "Proof of mailing",
+                "No",
+                "Yes, a date-stamped receipt from the post office"
+              ],
+              [
+                "Tracking",
+                "No",
+                "Delivery confirmation; Canada Post makes the delivery date available the next business day"
+              ],
+              [
+                "Liability coverage",
+                "None listed",
+                "Up to $100 included"
+              ],
+              [
+                "Where you post it",
+                "Any mailbox",
+                "A post office, or a rural carrier"
+              ]
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "h2": "When ordinary mail is enough",
+      "blocks": [
+        {
+          "p": "Most letters: requests, complaints, cancellations where no particular form of delivery is required, and anything where the cost of being wrong is small. If nobody will later dispute that it arrived, proof of delivery buys you nothing."
+        }
+      ]
+    },
+    {
+      "h2": "When the rule decides",
+      "blocks": [
+        {
+          "p": "Some notices must be delivered in a particular way, and some must be provable. The rule that governs your situation sets this: a statute, a tribunal's procedure, or a contract. For example, Tribunals Ontario's guidance on serving documents in Landlord and Tenant Board matters says a document sent by regular mail is treated as received five days after you mailed it, and that you complete a Certificate of Service showing how and when it was given. Other provinces and other kinds of notice have their own rules."
+        },
+        {
+          "note": "This is general information, not legal advice. If a deadline or a court or tribunal is involved, read the rule that applies or ask a lawyer or the tribunal itself."
+        }
+      ]
+    },
+    {
+      "h2": "What sendletter sends",
+      "blocks": [
+        {
+          "p": "sendletter mails ordinary Lettermail. It has no signature, no tracking and no proof of delivery, so it is the regular column in this table. If you need the registered column, post it yourself at a post office. [Can you mail a legal notice online](/blog/can-you-mail-a-legal-notice-online) covers the question in more depth, and [Registered Mail's cost](/blog/registered-mail-canada-cost) has the price table."
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "label": "Canada Post, Consumer prices (updated September 7, 2026)",
+      "url": "https://www.canadapost-postescanada.ca/cpc/doc/en/support/prices/consumer-prices.pdf"
+    },
+    {
+      "label": "Canada Post, Registered Mail features",
+      "url": "https://www.canadapost-postescanada.ca/cpc/en/support/articles/registered-mail-canada/features.page"
+    },
+    {
+      "label": "Tribunals Ontario, How to serve a landlord or tenant with documents",
+      "url": "https://tribunalsontario.ca/documents/ltb/Brochures/How%20to%20Serve%20a%20Landlord%20or%20Tenant%20with%20Documents%20(EN).html"
+    }
+  ],
+  "related": [
+    "registered-mail-canada-cost",
+    "legal-notice",
+    "how-long-does-a-letter-take-in-canada"
+  ]
+}

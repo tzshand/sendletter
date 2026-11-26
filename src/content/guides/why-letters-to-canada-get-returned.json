@@ -1,0 +1,77 @@
+{
+  "id": "why-letters-to-canada-get-returned",
+  "hub": "from-abroad",
+  "wave": 2,
+  "published": "2026-12-03",
+  "slug": "why-letters-to-canada-get-returned",
+  "title": "Why Letters to Canada Get Returned or Delayed",
+  "description": "Incomplete addresses, short postage and no return address: the reasons Canada Post lists for returning mail, and a checklist for letters from abroad.",
+  "keywords": [
+    "why was my letter returned to sender canada post",
+    "letter to canada returned",
+    "undeliverable mail canada post"
+  ],
+  "answer": "Canada Post lists an insufficient or nonexistent address, a move with no forwarding address, a refusal and insufficient postage among the reasons mail is undeliverable. It returns an item only when a valid return address is on it. Items from other countries go back to the country-of-origin undeliverable mail office. Check four things before you post.",
+  "sections": [
+    {
+      "h2": "The reasons Canada Post gives",
+      "blocks": [
+        {
+          "ul": [
+            "**The address is insufficient or does not exist.**",
+            "**The addressee has moved** and left no forwarding address.",
+            "**The addressee refuses the item.**",
+            "**The item has insufficient postage,** or needs new postage before it can go. See [what happens with too little postage](/blog/letter-with-too-little-postage)."
+          ]
+        },
+        {
+          "p": "Sending the item back is a separate step with its own condition: Canada Post returns it only if it carries a valid return address. Without one it opens the item, and an item with no obvious value is destroyed."
+        }
+      ]
+    },
+    {
+      "h2": "A pre-flight checklist for a letter from abroad",
+      "blocks": [
+        {
+          "ol": [
+            "**Address in Canadian order,** ending in municipality, province and postal code: [how to address a letter to Canada](/blog/how-to-address-a-letter-to-canada).",
+            "**A correct postal code.** A missing or incorrect one moves the item to higher Lettermail rates: [Canadian postal code format](/blog/canadian-postal-code-format).",
+            "**Enough postage for the weight,** using your own postal service's international rate, or none if the letter is stamped in Canada.",
+            "**A return address** that can receive mail."
+          ]
+        }
+      ]
+    },
+    {
+      "h2": "Delays that are not returns",
+      "blocks": [
+        {
+          "p": "Canada Post's Lettermail delivery standards are estimates and are not guaranteed, and ordinary mail has no tracking. See [how long a letter takes in Canada](/blog/how-long-does-a-letter-take-in-canada)."
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "label": "Canada Post, Undeliverable mail overview",
+      "url": "https://www.canadapost-postescanada.ca/cpc/en/support/articles/undeliverable-mail/undeliverable-mail-overview.page"
+    },
+    {
+      "label": "Canada Post, What happens to undeliverable mail",
+      "url": "https://www.canadapost-postescanada.ca/cpc/en/support/articles/undeliverable-mail/what-happens-to-undeliverable-mail.page"
+    },
+    {
+      "label": "Canada Post, Why mail is returned to sender",
+      "url": "https://www.canadapost-postescanada.ca/cpc/en/support/kb/receiving/delivery-faq/why-mail-is-returned-to-sender.page"
+    },
+    {
+      "label": "Canada Post, Consumer prices (updated September 7, 2026)",
+      "url": "https://www.canadapost-postescanada.ca/cpc/doc/en/support/prices/consumer-prices.pdf"
+    }
+  ],
+  "related": [
+    "mail-a-letter-to-canada-from-abroad",
+    "letter-with-too-little-postage",
+    "return-address-on-a-canadian-letter"
+  ]
+}

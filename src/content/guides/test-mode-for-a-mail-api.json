@@ -1,0 +1,93 @@
+{
+  "id": "test-mode-for-a-mail-api",
+  "hub": "api",
+  "wave": 5,
+  "live": true,
+  "slug": "test-mode-for-a-mail-api",
+  "title": "Testing a Mail API Without Mailing Anything",
+  "description": "Build against a print-and-mail API without printing or posting a letter: what test keys do, what they cannot check, and a checklist before going live.",
+  "keywords": [
+    "mail api test mode",
+    "mail api sandbox",
+    "test key letter api",
+    "test print and mail api"
+  ],
+  "answer": "A test key lets you build against a print-and-mail API without printing or posting anything. sendletter's test keys validate the request, price the letter, move a test letter from queued to printed to mailed with matching webhooks, but never mail or bill. They do not check that a street address exists.",
+  "sections": [
+    {
+      "h2": "What test mode should do",
+      "blocks": [
+        {
+          "p": "A good test mode runs the same code path as live, so you find your bugs before a letter is printed. It should validate requests, return realistic responses, show the price, and let you exercise status changes and webhooks, while sending nothing and charging nothing."
+        }
+      ]
+    },
+    {
+      "h2": "How sendletter's works",
+      "blocks": [
+        {
+          "ul": [
+            "**Keys.** A test key starts with sl_test_. You can create one without adding a card.",
+            "**Pricing.** A test letter is priced as a live one would be, including your volume discount, so you can check your cost model.",
+            "**Status.** A test letter moves from queued, to printed after 30 seconds, to mailed after 2 minutes, so you can build against all three.",
+            "**Webhooks.** A test endpoint receives created, printed, mailed and cancelled events for test letters, with printed and mailed arriving as the letter advances (when you next read it, or within a few minutes). You can also send a signed test event on demand.",
+            "**Separate.** Test and live letters, keys and idempotency keys never mix."
+          ]
+        },
+        {
+          "p": "What it does not do: it cannot tell you that 12 Example Street exists. It does flag a postal code whose first letter does not match the province."
+        }
+      ]
+    },
+    {
+      "h2": "How others handle it",
+      "blocks": [
+        {
+          "p": "PostGrid's documentation says calls made with its test key operate in an isolated sandbox, that none of the orders made in test mode will be sent out, and that it does not verify addresses in test mode. Lob issues a pair of keys, one for testing and one for live, with the prefixes test_ and live_. Click2Mail says testing happens in its staging environment. Read what each one does with addresses and tracking events before you rely on it."
+        }
+      ]
+    },
+    {
+      "h2": "A checklist before you go live",
+      "blocks": [
+        {
+          "ol": [
+            "Send a request that should fail (a bad postal code) and confirm your code handles the error and its code.",
+            "Retry a request with the same idempotency key and confirm you get the same letter back. See [idempotency for physical mail](/blog/idempotency-for-physical-mail).",
+            "Receive a webhook, verify its signature, and answer within 10 seconds.",
+            "Check the price against your own model at your expected volume. See [volume pricing](/blog/api-volume-pricing).",
+            "Send one real letter to yourself, and look at it.",
+            "Set your daily spending limit."
+          ]
+        },
+        {
+          "p": "The last step matters: a test key proves your code, not your address data or your template. Your first live letter is charged when you send it, so make it a letter to yourself."
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "label": "sendletter API reference",
+      "url": "https://sendletter.app/docs"
+    },
+    {
+      "label": "PostGrid, Print and Mail API overview",
+      "url": "https://guides.postgrid.com/print-and-mail/api/overview/"
+    },
+    {
+      "label": "Lob, API reference",
+      "url": "https://docs.lob.com/"
+    },
+    {
+      "label": "Click2Mail, API FAQs: testing",
+      "url": "https://click2mail.kayako.com/article/551-testing"
+    }
+  ],
+  "related": [
+    "idempotency-for-physical-mail",
+    "send-a-letter-with-an-api-canada",
+    "api-volume-pricing"
+  ],
+  "published": "2026-11-26"
+}

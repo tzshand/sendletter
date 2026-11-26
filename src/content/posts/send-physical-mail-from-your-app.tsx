@@ -29,8 +29,8 @@ export default function Post() {
       </UL>
 
       <P>
-        What it is <em>not</em> good for is anything time-critical. Domestic delivery now
-        runs three to seven business days. If it has to arrive tomorrow, mail is the wrong
+        What it is <em>not</em> good for is anything time-critical. Canada Post&apos;s Lettermail
+        standard is two to four business days after posting, an estimate and not a guarantee. If it has to arrive tomorrow, mail is the wrong
         channel regardless of how good the API is.
       </P>
 
@@ -77,8 +77,9 @@ export default function Post() {
       <P>
         <strong>1. Retries send real paper.</strong> This is the big one. A retried API call
         that fails halfway can produce two physical letters, and you cannot recall the
-        second. Generate an idempotency key per logical letter and store the returned id
-        before you retry anything.
+        second. Send an Idempotency-Key header with every create request (tie it to your own record, such as an
+        invoice number) and reuse the same key on every retry: sendletter then returns the original letter
+        instead of mailing a second one. Store the returned id as soon as you have it.
       </P>
 
       <P>
@@ -114,7 +115,7 @@ export default function Post() {
 
       <Note>
         <strong>Where we fit:</strong> sendletter does one letter at a time, delivered to
-        Canadian addresses, billed per piece with no monthly fee. Sending addresses can be
+        Canadian addresses, billed per piece with no monthly fee, and with automatic volume pricing that takes a letter to as low as $1.69 all in (<A href="/blog/api-volume-pricing">rates and calculator</A>). The API now has test keys, idempotency keys, status, cancellation, webhooks and a bulk endpoint. Sending addresses can be
         anywhere in the world; delivery is Canada only. If you need bulk campaign tooling or
         delivery outside Canada, use one of the platforms above — it will be less work than
         bending ours into that shape.

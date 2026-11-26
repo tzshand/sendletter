@@ -6,7 +6,20 @@
 // is the stable key that ties the two together for hreflang and for the
 // language switcher.
 
+import { HUBS, type HubId } from "./hubs";
+import { GUIDES } from "@/content/guides";
+import { API_FROM_ALL_IN_CENTS } from "./volume";
+import { formatCents } from "./pricing";
+
 export type Locale = "en" | "fr";
+
+/**
+ * Guides are published in waves, nearest the site's centre first (see
+ * scripts/topical/README.md). A guide is live once its wave is at or below this
+ * number. Raise it only after the previous wave has been checked in Search
+ * Console: if more than 30% of it is "Crawled - currently not indexed", slow down.
+ */
+export const RELEASED_WAVE = 1;
 
 export type LocaleMeta = {
   slug: string;
@@ -18,6 +31,10 @@ export type LocaleMeta = {
 
 export type PostMeta = {
   id: string;
+  /** Topic hub this post belongs to; drives breadcrumbs and related links. */
+  hub?: HubId;
+  /** Publishing wave; 0 = the original posts, always live. */
+  wave?: number;
   published: string;
   updated?: string;
   /** Where the single end-of-post call to action points. */
@@ -25,12 +42,15 @@ export type PostMeta = {
   /** Ids of one or two sibling posts, rendered as further reading. */
   related: string[];
   en: LocaleMeta;
-  fr: LocaleMeta;
+  /** Absent on English-only guides. */
+  fr?: LocaleMeta;
 };
 
-export const POSTS: PostMeta[] = [
+const LEGACY_POSTS: PostMeta[] = [
   {
     id: "send-a-letter-online",
+    hub: "send-online",
+    wave: 0,
     published: "2026-08-02",
     cta: "home",
     related: ["cost-to-mail", "legal-notice"],
@@ -61,9 +81,11 @@ export const POSTS: PostMeta[] = [
   },
   {
     id: "cost-to-mail",
+    hub: "postage",
+    wave: 0,
     published: "2026-08-02",
     cta: "home",
-    related: ["send-a-letter-online", "legal-notice"],
+    related: ["canada-post-stamp-price", "send-a-letter-online", "legal-notice"],
     en: {
       slug: "what-it-costs-to-mail-a-letter-in-canada",
       title: "What It Actually Costs to Mail a Letter in Canada in 2026",
@@ -72,8 +94,8 @@ export const POSTS: PostMeta[] = [
       keywords: [
         "canada post letter rate 2026",
         "cost to mail a letter in canada",
-        "canada post stamp price",
-        "how much is a stamp in canada",
+        "cost of mailing a letter yourself",
+        "is it worth paying to mail a letter",
       ],
     },
     fr: {
@@ -91,6 +113,8 @@ export const POSTS: PostMeta[] = [
   },
   {
     id: "legal-notice",
+    hub: "legal",
+    wave: 0,
     published: "2026-08-02",
     cta: "home",
     related: ["send-a-letter-online", "cost-to-mail"],
@@ -120,7 +144,25 @@ export const POSTS: PostMeta[] = [
     },
   },
   {
+    // Always live (wave 0): the API docs and the account pages link to it.
+    id: "api-volume-pricing",
+    hub: "api",
+    wave: 0,
+    published: "2026-11-26",
+    cta: "api",
+    related: ["api-guide"],
+    en: {
+      slug: "api-volume-pricing",
+      title: `Letter API Volume Pricing: From ${formatCents(API_FROM_ALL_IN_CENTS)} a Letter`,
+      description:
+        `Letters by API from as low as ${formatCents(API_FROM_ALL_IN_CENTS)} all in: the mailing fee falls automatically with volume. Rate table, calculator, billing and spending limits.`,
+      keywords: ["letter api pricing", "print and mail api pricing canada", "bulk letter mailing canada price", "mail api volume discount"],
+    },
+  },
+  {
     id: "api-guide",
+    hub: "api",
+    wave: 0,
     published: "2026-08-02",
     cta: "api",
     related: ["send-a-letter-online", "legal-notice"],
@@ -152,21 +194,73 @@ export const POSTS: PostMeta[] = [
   },
 ];
 
+/** Every post, released or not. Use POSTS for anything a visitor or crawler can see. */
+export const ALL_POSTS: PostMeta[] = [
+  ...LEGACY_POSTS,
+  ...GUIDES.map(
+    (g): PostMeta => ({
+      id: g.id,
+      hub: g.hub,
+      wave: g.live ? 0 : g.wave,
+      published: g.published,
+      updated: g.updated,
+      cta: "home",
+      related: g.related ?? [],
+      en: { slug: g.slug, title: g.title, description: g.description, keywords: g.keywords },
+    }),
+  ),
+];
+
+/** Posts that are live. */
+export const POSTS: PostMeta[] = ALL_POSTS.filter((p) => (p.wave ?? 0) <= RELEASED_WAVE);
+
+/** Hubs worth a page: at least two live posts (a hub of one is just a thin duplicate of the post). */
+export function liveHubs() {
+  return HUBS.filter((h) => POSTS.filter((p) => p.hub === h.id).length >= 2);
+}
+
 export function getPostById(id: string): PostMeta | undefined {
   return POSTS.find((p) => p.id === id);
 }
 
 export function getPostBySlug(locale: Locale, slug: string): PostMeta | undefined {
-  return POSTS.find((p) => p[locale].slug === slug);
+  return POSTS.find((p) => p[locale]?.slug === slug);
 }
 
-/** Path to a post in a given locale. French lives under /fr. */
+/** Posts that exist in this locale. */
+export function postsIn(locale: Locale): PostMeta[] {
+  return POSTS.filter((p) => Boolean(p[locale]));
+}
+
+export function hasLocale(post: PostMeta, locale: Locale): boolean {
+  return Boolean(post[locale]);
+}
+
+/** Path to a post in a given locale. French lives under /fr. Falls back to English when there is no translation. */
 export function postPath(post: PostMeta, locale: Locale): string {
-  return locale === "fr" ? `/fr/blog/${post.fr.slug}` : `/blog/${post.en.slug}`;
+  if (locale === "fr" && post.fr) return `/fr/blog/${post.fr.slug}`;
+  return `/blog/${post.en.slug}`;
 }
 
 export function blogIndexPath(locale: Locale): string {
   return locale === "fr" ? "/fr/blog" : "/blog";
+}
+
+/**
+ * "Keep reading": hand-picked related posts first, then siblings in the same
+ * hub, then anything else, up to `max`. Only live posts that exist in this
+ * locale. Every guide therefore links to about six siblings automatically.
+ */
+export function relatedFor(post: PostMeta, locale: Locale, max = 6): PostMeta[] {
+  const live = postsIn(locale).filter((p) => p.id !== post.id);
+  const picked: PostMeta[] = [];
+  const add = (p?: PostMeta) => {
+    if (p && !picked.includes(p) && picked.length < max) picked.push(p);
+  };
+  for (const id of post.related) add(live.find((p) => p.id === id));
+  for (const p of live) if (post.hub && p.hub === post.hub) add(p);
+  for (const p of live) add(p);
+  return picked;
 }
 
 export const SITE = "https://sendletter.app";

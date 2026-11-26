@@ -1,0 +1,101 @@
+{
+  "id": "postage-for-a-large-envelope-canada",
+  "hub": "postage",
+  "wave": 1,
+  "slug": "postage-for-a-large-envelope-canada",
+  "title": "Postage for a Large Envelope in Canada",
+  "description": "A 9×12 flat envelope is oversize Lettermail: $2.61 up to 100 g, three Permanent stamps, and more as the weight climbs to 500 g. Rates and stamp counts.",
+  "keywords": [
+    "how many stamps for a large envelope canada",
+    "canada post oversize lettermail",
+    "9x12 envelope postage canada",
+    "postage large envelope canada"
+  ],
+  "answer": "A large flat envelope, such as 9 × 12 inches, is oversize Lettermail. It costs $2.61 up to 100 grams, $4.29 up to 200 grams, and $7.36 at the 500 gram limit. In Permanent stamps ($1.24 each) that is three stamps up to 100 grams.",
+  "sections": [
+    {
+      "h2": "Rates and stamps",
+      "blocks": [
+        {
+          "table": {
+            "headers": [
+              "Weight",
+              "Canada Post rate",
+              "Permanent stamps"
+            ],
+            "rows": [
+              [
+                "Up to 100 g",
+                "$2.61",
+                "3"
+              ],
+              [
+                "100 to 200 g",
+                "$4.29",
+                "4"
+              ],
+              [
+                "200 to 300 g",
+                "$5.98",
+                "5"
+              ],
+              [
+                "300 to 400 g",
+                "$6.85",
+                "6"
+              ],
+              [
+                "400 to 500 g",
+                "$7.36",
+                "6"
+              ]
+            ]
+          }
+        },
+        {
+          "p": "Two Permanent stamps ($2.48) fall $0.13 short of the first band, so a flat envelope needs three even when it is light."
+        }
+      ]
+    },
+    {
+      "h2": "Size limits",
+      "blocks": [
+        {
+          "p": "The largest Lettermail item is 380 × 270 × 20 mm and 500 g. A 9 × 12 inch envelope (about 229 × 305 mm) fits. A thicker package, or anything over 500 g, is no longer Lettermail and must go as a parcel. Non-standard items have a minimum weight of 3 g and oversize items 5 g."
+        }
+      ]
+    },
+    {
+      "h2": "Why a flat envelope costs more",
+      "blocks": [
+        {
+          "p": "A folded letter in a standard envelope qualifies for the lowest rate. A flat sheet in a 9 × 12 envelope does not, because it is larger than 245 × 156 mm. Canada Post prices it as non-standard or oversize Lettermail, and the envelope itself costs more than a #10."
+        }
+      ]
+    },
+    {
+      "h2": "When flat is worth it",
+      "blocks": [
+        {
+          "p": "Flat suits documents that must not be folded: certificates, drawings, and anything you want to arrive pressed. A long letter can also be cheaper flat than folded across several envelopes. sendletter offers 9 × 12 and 10 × 15 flat mailers; the [cost breakdown](/blog/what-an-online-letter-costs) shows how each is priced."
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "label": "Canada Post, Consumer prices (updated September 7, 2026)",
+      "url": "https://www.canadapost-postescanada.ca/cpc/doc/en/support/prices/consumer-prices.pdf"
+    },
+    {
+      "label": "Canada Post, Lettermail size requirements",
+      "url": "https://www.canadapost-postescanada.ca/cpc/en/support/articles/lettermail/size-requirements.page"
+    }
+  ],
+  "related": [
+    "lettermail-size-and-weight-limits",
+    "how-many-stamps-for-a-letter-in-canada",
+    "canada-post-letter-rates-by-weight"
+  ],
+  "published": "2026-11-26"
+}

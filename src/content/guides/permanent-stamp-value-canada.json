@@ -1,0 +1,71 @@
+{
+  "id": "permanent-stamp-value-canada",
+  "hub": "postage",
+  "wave": 1,
+  "slug": "permanent-stamp-value-canada",
+  "title": "What Is a Permanent Stamp Worth in Canada?",
+  "description": "A Permanent stamp is worth $1.24, mails a letter up to 30 g anywhere in Canada, and stays valid at the current domestic rate after any price rise.",
+  "keywords": [
+    "canada post permanent stamp value",
+    "permanent stamp canada",
+    "canada post p stamp",
+    "value of canadian postage stamps"
+  ],
+  "answer": "A Canadian Permanent stamp has a postage value of $1.24. It carries no printed amount and always pays for a standard letter up to 30 grams anywhere in Canada. Canada Post accepts it at the current domestic rate even after prices rise, so a Permanent stamp bought today stays usable.",
+  "sections": [
+    {
+      "h2": "What the stamp is",
+      "blocks": [
+        {
+          "p": "Canada Post describes the Permanent stamp as a non-denominated stamp with a postage value of $1.24. One stamp mails a letter weighing up to 30 g anywhere in Canada."
+        }
+      ]
+    },
+    {
+      "h2": "Why it does not expire",
+      "blocks": [
+        {
+          "p": "Canada Post's stamp page says a Permanent stamp is always accepted at the current domestic postage rate and can be used at any time, now or in the future, even if rates have increased. A rate rise changes what a new stamp costs, not what an old Permanent stamp is worth."
+        },
+        {
+          "p": "If the domestic rate rises, a Permanent stamp bought at $1.24 still pays for a standard letter. That is a property of the stamp, not a forecast, and it applies only to the up-to-30 g domestic letter."
+        }
+      ]
+    },
+    {
+      "h2": "Using a Permanent stamp for heavier mail",
+      "blocks": [
+        {
+          "p": "Canada Post says Permanent stamps can be combined with additional postage to mail larger letters or parcels, or to send mail internationally. For a domestic letter, count stamps by weight: [how many stamps a letter needs](/blog/how-many-stamps-for-a-letter-in-canada)."
+        }
+      ]
+    },
+    {
+      "h2": "Why it matters to a mailing service",
+      "blocks": [
+        {
+          "p": "sendletter stamps letters with Permanent coil stamps and charges exactly their value, $1.24 each, with no postage margin."
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "label": "Canada Post, What are Permanent stamps?",
+      "url": "https://www.canadapost-postescanada.ca/cpc/en/support/kb/sending/stamps-packaging/what-are-permanent-stamps"
+    },
+    {
+      "label": "Canada Post, Stamp prices",
+      "url": "https://www.canadapost-postescanada.ca/cpc/en/personal/stamp-prices.page"
+    },
+    {
+      "label": "Canada Post, Consumer prices (updated September 7, 2026)",
+      "url": "https://www.canadapost-postescanada.ca/cpc/doc/en/support/prices/consumer-prices.pdf"
+    }
+  ],
+  "related": [
+    "canada-post-stamp-price",
+    "how-many-stamps-for-a-letter-in-canada"
+  ],
+  "published": "2026-11-26"
+}

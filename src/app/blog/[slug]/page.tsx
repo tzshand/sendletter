@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { BlogHeader, BlogFooter, PostShell } from "@/components/blog/Chrome";
-import { POSTS, getPostBySlug, postPath, SITE } from "@/lib/blog";
+import { POSTS, getPostBySlug, hasLocale, postPath, SITE } from "@/lib/blog";
 import { renderBody } from "@/content/registry";
 import { postJsonLd } from "@/lib/blog-schema";
 
@@ -26,11 +26,17 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     keywords: meta.keywords,
     alternates: {
       canonical: `${SITE}${postPath(post, "en")}`,
-      languages: {
-        "en-CA": `${SITE}${postPath(post, "en")}`,
-        "fr-CA": `${SITE}${postPath(post, "fr")}`,
-        "x-default": `${SITE}${postPath(post, "en")}`,
-      },
+      // Only declare a French alternate where one exists, or hreflang points
+      // at a page that is not there.
+      ...(hasLocale(post, "fr")
+        ? {
+            languages: {
+              "en-CA": `${SITE}${postPath(post, "en")}`,
+              "fr-CA": `${SITE}${postPath(post, "fr")}`,
+              "x-default": `${SITE}${postPath(post, "en")}`,
+            },
+          }
+        : {}),
     },
     openGraph: {
       title: meta.title,
@@ -41,7 +47,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       publishedTime: post.published,
       modifiedTime: post.updated ?? post.published,
       locale: "en_CA",
-      alternateLocale: "fr_CA",
+      ...(hasLocale(post, "fr") ? { alternateLocale: "fr_CA" } : {}),
     },
     twitter: { card: "summary_large_image", title: meta.title, description: meta.description },
   };

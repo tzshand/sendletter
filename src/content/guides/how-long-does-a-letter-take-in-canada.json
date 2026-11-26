@@ -1,0 +1,81 @@
+{
+  "id": "how-long-does-a-letter-take-in-canada",
+  "hub": "postage",
+  "wave": 1,
+  "slug": "how-long-does-a-letter-take-in-canada",
+  "title": "How Long Does a Letter Take in Canada?",
+  "description": "Canada Post's Lettermail standards are 2 business days locally, 3 provincially and 4 nationally. They are estimates, not guarantees.",
+  "keywords": [
+    "how long does a letter take in canada",
+    "canada post lettermail delivery time",
+    "lettermail delivery standards"
+  ],
+  "answer": "Canada Post's Lettermail delivery standards are two business days within a city, three within a province and four across the country, not counting the day of mailing. They are estimates, not guarantees. A letter sent through a mailing service also needs a day or so to be printed and posted.",
+  "sections": [
+    {
+      "h2": "Canada Post's standards",
+      "blocks": [
+        {
+          "table": {
+            "headers": [
+              "Route",
+              "Business days"
+            ],
+            "rows": [
+              [
+                "Local, within a city",
+                "2"
+              ],
+              [
+                "Provincial",
+                "3"
+              ],
+              [
+                "National",
+                "4"
+              ]
+            ]
+          }
+        },
+        {
+          "p": "Business days exclude the day of mailing. Canada Post states that delivery standards are estimates and are not guaranteed."
+        }
+      ]
+    },
+    {
+      "h2": "Adding the first leg",
+      "blocks": [
+        {
+          "p": "If you mail the letter yourself, the clock starts when it enters the postal system. If a service prints and posts it, add its processing time. sendletter prints and mails an order within one business day of payment, so at Canada Post's national standard a letter lands about five business days after you order. Canada Post's standards are estimates, not guarantees."
+        },
+        {
+          "p": "Allow extra time around holidays and in rural or remote areas. Ordinary Lettermail has no tracking, so you will not see it move."
+        }
+      ]
+    },
+    {
+      "h2": "If the date matters",
+      "blocks": [
+        {
+          "p": "Because ordinary Lettermail is not guaranteed and not tracked, it is a poor fit for a deadline. Mail early, or use a service with tracking. [Registered Mail versus regular mail](/blog/registered-vs-regular-mail-canada) covers what each provides."
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "label": "Canada Post, Lettermail delivery standards",
+      "url": "https://www.canadapost-postescanada.ca/cpc/en/support/articles/lettermail/delivery-standards.page"
+    },
+    {
+      "label": "Canada Post, Delivery standards overview",
+      "url": "https://www.canadapost-postescanada.ca/cpc/en/support/articles/delivery-standards/overview.page"
+    }
+  ],
+  "related": [
+    "registered-vs-regular-mail-canada",
+    "letter-with-too-little-postage",
+    "canada-post-stamp-price"
+  ],
+  "published": "2026-11-26"
+}

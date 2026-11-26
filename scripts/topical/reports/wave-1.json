@@ -1,0 +1,190 @@
+{
+  "mode": "wave",
+  "wave": 1,
+  "accepted_through": 0,
+  "baseline": {
+    "n": 5,
+    "mean": 0.9467,
+    "sd": 0.0123,
+    "small_sample": true,
+    "pages": [
+      {
+        "id": "home",
+        "sim": 0.9375
+      },
+      {
+        "id": "send-a-letter-online",
+        "sim": 0.9667
+      },
+      {
+        "id": "cost-to-mail",
+        "sim": 0.9478
+      },
+      {
+        "id": "legal-notice",
+        "sim": 0.9359
+      },
+      {
+        "id": "api-guide",
+        "sim": 0.9456
+      }
+    ]
+  },
+  "drafts": [
+    {
+      "id": "canada-post-letter-rates-by-weight",
+      "hub": "postage",
+      "sim": 0.9118,
+      "z": -0.83,
+      "nearest": "canada-post-stamp-price",
+      "nearest_sim": 0.9471,
+      "verdict": [
+        "ok"
+      ]
+    },
+    {
+      "id": "canada-post-stamp-price",
+      "hub": "postage",
+      "sim": 0.9184,
+      "z": -0.5,
+      "nearest": "cost-to-mail",
+      "nearest_sim": 0.9551,
+      "verdict": [
+        "near-duplicate, accepted after review"
+      ]
+    },
+    {
+      "id": "how-long-does-a-letter-take-in-canada",
+      "hub": "postage",
+      "sim": 0.9344,
+      "z": 0.3,
+      "nearest": "how-online-letter-mailing-works",
+      "nearest_sim": 0.9204,
+      "verdict": [
+        "ok"
+      ]
+    },
+    {
+      "id": "how-many-stamps-for-a-letter-in-canada",
+      "hub": "postage",
+      "sim": 0.9158,
+      "z": -0.63,
+      "nearest": "canada-post-letter-rates-by-weight",
+      "nearest_sim": 0.9464,
+      "verdict": [
+        "ok"
+      ]
+    },
+    {
+      "id": "how-online-letter-mailing-works",
+      "hub": "send-online",
+      "sim": 0.9541,
+      "z": 1.29,
+      "nearest": "mail-a-letter-without-a-printer",
+      "nearest_sim": 0.9398,
+      "verdict": [
+        "ok"
+      ]
+    },
+    {
+      "id": "letter-with-too-little-postage",
+      "hub": "postage",
+      "sim": 0.9135,
+      "z": -0.75,
+      "nearest": "return-address-on-a-canadian-letter",
+      "nearest_sim": 0.9431,
+      "verdict": [
+        "ok"
+      ]
+    },
+    {
+      "id": "lettermail-size-and-weight-limits",
+      "hub": "postage",
+      "sim": 0.8957,
+      "z": -1.65,
+      "nearest": "how-many-stamps-for-a-letter-in-canada",
+      "nearest_sim": 0.9293,
+      "verdict": [
+        "ok"
+      ]
+    },
+    {
+      "id": "mail-a-letter-without-a-printer",
+      "hub": "send-online",
+      "sim": 0.9457,
+      "z": 0.87,
+      "nearest": "how-online-letter-mailing-works",
+      "nearest_sim": 0.9398,
+      "verdict": [
+        "ok"
+      ]
+    },
+    {
+      "id": "mail-one-letter-without-a-stamp-book",
+      "hub": "send-online",
+      "sim": 0.9421,
+      "z": 0.69,
+      "nearest": "cost-to-mail",
+      "nearest_sim": 0.9478,
+      "verdict": [
+        "ok"
+      ]
+    },
+    {
+      "id": "permanent-stamp-value-canada",
+      "hub": "postage",
+      "sim": 0.9049,
+      "z": -1.18,
+      "nearest": "canada-post-stamp-price",
+      "nearest_sim": 0.9447,
+      "verdict": [
+        "ok"
+      ]
+    },
+    {
+      "id": "postage-for-a-large-envelope-canada",
+      "hub": "postage",
+      "sim": 0.9141,
+      "z": -0.72,
+      "nearest": "canada-post-letter-rates-by-weight",
+      "nearest_sim": 0.9453,
+      "verdict": [
+        "ok"
+      ]
+    },
+    {
+      "id": "return-address-on-a-canadian-letter",
+      "hub": "postage",
+      "sim": 0.9024,
+      "z": -1.3,
+      "nearest": "letter-with-too-little-postage",
+      "nearest_sim": 0.9431,
+      "verdict": [
+        "ok"
+      ]
+    },
+    {
+      "id": "what-an-online-letter-costs",
+      "hub": "send-online",
+      "sim": 0.9247,
+      "z": -0.19,
+      "nearest": "how-many-stamps-for-a-letter-in-canada",
+      "nearest_sim": 0.9417,
+      "verdict": [
+        "ok"
+      ]
+    }
+  ],
+  "z_reference": {
+    "pooled": true,
+    "mean": 0.9284,
+    "sd": 0.0199
+  },
+  "after_wave": {
+    "centre_cosine_to_old": 0.98394,
+    "sd_before": 0.0123,
+    "sd_after": 0.0179,
+    "mean_before": 0.9467,
+    "mean_after": 0.9436
+  }
+}

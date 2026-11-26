@@ -1,0 +1,84 @@
+{
+  "id": "letter-with-too-little-postage",
+  "hub": "postage",
+  "wave": 1,
+  "slug": "letter-with-too-little-postage",
+  "title": "What Happens to a Letter With Too Little Postage?",
+  "description": "In Canada, insufficient postage can send a letter back to the sender, and Canada Post lists a $1.24 deficient postage fee on top of the shortfall.",
+  "keywords": [
+    "insufficient postage canada",
+    "not enough postage canada post",
+    "deficient postage fee canada post",
+    "postage due canada"
+  ],
+  "answer": "Canada Post lists insufficient postage among the reasons an item is returned to the sender, as long as it carries a valid return address. Its price guide also lists a deficient postage fee of $1.24 plus the amount of postage that was missing. Without a return address, the item may be opened and destroyed.",
+  "sections": [
+    {
+      "h2": "What Canada Post says",
+      "blocks": [
+        {
+          "ul": [
+            "**Returned to sender.** Canada Post's return-to-sender page lists \"the item contains insufficient postage\" as a reason mail is returned.",
+            "**Only with a return address.** Its undeliverable-mail page says it returns items to the sender only if there is a valid return address.",
+            "**A fee.** The consumer price guide lists a Deficient Postage Fee of $1.24 plus the amount of deficient postage."
+          ]
+        },
+        {
+          "p": "Canada Post's pages do not spell out, for ordinary Lettermail, who is asked to pay the fee in each case, so we do not guess. Check with Canada Post before relying on a particular outcome."
+        }
+      ]
+    },
+    {
+      "h2": "How letters end up short",
+      "blocks": [
+        {
+          "ul": [
+            "The letter weighs more than you thought, usually just past 30 g.",
+            "The envelope is larger or thicker than standard, so it is priced as oversize.",
+            "The postal code is missing or wrong, which moves it to the higher rate.",
+            "The stamp is not a Permanent stamp and has a lower printed value than the current rate."
+          ]
+        },
+        {
+          "p": "[How many stamps a letter needs](/blog/how-many-stamps-for-a-letter-in-canada) shows the postage for each weight band."
+        }
+      ]
+    },
+    {
+      "h2": "What a return address does",
+      "blocks": [
+        {
+          "p": "Without a valid return address, an undeliverable item is opened. If it has no obvious value, Canada Post says it destroys it. A return address is the difference between getting a letter back and losing it; see [return addresses on Canadian letters](/blog/return-address-on-a-canadian-letter)."
+        }
+      ]
+    },
+    {
+      "h2": "Why we over-stamp on purpose",
+      "blocks": [
+        {
+          "p": "sendletter works out postage from a deliberately heavy estimate of the paper and envelope, then rounds up. One extra stamp costs $1.24; one missing stamp can cost the whole letter."
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "label": "Canada Post, Why mail is returned to sender",
+      "url": "https://www.canadapost-postescanada.ca/cpc/en/support/kb/receiving/delivery-faq/why-mail-is-returned-to-sender.page"
+    },
+    {
+      "label": "Canada Post, What happens to undeliverable mail",
+      "url": "https://www.canadapost-postescanada.ca/cpc/en/support/articles/undeliverable-mail/what-happens-to-undeliverable-mail.page"
+    },
+    {
+      "label": "Canada Post, Consumer prices (updated September 7, 2026)",
+      "url": "https://www.canadapost-postescanada.ca/cpc/doc/en/support/prices/consumer-prices.pdf"
+    }
+  ],
+  "related": [
+    "how-many-stamps-for-a-letter-in-canada",
+    "return-address-on-a-canadian-letter",
+    "lettermail-size-and-weight-limits"
+  ],
+  "published": "2026-11-26"
+}

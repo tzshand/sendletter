@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getSession } from "@/lib/auth";
 import { getStripe } from "@/lib/stripe";
 import { getDb } from "@/lib/db";
+import { chargeUsage } from "@/lib/invoices";
 
 export async function POST() {
   const session = await getSession();
@@ -20,61 +21,28 @@ export async function POST() {
     return NextResponse.json({ error: "No Stripe customer" }, { status: 400 });
   }
 
-  // Check for unbilled usage
+  // Anything not yet invoiced is invoiced and charged now, before the card goes:
+  // otherwise the usage could never be collected. Cancelled letters are excluded.
   const { data: unbilled } = await db
     .from("sendletter_api_usage")
     .select("id, amount_cents")
     .eq("account_id", session.accountId)
-    .eq("billed", false);
+    .eq("billed", false)
+    .isNull("voided_at");
 
   if (unbilled && unbilled.length > 0) {
-    const totalCents = unbilled.reduce((sum, u) => sum + u.amount_cents, 0);
-
-    // Charge the outstanding balance before removing
-    const stripe = getStripe();
-    try {
-      const pi = await stripe.paymentIntents.create({
-        amount: totalCents,
-        currency: "cad",
-        customer: account.stripe_customer_id,
-        off_session: true,
-        confirm: true,
-        description: `sendletter API — final billing before card removal (${unbilled.length} letter${unbilled.length > 1 ? "s" : ""})`,
-        metadata: {
-          account_id: session.accountId,
-          type: "final_billing",
-          usage_count: String(unbilled.length),
-        },
-      });
-
-      if (pi.status !== "succeeded") {
-        return NextResponse.json(
-          { error: `Outstanding balance of $${(totalCents / 100).toFixed(2)} CAD could not be charged. Please update your card first.` },
-          { status: 402 }
-        );
-      }
-
-      // Mark usage as billed
-      const usageIds = unbilled.map((u) => u.id);
-      await db
-        .from("sendletter_api_usage")
-        .update({ billed: true })
-        .in("id", usageIds);
-
-      // Record billing run
-      await db.from("sendletter_billing_runs").insert({
-        account_id: session.accountId,
-        stripe_payment_intent_id: pi.id,
-        amount_cents: totalCents,
-        usage_count: unbilled.length,
-        status: "succeeded",
-      });
-    } catch (e) {
-      console.error("Final billing failed:", e);
-      const totalStr = (totalCents / 100).toFixed(2);
+    const totalCents = unbilled.reduce((sum: number, u: { amount_cents: number }) => sum + u.amount_cents, 0);
+    const result = await chargeUsage({
+      accountId: session.accountId,
+      usageIds: unbilled.map((u: { id: string }) => u.id),
+      kind: "monthly",
+      periodEnd: new Date(),
+    });
+    if (!result.ok && !result.skipped) {
+      console.error("Final billing failed:", result.error);
       return NextResponse.json(
-        { error: `Payment of $${totalStr} CAD failed. Resolve the outstanding balance before removing your card.` },
-        { status: 402 }
+        { error: `Outstanding balance of $${(totalCents / 100).toFixed(2)} CAD could not be charged. Please update your card first.` },
+        { status: 402 },
       );
     }
   }

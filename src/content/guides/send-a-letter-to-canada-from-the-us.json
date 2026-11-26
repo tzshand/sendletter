@@ -1,0 +1,75 @@
+{
+  "id": "send-a-letter-to-canada-from-the-us",
+  "hub": "from-abroad",
+  "wave": 2,
+  "published": "2026-12-03",
+  "slug": "send-a-letter-to-canada-from-the-us",
+  "title": "Sending a Letter to Canada From the US",
+  "description": "Mailing a letter from the US to Canada: the USPS Global Forever stamp at $1.75, what to check, and a way to send it without an international stamp.",
+  "keywords": [
+    "mail a letter to canada from usa",
+    "how many stamps to mail from us to canada",
+    "usps stamp to canada",
+    "global forever stamp canada"
+  ],
+  "answer": "From the United States, USPS says stamps for a standard-sized letter up to one ounce start at $1.75 for all countries, and one Global Forever stamp, currently $1.75, never expires. Heavier, oversized or unusually shaped envelopes are priced by destination. Or order the letter online and have it printed and mailed inside Canada.",
+  "sections": [
+    {
+      "h2": "With USPS",
+      "blocks": [
+        {
+          "p": "USPS's international letter page says a Global Forever stamp currently costs $1.75 and never expires, even if the price goes up, and that stamps for standard-sized letters up to 1 oz start at $1.75 for all countries. Heavier, oversized or unusually shaped items are priced by the destination's price group, which USPS lists on its Country Price Groups page."
+        },
+        {
+          "p": "USPS's page does not say whether ordinary domestic Forever stamps are valid for Canada, so use a Global Forever stamp, or ask your post office. USPS sells international stamps through its store."
+        },
+        {
+          "ul": [
+            "Weigh it. A letter over one ounce needs more postage.",
+            "Write the Canadian address in Canadian order, and add the country name as USPS instructs.",
+            "Add a US return address."
+          ]
+        }
+      ]
+    },
+    {
+      "h2": "Ordering online instead",
+      "blocks": [
+        {
+          "p": "An online service can mail it from inside Canada, so it travels as ordinary Canadian Lettermail: 2 to 4 business days by Canada Post's standard once posted, an estimate and not a guarantee. sendletter's cheapest letter is $3.49 in Canadian dollars with printing, postage and tax included. It is untracked ordinary mail for Canadian addresses only."
+        }
+      ]
+    },
+    {
+      "h2": "Common mistakes",
+      "blocks": [
+        {
+          "ul": [
+            "Writing the postal code as a ZIP code. A Canadian one is [letter-number-letter, number-letter-number](/blog/canadian-postal-code-format).",
+            "Leaving off the postal code. Canada Post's price guide says a missing or incorrect code is charged at higher rates, and the item may be undeliverable.",
+            "Forgetting a return address. See [why letters to Canada get returned](/blog/why-letters-to-canada-get-returned)."
+          ]
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "label": "USPS, First-Class Mail International",
+      "url": "https://www.usps.com/international/first-class-mail-international.htm"
+    },
+    {
+      "label": "Canada Post, Consumer prices (updated September 7, 2026)",
+      "url": "https://www.canadapost-postescanada.ca/cpc/doc/en/support/prices/consumer-prices.pdf"
+    },
+    {
+      "label": "Canada Post, Lettermail delivery standards",
+      "url": "https://www.canadapost-postescanada.ca/cpc/en/support/articles/lettermail/delivery-standards.page"
+    }
+  ],
+  "related": [
+    "mail-a-letter-to-canada-from-abroad",
+    "send-a-letter-to-canada-from-the-uk",
+    "canadian-postal-code-format"
+  ]
+}

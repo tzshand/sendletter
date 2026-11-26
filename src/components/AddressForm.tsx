@@ -17,6 +17,12 @@ export type Address = {
 
 export const FREEFORM_LINES = 5;
 
+/** Placeholder hints for the free-text address lines, so a blank International form is not a mystery. */
+const FREEFORM_HINTS = {
+  en: ["Line 1: full name", "Line 2: street address", "Line 3: apt, suite (optional)", "Line 4: city, region, postal code", "Line 5: country"],
+  fr: ["Ligne 1 : nom complet", "Ligne 2 : adresse", "Ligne 3 : app., bureau (facultatif)", "Ligne 4 : ville, région, code postal", "Ligne 5 : pays"],
+} as const;
+
 /** The lines of a free-form address, padded to the number of inputs shown. */
 export function freeformLines(a: Address): string[] {
   const l = a.lines ?? [];
@@ -272,6 +278,7 @@ function AddressBlock({
               key={i}
               name={`${prefix}-line-${i + 1}`}
               autoComplete={i === 0 ? "name" : "off"}
+              placeholder={FREEFORM_HINTS[isFr ? "fr" : "en"][i] ?? ""}
               value={line}
               onChange={(e) => {
                 const next = [...lines];

@@ -1,0 +1,211 @@
+{
+  "mode": "wave",
+  "wave": 5,
+  "accepted_through": 4,
+  "baseline": {
+    "n": 28,
+    "mean": 0.9402,
+    "sd": 0.0152,
+    "small_sample": false,
+    "pages": [
+      {
+        "id": "home",
+        "sim": 0.9188
+      },
+      {
+        "id": "send-a-letter-online",
+        "sim": 0.9591
+      },
+      {
+        "id": "cost-to-mail",
+        "sim": 0.9576
+      },
+      {
+        "id": "legal-notice",
+        "sim": 0.912
+      },
+      {
+        "id": "api-guide",
+        "sim": 0.9211
+      },
+      {
+        "id": "canada-post-letter-rates-by-weight",
+        "sim": 0.9504
+      },
+      {
+        "id": "canada-post-stamp-price",
+        "sim": 0.9428
+      },
+      {
+        "id": "canadian-postal-code-format",
+        "sim": 0.919
+      },
+      {
+        "id": "cancel-a-contract-or-membership-by-mail",
+        "sim": 0.9265
+      },
+      {
+        "id": "how-long-does-a-letter-take-in-canada",
+        "sim": 0.9407
+      },
+      {
+        "id": "how-many-stamps-for-a-letter-in-canada",
+        "sim": 0.9479
+      },
+      {
+        "id": "how-online-letter-mailing-works",
+        "sim": 0.9545
+      },
+      {
+        "id": "how-to-address-a-letter-to-canada",
+        "sim": 0.9149
+      },
+      {
+        "id": "how-to-write-a-complaint-letter",
+        "sim": 0.9221
+      },
+      {
+        "id": "letter-with-too-little-postage",
+        "sim": 0.9488
+      },
+      {
+        "id": "lettermail-size-and-weight-limits",
+        "sim": 0.9281
+      },
+      {
+        "id": "mail-a-letter-to-canada-from-abroad",
+        "sim": 0.9556
+      },
+      {
+        "id": "mail-a-letter-without-a-printer",
+        "sim": 0.9531
+      },
+      {
+        "id": "mail-one-letter-without-a-stamp-book",
+        "sim": 0.9557
+      },
+      {
+        "id": "permanent-stamp-value-canada",
+        "sim": 0.937
+      },
+      {
+        "id": "postage-for-a-large-envelope-canada",
+        "sim": 0.9441
+      },
+      {
+        "id": "registered-mail-canada-cost",
+        "sim": 0.9525
+      },
+      {
+        "id": "registered-vs-regular-mail-canada",
+        "sim": 0.9539
+      },
+      {
+        "id": "return-address-on-a-canadian-letter",
+        "sim": 0.9304
+      },
+      {
+        "id": "send-a-letter-to-canada-from-the-uk",
+        "sim": 0.9426
+      },
+      {
+        "id": "send-a-letter-to-canada-from-the-us",
+        "sim": 0.9586
+      },
+      {
+        "id": "what-an-online-letter-costs",
+        "sim": 0.9514
+      },
+      {
+        "id": "why-letters-to-canada-get-returned",
+        "sim": 0.9278
+      }
+    ]
+  },
+  "drafts": [
+    {
+      "id": "canada-post-address-validation-api",
+      "hub": "api",
+      "sim": 0.8934,
+      "z": -3.09,
+      "nearest": "canada-post-api-send-letters",
+      "nearest_sim": 0.8904,
+      "verdict": [
+        "satellite: z within -6 floor"
+      ]
+    },
+    {
+      "id": "canada-post-api-send-letters",
+      "hub": "api",
+      "sim": 0.9316,
+      "z": -0.57,
+      "nearest": "send-a-letter-with-an-api-canada",
+      "nearest_sim": 0.9204,
+      "verdict": [
+        "ok"
+      ]
+    },
+    {
+      "id": "idempotency-for-physical-mail",
+      "hub": "api",
+      "sim": 0.8542,
+      "z": -5.68,
+      "nearest": "test-mode-for-a-mail-api",
+      "nearest_sim": 0.8977,
+      "verdict": [
+        "satellite: z within -6 floor"
+      ]
+    },
+    {
+      "id": "send-a-letter-with-an-api-canada",
+      "hub": "api",
+      "sim": 0.9165,
+      "z": -1.57,
+      "nearest": "canada-post-api-send-letters",
+      "nearest_sim": 0.9204,
+      "verdict": [
+        "ok"
+      ]
+    },
+    {
+      "id": "sendletter-vs-lob",
+      "hub": "api",
+      "sim": 0.9243,
+      "z": -1.05,
+      "nearest": "sendletter-vs-postgrid",
+      "nearest_sim": 0.9331,
+      "verdict": [
+        "ok"
+      ]
+    },
+    {
+      "id": "sendletter-vs-postgrid",
+      "hub": "api",
+      "sim": 0.9228,
+      "z": -1.15,
+      "nearest": "sendletter-vs-lob",
+      "nearest_sim": 0.9331,
+      "verdict": [
+        "ok"
+      ]
+    },
+    {
+      "id": "test-mode-for-a-mail-api",
+      "hub": "api",
+      "sim": 0.8814,
+      "z": -3.88,
+      "nearest": "send-a-letter-with-an-api-canada",
+      "nearest_sim": 0.9176,
+      "verdict": [
+        "satellite: z within -6 floor"
+      ]
+    }
+  ],
+  "after_wave": {
+    "centre_cosine_to_old": 0.99813,
+    "sd_before": 0.0152,
+    "sd_after": 0.0177,
+    "mean_before": 0.9402,
+    "mean_after": 0.9346
+  }
+}

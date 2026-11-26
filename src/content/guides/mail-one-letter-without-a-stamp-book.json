@@ -1,0 +1,83 @@
+{
+  "id": "mail-one-letter-without-a-stamp-book",
+  "hub": "send-online",
+  "wave": 1,
+  "slug": "mail-one-letter-without-a-stamp-book",
+  "title": "Mailing One Letter Without Buying a Stamp Book",
+  "description": "You can buy a single stamp for $1.44, or skip stamps with an online print-and-mail service. What each costs for a one-off letter, and what you still need.",
+  "keywords": [
+    "send one letter",
+    "mail one letter canada",
+    "only need one stamp canada",
+    "buy a single stamp canada"
+  ],
+  "answer": "You do not have to buy a stamp book. Canada Post sells single stamps at $1.44 for a standard letter, against $1.24 each in a booklet. Or an online service prints, stamps and mails the letter for you, from $3.49 all in. Which is better depends on whether you have a printer and envelope.",
+  "sections": [
+    {
+      "h2": "Option 1: a single stamp",
+      "blocks": [
+        {
+          "p": "A single stamp for a standard letter up to 30 g is $1.44. You still need the letter printed, an envelope, and a mailbox or post office. The [full cost comparison](/blog/what-it-costs-to-mail-a-letter-in-canada) adds the envelope and printing."
+        }
+      ]
+    },
+    {
+      "h2": "Option 2: an online service",
+      "blocks": [
+        {
+          "p": "A print-and-mail service takes your document and addresses, prints it, folds it into a window envelope, applies the stamps and mails it. The cheapest sendletter letter is $3.49 with postage and tax included; [the breakdown](/blog/what-an-online-letter-costs) explains how it is built."
+        }
+      ]
+    },
+    {
+      "h2": "How to choose",
+      "blocks": [
+        {
+          "table": {
+            "headers": [
+              "Your situation",
+              "Better choice"
+            ],
+            "rows": [
+              [
+                "Printer, envelope and a mailbox on your route",
+                "A single stamp"
+              ],
+              [
+                "No printer, or no time for the errand",
+                "An online service"
+              ],
+              [
+                "You are outside Canada",
+                "An online service: the letter is stamped and posted inside Canada"
+              ],
+              [
+                "Several letters a month",
+                "A booklet of stamps, or a service if the time saved is worth the difference"
+              ]
+            ]
+          }
+        },
+        {
+          "note": "If you already have the printer, envelope and stamp, mailing it yourself is cheaper. A service earns its price when one of those is missing."
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "label": "Canada Post, Stamp prices",
+      "url": "https://www.canadapost-postescanada.ca/cpc/en/personal/stamp-prices.page"
+    },
+    {
+      "label": "Canada Post, Consumer prices (updated September 7, 2026)",
+      "url": "https://www.canadapost-postescanada.ca/cpc/doc/en/support/prices/consumer-prices.pdf"
+    }
+  ],
+  "related": [
+    "how-online-letter-mailing-works",
+    "what-an-online-letter-costs",
+    "mail-a-letter-without-a-printer"
+  ],
+  "published": "2026-11-26"
+}

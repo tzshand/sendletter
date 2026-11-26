@@ -1,0 +1,148 @@
+{
+  "id": "sendletter-vs-postgrid",
+  "hub": "api",
+  "wave": 5,
+  "live": true,
+  "slug": "sendletter-vs-postgrid",
+  "title": "sendletter vs PostGrid for Letters in Canada",
+  "description": "An honest comparison of sendletter and PostGrid for sending letters in Canada: pricing, features, test mode and idempotency, and who should choose which.",
+  "keywords": [
+    "postgrid alternative",
+    "postgrid pricing",
+    "postgrid api",
+    "sendletter vs postgrid",
+    "postgrid canada"
+  ],
+  "answer": "PostGrid is a print-and-mail platform with country-specific sites and a free starter tier. Its pricing page lists $1.059 for a US first-class letter in US dollars, and its plans page shows different tier details. sendletter sends only to Canadian addresses, with no platform fee and letters from as low as $1.69 CAD all in.",
+  "sections": [
+    {
+      "h2": "The short version",
+      "blocks": [
+        {
+          "table": {
+            "headers": [
+              "",
+              "sendletter",
+              "PostGrid"
+            ],
+            "rows": [
+              [
+                "Built for",
+                "Letters to Canadian addresses",
+                "Print and mail across several countries, with separate country sites"
+              ],
+              [
+                "Platform fee",
+                "None, no minimum",
+                "A free tier (up to 500 mailings a month on its pricing page; its plans page says 1,000). Its plans page lists Business at $449 or $499 a month and Growth at $900 or $999, depending on the copy of the page"
+              ],
+              [
+                "Letter price",
+                "$2.48 on your first, as low as $1.69 at volume, CAD, postage included",
+                "$1.059 per black-and-white first-class letter on the pricing page (USA, USD, includes printing, processing and postage). Its plans page shows a different free tier at $0.75 a letter, with no class or currency stated"
+              ],
+              [
+                "Idempotency keys",
+                "Yes, 7 days",
+                "Yes, identical key within 24 hours returns the same response"
+              ],
+              [
+                "Test mode",
+                "Yes, free; prices as live; simulated statuses",
+                "Yes, an isolated sandbox; no orders sent; addresses not verified in test mode"
+              ],
+              [
+                "Webhooks",
+                "Yes, signed, retried; up to 10 endpoints",
+                "1 on the starter tier; unlimited on enterprise"
+              ],
+              [
+                "Address verification",
+                "No, a province and postal-code check only",
+                "Yes: address validation is listed among its features, with batch cleansing"
+              ],
+              [
+                "Cancellation",
+                "Yes, while queued, with a refund if paid",
+                "We could not find it stated"
+              ],
+              [
+                "Tracking",
+                "No: queued, printed, mailed",
+                "Standard mail tracking on the starter tier"
+              ]
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "h2": "Read PostGrid's pricing carefully",
+      "blocks": [
+        {
+          "p": "PostGrid's pricing page and its plans page, both read on November 26, 2026, describe the free tier differently (500 mailings a month on one, 1,000 on the other) and show different per-letter prices, without saying which country or mail class the second one is for. The two pages also give different monthly prices for its paid plans. That is not unusual for a company mid-change, but it means you should get a quote in writing. Its pricing text shows USD and says to talk to sales for pricing in local currency."
+        }
+      ]
+    },
+    {
+      "h2": "Canada",
+      "blocks": [
+        {
+          "p": "PostGrid links to a separate Canadian site, postgrid.ca, which we did not read, and its public API guide lists Canadian letter sizes. We did not find PostGrid's Canadian per-letter price on the pages we read, so we cannot compare it to ours. If you are a Canadian business sending to Canada, ask both companies what a letter to a Canadian address costs, in Canadian dollars, with postage."
+        }
+      ]
+    },
+    {
+      "h2": "Choose sendletter if",
+      "blocks": [
+        {
+          "ul": [
+            "You send letters within Canada and want a flat, published price in Canadian dollars.",
+            "You want automatic volume pricing, a bulk endpoint, and a rate limit you will not hit by batching.",
+            "You want to be able to cancel a queued letter and see it on an invoice in your account."
+          ]
+        }
+      ]
+    },
+    {
+      "h2": "Choose PostGrid if",
+      "blocks": [
+        {
+          "ul": [
+            "You mail to several countries, or mostly outside Canada.",
+            "You need address verification or batch cleansing from the same vendor.",
+            "You need more mail types than a letter, or an enterprise plan."
+          ]
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "label": "PostGrid, Print and Mail pricing",
+      "url": "https://www.postgrid.com/pricing-print-mail/"
+    },
+    {
+      "label": "PostGrid, Plans and pricing",
+      "url": "https://www.postgrid.com/plans-and-pricing/"
+    },
+    {
+      "label": "PostGrid, Response codes and retry logic",
+      "url": "https://postgrid.readme.io/docs/response-codes-and-retry-logic"
+    },
+    {
+      "label": "PostGrid, Print and Mail API overview",
+      "url": "https://guides.postgrid.com/print-and-mail/api/overview/"
+    },
+    {
+      "label": "sendletter API reference",
+      "url": "https://sendletter.app/docs"
+    }
+  ],
+  "related": [
+    "sendletter-vs-lob",
+    "api-volume-pricing",
+    "test-mode-for-a-mail-api"
+  ],
+  "published": "2026-11-26"
+}

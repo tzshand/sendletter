@@ -1,0 +1,156 @@
+{
+  "id": "sendletter-vs-lob",
+  "hub": "api",
+  "wave": 5,
+  "live": true,
+  "slug": "sendletter-vs-lob",
+  "title": "sendletter vs Lob for Letters in Canada",
+  "description": "An honest comparison of sendletter and Lob for sending letters in Canada: pricing model, Canadian delivery, features, and who should choose which.",
+  "keywords": [
+    "lob alternative",
+    "lob alternative canada",
+    "lob pricing",
+    "lob api",
+    "sendletter vs lob"
+  ],
+  "answer": "Lob is a US-centred platform with all-in per-piece prices, a free Developer plan, paid plans from $260 a month, and address verification sendletter lacks. sendletter is for letters to Canadian addresses: no subscription, billed in Canadian dollars, from as low as $1.69 a letter. Choose Lob for US mail or campaigns.",
+  "sections": [
+    {
+      "h2": "The short version",
+      "blocks": [
+        {
+          "table": {
+            "headers": [
+              "",
+              "sendletter",
+              "Lob"
+            ],
+            "rows": [
+              [
+                "Built for",
+                "Letters to Canadian addresses",
+                "US direct mail, with some international options"
+              ],
+              [
+                "Platform fee",
+                "None, no minimum",
+                "Developer plan $0; Startup from $260 a month; Growth from $550 a month (Lob's pricing page, as read November 26, 2026)"
+              ],
+              [
+                "Letter price",
+                "$2.48 on your first letter, as low as $1.69 at volume, CAD, postage included",
+                "Lob lists all-in per-piece prices (its help page says print, postage and envelopes are included), in USD. For a black-and-white letter: Standard Class (slower marketing-class mail) $0.828 on the Developer plan, $0.658 on Startup, $0.628 on Growth; First Class $1.060, $0.890 and $0.860. Its help page also lists slightly higher prices effective 11/01/2026"
+              ],
+              [
+                "Mails to Canada",
+                "Yes: Canadian addresses only",
+                "Lob's API reference says international destinations are supported and its price list has an international letter postage fee ($1.275, first class only). We did not find a Canada-specific price; confirm Canada with Lob"
+              ],
+              [
+                "Return address",
+                "Any country (free text)",
+                "Lob's API reference says the from address must be a US address unless you use a custom envelope"
+              ],
+              [
+                "Idempotency keys",
+                "Yes, 7 days",
+                "Yes, an Idempotency-Key header"
+              ],
+              [
+                "Test keys",
+                "Yes, free, no card",
+                "Yes, test and live keys"
+              ],
+              [
+                "Webhooks",
+                "Yes, signed, retried; up to 10 endpoints",
+                "Yes, the number of webhooks depends on the plan (1 on Developer)"
+              ],
+              [
+                "Address verification",
+                "No, a province and postal-code check only",
+                "Yes. Lob's API reference describes verification across 240+ countries and territories, priced separately"
+              ],
+              [
+                "Certified or registered mail",
+                "No",
+                "Certified Mail $6.950 and Registered Mail $24.500, first class only"
+              ],
+              [
+                "Delivery tracking",
+                "No: queued, printed, mailed",
+                "Tracking events on tracked mail types"
+              ]
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "h2": "Why the prices are not directly comparable",
+      "blocks": [
+        {
+          "p": "Lob's per-piece price includes US postage. sendletter's includes a Canada Post stamp at $1.24, which is a single-letter Lettermail price. The two are not the same cost, so a lower number on Lob's page for US mail says little about what a letter to Canada costs. Postage is $1.24 of our $1.69 floor."
+        }
+      ]
+    },
+    {
+      "h2": "Choose sendletter if",
+      "blocks": [
+        {
+          "ul": [
+            "Your recipients are in Canada, and you want them to receive ordinary Canada Post mail.",
+            "You want to pay in Canadian dollars with no subscription.",
+            "You send from a few letters to a few thousand a month, and want a bulk endpoint and an automatic volume discount.",
+            "You want a person to answer support, by email."
+          ]
+        }
+      ]
+    },
+    {
+      "h2": "Choose Lob if",
+      "blocks": [
+        {
+          "ul": [
+            "You mail mostly to the United States.",
+            "You need address verification, certified or registered mail, or full delivery tracking.",
+            "You run marketing campaigns and need its templates, analytics and integrations.",
+            "You need guaranteed capacity and an enterprise agreement."
+          ]
+        }
+      ]
+    },
+    {
+      "h2": "What we could not confirm",
+      "blocks": [
+        {
+          "p": "Lob's public pages did not give us a Canada-specific letter price, and its API reference says the from address must be a US address unless you use a custom envelope. If you are weighing Lob for mail within Canada, ask it what a letter to a Canadian address costs and where it is printed. Lob changed its prices effective 11/01/2026 according to its help page, so check the current figures."
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "label": "Lob, Pricing",
+      "url": "https://www.lob.com/pricing"
+    },
+    {
+      "label": "Lob, Pricing details",
+      "url": "https://help.lob.com/print-and-mail/ready-to-get-started/pricing-details"
+    },
+    {
+      "label": "Lob, API reference",
+      "url": "https://docs.lob.com/"
+    },
+    {
+      "label": "sendletter API reference",
+      "url": "https://sendletter.app/docs"
+    }
+  ],
+  "related": [
+    "sendletter-vs-postgrid",
+    "api-volume-pricing",
+    "send-a-letter-with-an-api-canada"
+  ],
+  "published": "2026-11-26"
+}

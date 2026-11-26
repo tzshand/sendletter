@@ -1,0 +1,105 @@
+{
+  "id": "canada-post-stamp-price",
+  "hub": "postage",
+  "wave": 1,
+  "slug": "canada-post-stamp-price",
+  "title": "Canada Post Stamp Price in 2026",
+  "description": "A single stamp is $1.44 and a booklet stamp $1.24 for a letter up to 30 g. Current rates by weight, and what the proposed 2027 increase means.",
+  "keywords": [
+    "canada post stamp price",
+    "price of a canadian stamp",
+    "canadian stamp rate",
+    "how much is a stamp in canada"
+  ],
+  "answer": "A single Canada Post stamp costs $1.44 in 2026. Stamps bought in a booklet, coil or pane cost $1.24 each. Either one mails a standard letter up to 30 grams anywhere in Canada. Letters from 30 to 50 grams cost $1.75. These rates have applied since January 13, 2025.",
+  "sections": [
+    {
+      "h2": "Current Lettermail prices",
+      "blocks": [
+        {
+          "table": {
+            "headers": [
+              "Standard letter",
+              "Single stamp",
+              "Booklet, coil or pane"
+            ],
+            "rows": [
+              [
+                "Up to 30 g",
+                "$1.44",
+                "$1.24"
+              ],
+              [
+                "30 g to 50 g",
+                "$1.75",
+                "$1.75"
+              ]
+            ]
+          }
+        },
+        {
+          "p": "A standard letter is an envelope or card no larger than 245 × 156 × 5 mm. Anything bigger or thicker is priced as non-standard or oversize; see [postage for a large envelope](/blog/postage-for-a-large-envelope-canada)."
+        }
+      ]
+    },
+    {
+      "h2": "How the price got here",
+      "blocks": [
+        {
+          "p": "The January 13, 2025 increase moved the single stamp from $1.15 to $1.44, a rise of about 25%, and the booklet, coil and pane stamp from $0.99 to $1.24. Canada Post's price pages show the same rates today, and the 30 to 50 g rate is $1.75 for both kinds of stamp."
+        }
+      ]
+    },
+    {
+      "h2": "Booklet stamps are Permanent stamps",
+      "blocks": [
+        {
+          "p": "Canada Post's price guide defines the Permanent stamp as a non-denominated stamp with a postage value of $1.24, the same as the booklet price. See [what a Permanent stamp is worth](/blog/permanent-stamp-value-canada) for how that affects you."
+        }
+      ]
+    },
+    {
+      "h2": "The proposed 2027 increase",
+      "blocks": [
+        {
+          "p": "News coverage of the November 2026 federal budget reports a plan to raise the domestic stamp to $2.00 in 2027. Canada Post's own price pages still show $1.44 and $1.24, so treat $2.00 as a proposal until Canada Post publishes a new rate. This page will be updated when it does."
+        },
+        {
+          "note": "Check the live figure on Canada Post's stamp price page before you buy in bulk; the numbers here are current as of this guide's date."
+        }
+      ]
+    },
+    {
+      "h2": "Do you need more than one stamp?",
+      "blocks": [
+        {
+          "p": "A standard letter up to 30 g needs one. Heavier or oversize letters need several; [how many stamps a letter needs](/blog/how-many-stamps-for-a-letter-in-canada) works through each weight band. If you would rather skip the stamp entirely, [sendletter](/) prints, stamps and mails a letter for you."
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "label": "Canada Post, Stamp prices",
+      "url": "https://www.canadapost-postescanada.ca/cpc/en/personal/stamp-prices.page"
+    },
+    {
+      "label": "Canada Post, Consumer prices (updated September 7, 2026)",
+      "url": "https://www.canadapost-postescanada.ca/cpc/doc/en/support/prices/consumer-prices.pdf"
+    },
+    {
+      "label": "Canada Gazette, SOR/2024-262 (Lettermail rate changes)",
+      "url": "https://gazette.gc.ca/rp-pr/p2/2024/2024-12-18/html/sor-dors262-eng.html"
+    },
+    {
+      "label": "Global News, Stamp prices in the 2026 federal budget",
+      "url": "https://globalnews.ca/news/12138831/stamp-prices-budget-2026/"
+    }
+  ],
+  "related": [
+    "how-many-stamps-for-a-letter-in-canada",
+    "permanent-stamp-value-canada",
+    "canada-post-letter-rates-by-weight"
+  ],
+  "published": "2026-11-26"
+}

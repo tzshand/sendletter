@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { BlogHeader, BlogFooter, PostShell } from "@/components/blog/Chrome";
-import { POSTS, getPostBySlug, postPath, SITE } from "@/lib/blog";
+import { postsIn, getPostBySlug, postPath, SITE } from "@/lib/blog";
 import { renderBody } from "@/content/registry";
 import { postJsonLd } from "@/lib/blog-schema";
 
 export function generateStaticParams() {
-  return POSTS.map((p) => ({ slug: p.fr.slug }));
+  return postsIn("fr").map((p) => ({ slug: p.fr!.slug }));
 }
 
 export const dynamicParams = false;
@@ -17,7 +17,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const post = getPostBySlug("fr", slug);
   if (!post) return {};
-  const meta = post.fr;
+  const meta = post.fr!;
 
   return {
     title: `${meta.title} | sendletter`,

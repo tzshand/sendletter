@@ -23,7 +23,7 @@ import {
   RASTER_MAX_PAGES,
   RATES,
   FROM_ALL_IN_CENTS,
-  DEFAULT_SINGLE_CENTS,
+  COLOUR_SINGLE_CENTS,
 } from "@/lib/pricing";
 import { SnowGoose } from "@/components/SnowGoose";
 import {
@@ -38,6 +38,7 @@ import {
   ChevronDown,
 } from "lucide-react";
 import Link from "next/link";
+import { API_FROM_ALL_IN_CENTS } from "@/lib/volume";
 
 type Mode = "upload" | "custom" | "simple";
 
@@ -69,7 +70,7 @@ export default function Home() {
   const [pdfPages, setPdfPages] = useState(1); // pages of an uploaded PDF
   const [pages, setPages] = useState(1);
   const [previewPdf, setPreviewPdf] = useState<string | null>(null); // classic letters: the real PDF
-  const [colour, setColour] = useState(true);
+  const [colour, setColour] = useState(false);
   const [duplex, setDuplex] = useState(true);
   const [flatNote, setFlatNote] = useState(false);
 
@@ -535,8 +536,8 @@ export default function Home() {
 
   const faqItems = isFr ? [
     { q: "Peut-on vraiment envoyer une lettre en ligne?", a: "Oui. Vous écrivez ou téléchargez votre lettre, ajoutez les adresses, payez, et nous l'imprimons et la postons via Postes Canada dans un délai de 1 jour ouvrable." },
-    { q: "Combien ça coûte?", a: `À partir de ${formatCents(FROM_ALL_IN_CENTS, "fr")} pour une lettre d'une page en noir et blanc (${formatCents(DEFAULT_SINGLE_CENTS, "fr")} en couleur), impression, affranchissement et taxes compris. Les lettres plus longues coûtent plus cher : vous payez des frais d'envoi, l'impression (${formatCents(RATES.pageCents.bw, "fr")} la page en noir et blanc, ${formatCents(RATES.pageCents.colour, "fr")} en couleur), l'enveloppe, et l'affranchissement Postes Canada au prix coûtant : un timbre (${formatCents(RATES.stampCents, "fr")}) suffit pour la plupart des lettres jusqu'à 5 pages. Taxes incluses.` },
-    { q: "Quel est le délai de livraison?", a: "Les lettres sont imprimées et postées dans un délai de 1 jour ouvrable. La livraison via Postes Canada prend généralement de 3 à 7 jours ouvrables au Canada." },
+    { q: "Combien ça coûte?", a: `À partir de ${formatCents(FROM_ALL_IN_CENTS, "fr")} pour une lettre d'une page en noir et blanc (${formatCents(COLOUR_SINGLE_CENTS, "fr")} en couleur), impression, affranchissement et taxes compris. Les lettres plus longues coûtent plus cher : vous payez des frais d'envoi, l'impression (${formatCents(RATES.pageCents.bw, "fr")} la page en noir et blanc, ${formatCents(RATES.pageCents.colour, "fr")} en couleur), l'enveloppe, et l'affranchissement Postes Canada au prix coûtant : un timbre (${formatCents(RATES.stampCents, "fr")}) suffit pour la plupart des lettres jusqu'à 5 pages. Taxes incluses. Envoi en volume par API : dès ${formatCents(API_FROM_ALL_IN_CENTS, "fr")} la lettre, tout compris, avec prix dégressifs automatiques et sans frais mensuels.` },
+    { q: "Quel est le délai de livraison?", a: "Les lettres sont imprimées et postées dans un délai de 1 jour ouvrable. La norme de livraison de Postes Canada est de 2 à 4 jours ouvrables après la mise à la poste (une estimation, non une garantie)." },
     { q: "Ai-je besoin d'un compte?", a: "Non. Aucun compte, aucun abonnement, aucune commande minimale. Écrivez votre lettre, payez et c'est posté." },
     { q: "Quels formats de fichier puis-je télécharger?", a: `PDF jusqu'à ${MAX_PAGES} pages et 40 Mo, ou documents Word (.docx) jusqu'à ${RASTER_MAX_PAGES} pages.` },
     { q: "Où livrez-vous?", a: "À toute adresse postale au Canada via Postes Canada." },
@@ -545,8 +546,8 @@ export default function Home() {
     { q: "Avez-vous une API?", a: "Oui. sendletter offre un accès API pour envoyer des lettres par programmation, automatiser les flux de courrier et intégrer les services postaux dans vos applications." },
   ] : [
     { q: "Can you actually send a letter online?", a: "Yes. Write or upload your letter, add addresses, pay, and we print and mail it via Canada Post within 1 business day." },
-    { q: "How much does it cost?", a: `From ${formatCents(FROM_ALL_IN_CENTS)} for a one-page black-and-white letter (${formatCents(DEFAULT_SINGLE_CENTS)} in colour), with printing, postage and tax included. Longer letters cost more: you pay a mailing fee, printing (${formatCents(RATES.pageCents.bw)} a page black & white, ${formatCents(RATES.pageCents.colour)} colour), the envelope, and Canada Post postage at cost: one stamp (${formatCents(RATES.stampCents)}) covers most letters up to 5 pages. Tax included.` },
-    { q: "How long does delivery take?", a: "Letters are printed and mailed within 1 business day. Delivery via Canada Post typically takes 3–7 business days within Canada." },
+    { q: "How much does it cost?", a: `From ${formatCents(FROM_ALL_IN_CENTS)} for a one-page black-and-white letter (${formatCents(COLOUR_SINGLE_CENTS)} in colour), with printing, postage and tax included. Longer letters cost more: you pay a mailing fee, printing (${formatCents(RATES.pageCents.bw)} a page black & white, ${formatCents(RATES.pageCents.colour)} colour), the envelope, and Canada Post postage at cost: one stamp (${formatCents(RATES.stampCents)}) covers most letters up to 5 pages. Tax included. Sending in volume by API? Letters from as low as ${formatCents(API_FROM_ALL_IN_CENTS)} all in, with automatic volume pricing and no monthly fee.` },
+    { q: "How long does delivery take?", a: "Letters are printed and mailed within 1 business day. Canada Post's delivery standard is 2 to 4 business days after posting (an estimate, not a guarantee)." },
     { q: "Do I need an account?", a: "No. No account, no subscription, no minimum order. Write your letter, pay, and it's in the mail." },
     { q: "What file formats can I upload?", a: `PDFs up to ${MAX_PAGES} pages and 40 MB, or Word documents (.docx) up to ${RASTER_MAX_PAGES} pages.` },
     { q: "Where can you deliver?", a: "Any mailing address in Canada via Canada Post." },
@@ -784,8 +785,8 @@ export default function Home() {
                 </div>
                 <p className="text-xs text-gray-400 mt-0.5">
                   {isFr
-                    ? "Courrier standard sans suivi. 2–5 jours ouvrables pour la plupart des adresses."
-                    : "Standard mail, no tracking. 3–7 business days to most addresses."}
+                    ? "Courrier standard sans suivi. Norme de Postes Canada : 2 à 4 jours ouvrables."
+                    : "Standard mail, no tracking. Canada Post's standard is 2–4 business days."}
                 </p>
               </div>
             </div>
@@ -911,6 +912,12 @@ export default function Home() {
             <span>·</span>
             <Link href="/blog" className="hover:text-gray-600 transition-colors">{isFr ? "Blogue" : "Blog"}</Link>
             <span>·</span>
+            {!isFr && (
+              <>
+                <Link href="/guides/postage-and-stamps" className="hover:text-gray-600 transition-colors">Postage guides</Link>
+                <span>·</span>
+              </>
+            )}
             <Link href="/mail-to-canada" className="hover:text-gray-600 transition-colors">
               {isFr ? "Poster au Canada" : "Mail to Canada"}
             </Link>

@@ -1,0 +1,107 @@
+{
+  "id": "registered-mail-canada-cost",
+  "hub": "legal",
+  "wave": 3,
+  "published": "2026-12-10",
+  "slug": "registered-mail-canada-cost",
+  "title": "Registered Mail in Canada: What It Costs",
+  "description": "Registered Mail is $13.15 plus the letter's postage within Canada, with a signature, proof of mailing, tracking and $100 of coverage included.",
+  "keywords": [
+    "canada post registered mail cost",
+    "registered mail canada cost",
+    "cost of registered mail canada post",
+    "registered letter cost canada post"
+  ],
+  "answer": "Canada Post's price guide lists Registered Mail at $13.15 plus the applicable Lettermail postage, so a standard letter with a $1.24 stamp costs $14.39. The fee includes a signature on delivery, proof of mailing, delivery confirmation and liability coverage up to $100, with some exceptions. It must be deposited at a post office or given to a rural carrier.",
+  "sections": [
+    {
+      "h2": "The price",
+      "blocks": [
+        {
+          "table": {
+            "headers": [
+              "Letter",
+              "Postage",
+              "Registered fee",
+              "Total"
+            ],
+            "rows": [
+              [
+                "Standard, up to 30 g, booklet stamp",
+                "$1.24",
+                "$13.15",
+                "$14.39"
+              ],
+              [
+                "Standard, up to 30 g, single stamp",
+                "$1.44",
+                "$13.15",
+                "$14.59"
+              ],
+              [
+                "Standard, 30 to 50 g",
+                "$1.75",
+                "$13.15",
+                "$14.90"
+              ],
+              [
+                "Oversize, up to 100 g",
+                "$2.61",
+                "$13.15",
+                "$15.76"
+              ]
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "h2": "What the fee buys",
+      "blocks": [
+        {
+          "p": "The $13.15 covers the signature, the proof of mailing, delivery confirmation and $100 of liability coverage, with some exceptions."
+        }
+      ]
+    },
+    {
+      "h2": "Extras and limits",
+      "blocks": [
+        {
+          "ul": [
+            "A hard copy of the signature (advice of receipt) requested after mailing costs $7.25.",
+            "Additional liability coverage is $2.75 per $100, up to $5,000.",
+            "Canada Post says Registered Mail must be deposited at an authorized post office or given to a rural mail carrier, and can't be dropped into a street mailbox.",
+            "Registered Mail to destinations outside the United States is a separate price, $26.25 plus letter-post postage, with liability coverage up to $60."
+          ]
+        }
+      ]
+    },
+    {
+      "h2": "Is it the right tool?",
+      "blocks": [
+        {
+          "p": "Registered Mail is the right choice when you need proof that a letter was delivered and signed for. For ordinary correspondence it is far more than you need. [Registered versus regular mail](/blog/registered-vs-regular-mail-canada) sets out the difference."
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "label": "Canada Post, Consumer prices (updated September 7, 2026)",
+      "url": "https://www.canadapost-postescanada.ca/cpc/doc/en/support/prices/consumer-prices.pdf"
+    },
+    {
+      "label": "Canada Post, Registered Mail features",
+      "url": "https://www.canadapost-postescanada.ca/cpc/en/support/articles/registered-mail-canada/features.page"
+    },
+    {
+      "label": "Canada Post, Depositing Registered Mail",
+      "url": "https://www.canadapost-postescanada.ca/cpc/en/support/articles/registered-mail-canada/depositing.page"
+    }
+  ],
+  "related": [
+    "registered-vs-regular-mail-canada",
+    "legal-notice",
+    "canada-post-stamp-price"
+  ]
+}

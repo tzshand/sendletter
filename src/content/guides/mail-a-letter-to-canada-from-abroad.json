@@ -1,0 +1,121 @@
+{
+  "id": "mail-a-letter-to-canada-from-abroad",
+  "hub": "from-abroad",
+  "wave": 2,
+  "published": "2026-12-03",
+  "slug": "mail-a-letter-to-canada-from-abroad",
+  "title": "How to Mail a Letter to Canada From Abroad",
+  "description": "Two ways to get a letter to a Canadian address from another country: post it yourself with your own postage, or have it printed and mailed inside Canada.",
+  "keywords": [
+    "mail a letter to canada from usa",
+    "send a letter to canada from uk",
+    "send a letter to canada from abroad",
+    "post a letter to canada"
+  ],
+  "answer": "From abroad you can post the letter yourself with your own country's international postage, or order it online and have a service print and mail it from inside Canada. Either way the address must follow Canadian format and end in a correct six-character postal code, because a missing or wrong code can raise the postage or leave the item undeliverable.",
+  "sections": [
+    {
+      "h2": "Two routes",
+      "blocks": [
+        {
+          "table": {
+            "headers": [
+              "",
+              "Post it yourself",
+              "Order it online"
+            ],
+            "rows": [
+              [
+                "Who sets the price",
+                "Your national postal service",
+                "The service; sendletter's cheapest letter is $3.49 all in"
+              ],
+              [
+                "Postage",
+                "Your country's international stamps",
+                "Canadian stamps, applied in Canada"
+              ],
+              [
+                "Where it is posted",
+                "In your country",
+                "Inside Canada, as ordinary Lettermail"
+              ],
+              [
+                "Delivery time",
+                "Your postal service's international transit plus Canadian delivery",
+                "Printed and mailed within one business day, then Canada Post's 2 to 4 business-day Lettermail standard"
+              ],
+              [
+                "Tracking",
+                "Depends on the service you buy",
+                "None; it is ordinary mail"
+              ],
+              [
+                "Recipient",
+                "Anywhere in Canada",
+                "A Canadian address only"
+              ]
+            ]
+          }
+        },
+        {
+          "p": "Canada Post's Lettermail delivery standards are estimates, not guarantees. Your own postal service sets its own timing for the part of the journey before the letter reaches Canada."
+        }
+      ]
+    },
+    {
+      "h2": "Get the address right first",
+      "blocks": [
+        {
+          "ul": [
+            "Follow the Canadian order: addressee, street address, then municipality, province and postal code. [How to address a letter to Canada](/blog/how-to-address-a-letter-to-canada) shows each variant.",
+            "End with a valid postal code in the letter-number-letter, number-letter-number pattern: [Canadian postal code format](/blog/canadian-postal-code-format).",
+            "Add a return address in your own country, so the letter has somewhere to go back to."
+          ]
+        },
+        {
+          "p": "Country-specific mistakes, such as writing the postal code like a ZIP code or putting the house number in the wrong place, are covered on the [mail to Canada pages](/mail-to-canada), one per country."
+        }
+      ]
+    },
+    {
+      "h2": "If it cannot be delivered",
+      "blocks": [
+        {
+          "p": "Whether it comes back depends on a valid return address. [Why letters to Canada get returned](/blog/why-letters-to-canada-get-returned) lists the reasons and a checklist."
+        }
+      ]
+    },
+    {
+      "h2": "Ordering online from abroad",
+      "blocks": [
+        {
+          "p": "sendletter takes the letter as a PDF, a Word file or typed text and mails it to a Canadian address. The return address can be typed as free text, so it can be outside Canada. [How online letter mailing works](/blog/how-online-letter-mailing-works) walks through each step."
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "label": "Canada Post, Canadian addresses",
+      "url": "https://www.canadapost-postescanada.ca/cpc/en/support/articles/addressing-guidelines/canadian-addresses.page"
+    },
+    {
+      "label": "Canada Post, Postal codes",
+      "url": "https://www.canadapost-postescanada.ca/cpc/en/support/articles/addressing-guidelines/postal-codes.page"
+    },
+    {
+      "label": "Canada Post, What happens to undeliverable mail",
+      "url": "https://www.canadapost-postescanada.ca/cpc/en/support/articles/undeliverable-mail/what-happens-to-undeliverable-mail.page"
+    },
+    {
+      "label": "Canada Post, Lettermail delivery standards",
+      "url": "https://www.canadapost-postescanada.ca/cpc/en/support/articles/lettermail/delivery-standards.page"
+    }
+  ],
+  "related": [
+    "how-to-address-a-letter-to-canada",
+    "canadian-postal-code-format",
+    "why-letters-to-canada-get-returned"
+  ]
+}

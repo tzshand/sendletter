@@ -1,0 +1,34 @@
+{
+  "mode": "baseline",
+  "wave": 0,
+  "accepted_through": 0,
+  "baseline": {
+    "n": 5,
+    "mean": 0.9467,
+    "sd": 0.0123,
+    "small_sample": true,
+    "pages": [
+      {
+        "id": "home",
+        "sim": 0.9375
+      },
+      {
+        "id": "send-a-letter-online",
+        "sim": 0.9667
+      },
+      {
+        "id": "cost-to-mail",
+        "sim": 0.9478
+      },
+      {
+        "id": "legal-notice",
+        "sim": 0.9359
+      },
+      {
+        "id": "api-guide",
+        "sim": 0.9456
+      }
+    ]
+  },
+  "drafts": []
+}

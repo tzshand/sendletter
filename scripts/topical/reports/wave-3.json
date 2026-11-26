@@ -1,0 +1,140 @@
+{
+  "mode": "wave",
+  "wave": 3,
+  "accepted_through": 2,
+  "baseline": {
+    "n": 24,
+    "mean": 0.9409,
+    "sd": 0.0159,
+    "small_sample": false,
+    "pages": [
+      {
+        "id": "home",
+        "sim": 0.9196
+      },
+      {
+        "id": "send-a-letter-online",
+        "sim": 0.9583
+      },
+      {
+        "id": "cost-to-mail",
+        "sim": 0.9574
+      },
+      {
+        "id": "legal-notice",
+        "sim": 0.9048
+      },
+      {
+        "id": "api-guide",
+        "sim": 0.9172
+      },
+      {
+        "id": "canada-post-letter-rates-by-weight",
+        "sim": 0.9519
+      },
+      {
+        "id": "canada-post-stamp-price",
+        "sim": 0.9437
+      },
+      {
+        "id": "canadian-postal-code-format",
+        "sim": 0.9201
+      },
+      {
+        "id": "how-long-does-a-letter-take-in-canada",
+        "sim": 0.9384
+      },
+      {
+        "id": "how-many-stamps-for-a-letter-in-canada",
+        "sim": 0.951
+      },
+      {
+        "id": "how-online-letter-mailing-works",
+        "sim": 0.9519
+      },
+      {
+        "id": "how-to-address-a-letter-to-canada",
+        "sim": 0.9172
+      },
+      {
+        "id": "letter-with-too-little-postage",
+        "sim": 0.9508
+      },
+      {
+        "id": "lettermail-size-and-weight-limits",
+        "sim": 0.9311
+      },
+      {
+        "id": "mail-a-letter-to-canada-from-abroad",
+        "sim": 0.9569
+      },
+      {
+        "id": "mail-a-letter-without-a-printer",
+        "sim": 0.9536
+      },
+      {
+        "id": "mail-one-letter-without-a-stamp-book",
+        "sim": 0.9556
+      },
+      {
+        "id": "permanent-stamp-value-canada",
+        "sim": 0.9387
+      },
+      {
+        "id": "postage-for-a-large-envelope-canada",
+        "sim": 0.9467
+      },
+      {
+        "id": "return-address-on-a-canadian-letter",
+        "sim": 0.9325
+      },
+      {
+        "id": "send-a-letter-to-canada-from-the-uk",
+        "sim": 0.9421
+      },
+      {
+        "id": "send-a-letter-to-canada-from-the-us",
+        "sim": 0.9614
+      },
+      {
+        "id": "what-an-online-letter-costs",
+        "sim": 0.9501
+      },
+      {
+        "id": "why-letters-to-canada-get-returned",
+        "sim": 0.9309
+      }
+    ]
+  },
+  "drafts": [
+    {
+      "id": "registered-mail-canada-cost",
+      "hub": "legal",
+      "sim": 0.9453,
+      "z": 0.28,
+      "nearest": "registered-vs-regular-mail-canada",
+      "nearest_sim": 0.9483,
+      "verdict": [
+        "ok"
+      ]
+    },
+    {
+      "id": "registered-vs-regular-mail-canada",
+      "hub": "legal",
+      "sim": 0.9434,
+      "z": 0.16,
+      "nearest": "registered-mail-canada-cost",
+      "nearest_sim": 0.9483,
+      "verdict": [
+        "ok"
+      ]
+    }
+  ],
+  "after_wave": {
+    "centre_cosine_to_old": 0.99973,
+    "sd_before": 0.0159,
+    "sd_after": 0.0156,
+    "mean_before": 0.9409,
+    "mean_after": 0.9414
+  }
+}

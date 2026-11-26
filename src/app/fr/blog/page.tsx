@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { BlogHeader, BlogFooter, formatDate } from "@/components/blog/Chrome";
-import { POSTS, postPath, SITE } from "@/lib/blog";
+import { postsIn, postPath, SITE } from "@/lib/blog";
 
 export const metadata: Metadata = {
   title: "Blogue — Envoyer du courrier au Canada | sendletter",
@@ -28,7 +28,7 @@ export const metadata: Metadata = {
 };
 
 export default function BlogueIndex() {
-  const posts = [...POSTS].sort((a, b) => b.published.localeCompare(a.published));
+  const posts = [...postsIn("fr")].sort((a, b) => b.published.localeCompare(a.published));
 
   // Only the root layout can render <html>, and it is lang="en". Scoping lang
   // on this subtree is valid HTML and is what screen readers and search engines
@@ -60,9 +60,9 @@ export default function BlogueIndex() {
               href={postPath(post, "fr")}
               className="block rounded-xl border border-transparent hover:border-gray-200 hover:bg-white px-4 py-4 -mx-4 transition-colors"
             >
-              <h2 className="text-[15px] font-semibold text-gray-900 mb-1">{post.fr.title}</h2>
+              <h2 className="text-[15px] font-semibold text-gray-900 mb-1">{post.fr!.title}</h2>
               <p className="text-[13px] text-gray-500 leading-relaxed mb-2">
-                {post.fr.description}
+                {post.fr!.description}
               </p>
               <time
                 dateTime={post.published}

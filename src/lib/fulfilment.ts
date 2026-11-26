@@ -37,8 +37,10 @@ export function fulfilmentHtml(opts: {
   /** Files that were attached to the email (the rest must be fetched). */
   attached: string[];
   note?: string;
+  /** Signed links that mark the order printed or mailed (see lib/fulfil-links.ts). */
+  links?: { printed: string; mailed: string };
 }): string {
-  const { q, from, to, stagedPath, printFiles, attached, note } = opts;
+  const { q, from, to, stagedPath, printFiles, attached, note, links } = opts;
   const flat = q.size !== "standard";
 
   const mailingRows = q.mailings
@@ -75,6 +77,7 @@ ${note ? `<p style="margin:10px 0 0;font-size:12px;color:#b3261e;">${eh(note)}</
       ? `Print-ready PDF${printFiles.length > 1 ? "s" : ""}: ${attached.length ? "attached" : "not attached (too large)"}${stagedPath ? `; also in the files store: <span style="font-family:monospace;">canner files ls ${eh(stagedPath)}</span>` : ""}`
       : "No print-ready PDF for this order (a .docx or HTML letter): print the attached original."
   }</p>
+${links ? `<p style="margin:14px 0 0;font-size:12px;">When done: <a href="${eh(links.printed)}" style="color:#F0513C;">mark printed</a> &middot; <a href="${eh(links.mailed)}" style="color:#F0513C;">mark mailed</a> <span style="color:#888;">(each opens a confirmation page)</span></p>` : ""}
 </div>
 <div style="margin:12px 0;">${quoteTableHtml(q)}</div>`;
 }

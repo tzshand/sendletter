@@ -1,0 +1,72 @@
+{
+  "id": "how-online-letter-mailing-works",
+  "hub": "send-online",
+  "wave": 1,
+  "slug": "how-online-letter-mailing-works",
+  "title": "How Online Letter Mailing Works, Step by Step",
+  "description": "From upload to mailbox: what an online print-and-mail service does with your letter, what you get at the other end, and what it cannot do.",
+  "keywords": [
+    "how to send a letter online",
+    "print and mail letter online",
+    "online mailing service canada",
+    "send real mail online"
+  ],
+  "answer": "You upload a PDF or Word file, or type the letter, and enter the sender and recipient addresses. After you pay, the service prints it, folds it into an envelope, applies Canada Post stamps and posts it, usually within one business day. Ordinary mail carries no tracking.",
+  "sections": [
+    {
+      "h2": "The steps",
+      "blocks": [
+        {
+          "ol": [
+            "**Provide the letter.** On sendletter you upload a PDF (up to 200 pages and 40 MB) or a Word (.docx) file (up to 40 pages), or write it in the built-in editor.",
+            "**Choose the format.** A folded #10 window envelope, or a flat 9 × 12 or 10 × 15 mailer; black and white or colour; one or two sides.",
+            "**Enter addresses.** The recipient must be a Canadian address. The return address can be typed as free text, so it can be an address outside Canada.",
+            "**Pay.** The price is recalculated on the server from your document's real page count, and shown before you pay.",
+            "**We print and mail.** The letter is printed, enveloped, stamped with the correct postage, and posted within one business day.",
+            "**Canada Post delivers.** Its Lettermail standard is two to four business days after posting, an estimate and not a guarantee."
+          ]
+        }
+      ]
+    },
+    {
+      "h2": "What you get",
+      "blocks": [
+        {
+          "p": "A real paper letter on paper, in an envelope with a real stamp, arriving in an ordinary mailbox. There is no account to create. A confirmation email carries an itemised receipt."
+        }
+      ]
+    },
+    {
+      "h2": "What it does not do",
+      "blocks": [
+        {
+          "ul": [
+            "**No tracking or signature.** Ordinary Lettermail has neither. For proof of delivery you need [Registered Mail](/blog/registered-vs-regular-mail-canada).",
+            "**Canadian recipients only.** Letters cannot be mailed to addresses in other countries.",
+            "**Not a drafting or review service.** It prints and mails the document you provide; it does not write or check it."
+          ]
+        }
+      ]
+    },
+    {
+      "h2": "What happens to your document",
+      "blocks": [
+        {
+          "p": "The letter is stored so it can be printed, and deleted after 30 days. The [full price breakdown](/blog/what-an-online-letter-costs) and the [terms](/terms) describe the rest."
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "label": "Canada Post, Lettermail delivery standards",
+      "url": "https://www.canadapost-postescanada.ca/cpc/en/support/articles/lettermail/delivery-standards.page"
+    }
+  ],
+  "related": [
+    "mail-one-letter-without-a-stamp-book",
+    "what-an-online-letter-costs",
+    "mail-a-letter-without-a-printer"
+  ],
+  "published": "2026-11-26"
+}

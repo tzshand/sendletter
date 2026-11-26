@@ -13,13 +13,16 @@ const MOCKS = {
   "next/server": "tests/mocks/next-server.mts",
   "resend": "tests/mocks/resend.mts",
   "@/lib/stripe": "tests/mocks/stripe.mts",
-  "@/lib/api-auth": "tests/mocks/api-auth.mts",
 };
 
 const withExt = (p) => (fs.existsSync(p) ? p : fs.existsSync(p + ".ts") ? p + ".ts" : p + ".tsx");
 
 export async function resolve(specifier, context, nextResolve) {
   if (MOCKS[specifier]) return { url: pathToFileURL(path.join(root, MOCKS[specifier])).href, shortCircuit: true };
+  if (specifier === "@electric-sql/pglite" && process.env.PGLITE_DIR) {
+    // Optional: tests/pg-real.test.mts runs against a real Postgres (PGlite) when this points at an install of it.
+    return { url: pathToFileURL(path.join(process.env.PGLITE_DIR, "node_modules/@electric-sql/pglite/dist/index.js")).href, shortCircuit: true };
+  }
   if (specifier.startsWith("@/")) {
     return { url: pathToFileURL(withExt(path.join(root, "src", specifier.slice(2)))).href, shortCircuit: true };
   }
@@ -31,4 +34,14 @@ export async function resolve(specifier, context, nextResolve) {
     }
     throw e;
   }
+}
+
+// JSON modules (the guides under src/content/guides) need an import attribute
+// under plain Node; the bundler does not. Serve them as ES modules instead.
+export async function load(url, context, nextLoad) {
+  if (url.endsWith(".json")) {
+    const text = fs.readFileSync(new URL(url), "utf8");
+    return { format: "module", source: `export default ${text};`, shortCircuit: true };
+  }
+  return nextLoad(url, context);
 }

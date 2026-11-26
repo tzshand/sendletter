@@ -77,7 +77,7 @@ ${q ? receiptHtml(q, "en") : ""}
 ${pdfAttached ? '<p style="font-size:12px;color:#888;">Your letter is attached to this email as a PDF.</p>' : ''}
 
 <div style="background:#f5f5f5;border-radius:8px;padding:12px 16px;font-size:11px;color:#888;margin:16px 0;">
-  <strong>No Refunds:</strong> All sales are final. The service is considered rendered at the time of payment. Delivery via Canada Post typically takes 3–7 business days.<br/>
+  <strong>No Refunds:</strong> All sales are final. The service is considered rendered at the time of payment. Canada Post's delivery standard is 2 to 4 business days after posting (an estimate, not a guarantee).<br/>
   <strong>Merchant:</strong> sendletter &middot; <a href="https://sendletter.app" style="color:#888;">sendletter.app</a> &middot; <a href="mailto:support@sendletter.app" style="color:#888;">support@sendletter.app</a><br/>
   <strong>Terms:</strong> <a href="https://sendletter.app/terms" style="color:#888;">sendletter.app/terms</a>
 </div>
@@ -112,7 +112,7 @@ ${q ? receiptHtml(q, "fr") : ""}
 ${pdfAttached ? '<p style="font-size:12px;color:#888;">Votre lettre est jointe à ce courriel en format PDF.</p>' : ''}
 
 <div style="background:#f5f5f5;border-radius:8px;padding:12px 16px;font-size:11px;color:#888;margin:16px 0;">
-  <strong>Aucun remboursement :</strong> Toutes les ventes sont finales. Le service est considéré comme rendu au moment du paiement. La livraison via Postes Canada prend généralement de 3 à 7 jours ouvrables.<br/>
+  <strong>Aucun remboursement :</strong> Toutes les ventes sont finales. Le service est considéré comme rendu au moment du paiement. La norme de livraison de Postes Canada est de 2 à 4 jours ouvrables après la mise à la poste (une estimation, non une garantie).<br/>
   <strong>Marchand :</strong> sendletter &middot; <a href="https://sendletter.app" style="color:#888;">sendletter.app</a> &middot; <a href="mailto:support@sendletter.app" style="color:#888;">support@sendletter.app</a><br/>
   <strong>Conditions :</strong> <a href="https://sendletter.app/terms" style="color:#888;">sendletter.app/terms</a>
 </div>

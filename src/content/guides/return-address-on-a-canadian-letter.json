@@ -1,0 +1,79 @@
+{
+  "id": "return-address-on-a-canadian-letter",
+  "hub": "postage",
+  "wave": 1,
+  "slug": "return-address-on-a-canadian-letter",
+  "title": "Return Address on a Canadian Letter: What It Does",
+  "description": "Canada Post returns undeliverable mail only if it carries a valid return address. Without one, it may be opened and destroyed.",
+  "keywords": [
+    "return address canada post",
+    "what happens to mail with no return address",
+    "undeliverable mail canada"
+  ],
+  "answer": "Canada Post returns undeliverable mail to the sender only when it bears a valid return address. If an item has none, Canada Post may open it, and if it has no obvious value, destroys it. An item bearing a return address is returned at no charge, according to the price guide.",
+  "sections": [
+    {
+      "h2": "What Canada Post does with undeliverable mail",
+      "blocks": [
+        {
+          "p": "Mail is undeliverable when, for example, the address is incomplete or invalid, the item has insufficient postage, or the addressee refuses it. Canada Post says it returns an item to the sender only if there is a valid return address and the reason is one it lists. For any other undeliverable item, it opens the item to look for a way to deliver it or return it."
+        },
+        {
+          "p": "If it has no obvious value, Canada Post says it will destroy it. Cash found inside is deposited to Canada Post's credit."
+        }
+      ]
+    },
+    {
+      "h2": "What a return costs",
+      "blocks": [
+        {
+          "p": "The price guide lists Return to Sender as no charge for items bearing a return address. An item with a return address only inside the item is listed at $1.24."
+        }
+      ]
+    },
+    {
+      "h2": "How to write one",
+      "blocks": [
+        {
+          "ul": [
+            "By convention it goes in the upper-left corner of the envelope.",
+            "Use the same format as the destination address: name, street, city, province and postal code.",
+            "Make it a place that will actually receive mail. A return address no one checks is the same as none.",
+            "Keep it complete, including the postal code."
+          ]
+        },
+        {
+          "p": "The [address block rules](/blog/how-to-address-a-letter-to-canada) apply to both."
+        }
+      ]
+    },
+    {
+      "h2": "Letters posted from outside Canada",
+      "blocks": [
+        {
+          "p": "Canada Post says undeliverable items that came from the United States or other countries go back to the country-of-origin undeliverable mail office, rather than being posted back to the sender individually."
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "label": "Canada Post, What happens to undeliverable mail",
+      "url": "https://www.canadapost-postescanada.ca/cpc/en/support/articles/undeliverable-mail/what-happens-to-undeliverable-mail.page"
+    },
+    {
+      "label": "Canada Post, Why mail is returned to sender",
+      "url": "https://www.canadapost-postescanada.ca/cpc/en/support/kb/receiving/delivery-faq/why-mail-is-returned-to-sender.page"
+    },
+    {
+      "label": "Canada Post, Consumer prices (updated September 7, 2026)",
+      "url": "https://www.canadapost-postescanada.ca/cpc/doc/en/support/prices/consumer-prices.pdf"
+    }
+  ],
+  "related": [
+    "letter-with-too-little-postage",
+    "how-to-address-a-letter-to-canada",
+    "mail-a-letter-to-canada-from-abroad"
+  ],
+  "published": "2026-11-26"
+}
