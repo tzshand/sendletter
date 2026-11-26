@@ -1,7 +1,7 @@
 {
   "id": "mail-invoices-statements-small-business",
   "slug": "poster-factures-releves-moins-de-1000-par-mois",
-  "title": "Poster des factures sous 1 000 par mois au Canada",
+  "title": "Poster moins de 1 000 factures par mois au Canada",
   "description": "Sous le seuil de remise de 1 000 lettres de Postes Canada, comment une petite entreprise peut poster factures et relevés : à la main, par un service ou par logiciel.",
   "keywords": [
     "envoyer des factures par la poste au Canada",
@@ -119,7 +119,7 @@
   ],
   "sources": [
     {
-      "label": "Postes Canada, prix pour les entreprises (grille de prix de la Poste-lettres et de la Poste-lettres à tarifs préférentiels)",
+      "label": "Postes Canada, prix pour les entreprises (grille de prix Poste-lettres et Poste-lettres à tarifs préférentiels)",
       "url": "https://www.canadapost-postescanada.ca/scp/doc/fr/soutien/tarifs/tarifs-entreprise.pdf"
     },
     {

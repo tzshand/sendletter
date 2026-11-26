@@ -9,7 +9,7 @@
     "code postal canada format",
     "postes canada format code postal"
   ],
-  "answer": "Un code postal canadien compte six caractères selon le modèle lettre, chiffre, lettre, espace, chiffre, lettre, chiffre. Les trois premiers, la région de tri d’acheminement, désignent une grande zone géographique. Les trois derniers désignent la plus petite unité de livraison. La première lettre indique la région\u00a0: M signifie la région métropolitaine de Toronto. On dit code postal, et non code ZIP.",
+  "answer": "Un code postal canadien compte six caractères selon le modèle lettre, chiffre, lettre, espace, chiffre, lettre, chiffre. Les trois premiers, la région de tri d’acheminement, désignent une grande zone géographique. Les trois derniers désignent la plus petite unité de livraison. La première lettre indique la région\u00a0: M correspond au Grand Toronto. On dit code postal, et non code ZIP.",
   "sections": [
     {
       "h2": "La structure",
@@ -31,7 +31,7 @@
                 "Une grande zone géographique"
               ],
               [
-                "ULL (unité de livraison locale)",
+                "UDL (unité de distribution locale)",
                 "Chiffre, lettre, chiffre",
                 "La plus petite unité de livraison à l’intérieur de la région de tri d’acheminement"
               ]
@@ -75,7 +75,7 @@
               ],
               [
                 "H",
-                "Montréal métropolitain"
+                "Grand Montréal"
               ],
               [
                 "J",
@@ -91,7 +91,7 @@
               ],
               [
                 "M",
-                "Toronto métropolitain"
+                "Grand Toronto"
               ],
               [
                 "N",
@@ -131,7 +131,7 @@
       ]
     },
     {
-      "h2": "Code postal ou code zip",
+      "h2": "Code postal ou code ZIP",
       "blocks": [
         {
           "p": "Le code ZIP est le terme américain. L’équivalent canadien est le code postal, qui mêle lettres et chiffres alors qu’un code ZIP n’est composé que de chiffres. Un nombre de cinq chiffres n’est pas un code postal canadien."
@@ -142,7 +142,7 @@
       "h2": "Pourquoi c’est important pour l’affranchissement",
       "blocks": [
         {
-          "p": "Selon le guide des prix de Postes Canada, un envoi dont le code postal est manquant ou erroné doit être payé aux autres tarifs de Poste-lettres, qui commencent à 2,61 $ au lieu de 1,24 $ à 1,44 $. Postes Canada offre aussi sur son site Web un outil gratuit de recherche de code postal. Voyez [comment adresser une lettre au Canada](/blog/how-to-address-a-letter-to-canada) pour savoir où placer le code."
+          "p": "Selon le guide des prix de Postes Canada, un envoi dont le code postal est manquant ou erroné doit être payé aux autres tarifs Poste-lettres, qui commencent à 2,61 $ au lieu de 1,24 $ à 1,44 $. Postes Canada offre aussi sur son site Web un outil gratuit de recherche de code postal. Voyez [comment adresser une lettre au Canada](/blog/how-to-address-a-letter-to-canada) pour savoir où placer le code."
         }
       ]
     }

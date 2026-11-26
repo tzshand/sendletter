@@ -2,20 +2,20 @@
   "id": "return-address-on-a-canadian-letter",
   "slug": "adresse-de-l-expediteur-sur-une-lettre-canadienne",
   "title": "Adresse de l’expéditeur sur une lettre canadienne",
-  "description": "Postes Canada ne renvoie le courrier non livrable que s’il porte une adresse de l’expéditeur valide. Sans elle, il peut être ouvert et détruit.",
+  "description": "Postes Canada ne renvoie le courrier non distribuable que s’il porte une adresse de l’expéditeur valide. Sans elle, il peut être ouvert et détruit.",
   "keywords": [
     "adresse de l’expéditeur Postes Canada",
     "que devient une lettre sans adresse de l’expéditeur",
     "courrier non livrable Canada",
     "où écrire l’adresse de l’expéditeur sur une enveloppe"
   ],
-  "answer": "Postes Canada ne renvoie le courrier non livrable à l’expéditeur que s’il porte une adresse de l’expéditeur valide. Sinon, elle peut ouvrir l’article et, s’il n’a pas de valeur apparente, le détruire. Selon la grille de prix, un article portant une adresse de l’expéditeur est renvoyé sans frais.",
+  "answer": "Postes Canada ne renvoie le courrier non distribuable à l’expéditeur que s’il porte une adresse de l’expéditeur valide. Sinon, elle peut ouvrir l’article et, s’il n’a pas de valeur apparente, le détruire. Selon la grille de prix, un article portant une adresse de l’expéditeur est renvoyé sans frais.",
   "sections": [
     {
-      "h2": "Ce que Postes Canada fait du courrier non livrable",
+      "h2": "Ce que Postes Canada fait du courrier non distribuable",
       "blocks": [
         {
-          "p": "Un courrier est non livrable lorsque, par exemple, l’adresse est incomplète ou invalide, que l’article est insuffisamment affranchi ou que le destinataire le refuse. Postes Canada indique qu’elle ne renvoie un article à l’expéditeur que s’il porte une adresse de l’expéditeur valide et que le motif figure parmi ceux qu’elle énumère. Pour tout autre article non livrable, elle l’ouvre afin de chercher un moyen de le livrer ou de le renvoyer."
+          "p": "Un article est non distribuable lorsque, par exemple, l’adresse est incomplète ou invalide, que l’article est insuffisamment affranchi ou que le destinataire le refuse. Postes Canada indique qu’elle ne renvoie un article à l’expéditeur que s’il porte une adresse de l’expéditeur valide et que le motif figure parmi ceux qu’elle énumère. Pour tout autre article non distribuable, elle l’ouvre afin de chercher un moyen de le livrer ou de le renvoyer."
         },
         {
           "p": "S’il n’a pas de valeur apparente, Postes Canada indique qu’elle le détruit. L’argent comptant trouvé à l’intérieur est déposé au crédit de Postes Canada."
@@ -26,7 +26,7 @@
       "h2": "Ce que coûte un renvoi",
       "blocks": [
         {
-          "p": "La grille de prix indique que le renvoi à l’expéditeur est sans frais pour les articles portant une adresse de l’expéditeur. Un article dont l’adresse de l’expéditeur figure seulement à l’intérieur est tarifé à 1,24 $."
+          "p": "La grille de prix indique que le renvoi à l’expéditeur est sans frais pour les articles portant une adresse de l’expéditeur. Un article dont l’adresse de l’expéditeur figure seulement à l’intérieur figure dans la grille à 1,24 $."
         }
       ]
     },
@@ -50,14 +50,14 @@
       "h2": "Lettres postées de l’extérieur du Canada",
       "blocks": [
         {
-          "p": "Postes Canada indique que les articles non livrables provenant des États-Unis ou d’autres pays sont retournés au bureau du courrier non livrable du pays d’origine, plutôt que d’être renvoyés individuellement à l’expéditeur."
+          "p": "Postes Canada indique que les articles non distribuables provenant des États-Unis ou d’autres pays sont retournés au bureau responsable des envois non distribuables du pays d’origine, plutôt que d’être renvoyés individuellement à l’expéditeur."
         }
       ]
     }
   ],
   "sources": [
     {
-      "label": "Postes Canada, ce qui arrive au courrier non livrable",
+      "label": "Postes Canada, ce qui arrive au courrier non distribuable",
       "url": "https://www.canadapost-postescanada.ca/scp/fr/soutien/sujet/envois-non-distribuables/traitement-envois-non-distribuables.page"
     },
     {

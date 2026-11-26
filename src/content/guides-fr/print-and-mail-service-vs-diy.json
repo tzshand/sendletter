@@ -12,7 +12,7 @@
   "answer": "Poster une lettre soi-même coûte le timbre de 1,24 $, plus le papier, l’enveloppe, le toner et votre temps. Un service ajoute des frais pour le reste : chez sendletter, 2,25 $ la lettre sur le site Web, ou de 1,24 $ à 0,45 $ par API selon le volume. Le service l’emporte quand votre temps par lettre vaut plus que ces frais.",
   "sections": [
     {
-      "h2": "Le coût de le faire soi-même",
+      "h2": "Le coût de s’en charger soi-même",
       "blocks": [
         {
           "p": "Chaque lettre exige un timbre : 1,24 $ à partir d’un carnet, 1,44 $ à l’unité. S’ajoutent le papier, l’enveloppe, le toner ou l’encre, et les minutes qu’il faut pour imprimer, plier, insérer, cacheter, affranchir et poster. Les fournitures coûtent ce que vous les payez, généralement quelques cents par lettre. C’est le temps qui fait la différence."
@@ -81,7 +81,7 @@
           "ul": [
             "Les erreurs coûtent de l’argent. Un timbre oublié ou un code postal erroné entraîne le renvoi ou le retard de la lettre; voir [lettre insuffisamment affranchie](/blog/letter-with-too-little-postage).",
             "Un service n’exige ni imprimante, ni enveloppes, ni déplacement jusqu’à une boîte aux lettres, ce qui compte quand vous voyagez ou travaillez à distance.",
-            "Un service ne peut pas tout faire. Il poste de la Poste-lettres ordinaire; si vous avez besoin d’une signature ou d’une preuve de livraison, postez la lettre vous-même par Courrier recommandé. Voir [Courrier recommandé ou courrier ordinaire](/blog/registered-vs-regular-mail-canada)."
+            "Un service ne peut pas tout faire. Il poste des articles Poste-lettres ordinaires; si vous avez besoin d’une signature ou d’une preuve de livraison, postez la lettre vous-même par Courrier recommandé. Voir [Courrier recommandé ou courrier ordinaire](/blog/registered-vs-regular-mail-canada)."
           ]
         }
       ]
@@ -97,7 +97,7 @@
   ],
   "sources": [
     {
-      "label": "Postes Canada, prix pour les entreprises (grille de prix de la Poste-lettres et de la Poste-lettres à tarifs préférentiels)",
+      "label": "Postes Canada, prix pour les entreprises (grille de prix Poste-lettres et Poste-lettres à tarifs préférentiels)",
       "url": "https://www.canadapost-postescanada.ca/scp/doc/fr/soutien/tarifs/tarifs-entreprise.pdf"
     },
     {

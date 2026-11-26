@@ -8,7 +8,7 @@
     "lettre vers le canada renvoyée",
     "courrier non livrable postes canada"
   ],
-  "answer": "Postes Canada range l’adresse insuffisante ou inexistante, le déménagement sans adresse de réacheminement, le refus et l’affranchissement insuffisant parmi les motifs de non-livraison. Elle ne renvoie un article que s’il porte une adresse de l’expéditeur valide. Les articles venant d’autres pays retournent au bureau des envois non livrables du pays d’origine. Vérifiez quatre points avant de poster.",
+  "answer": "Postes Canada range l’adresse insuffisante ou inexistante, le déménagement sans adresse de réacheminement, le refus et l’affranchissement insuffisant parmi les motifs pour lesquels le courrier est non distribuable. Elle ne renvoie un article que s’il porte une adresse de l’expéditeur valide. Les articles venant d’autres pays retournent au bureau responsable des envois non distribuables du pays d’origine. Vérifiez quatre points avant de poster.",
   "sections": [
     {
       "h2": "Les motifs invoqués par Postes Canada",
@@ -32,7 +32,7 @@
         {
           "ol": [
             "**Une adresse selon l’ordre canadien,** se terminant par la municipalité, la province et le code postal\u00a0: [comment adresser une lettre au Canada](/blog/how-to-address-a-letter-to-canada).",
-            "**Un code postal exact.** Un code manquant ou erroné fait passer l’article aux tarifs supérieurs de la Poste-lettres\u00a0: [le format du code postal canadien](/blog/canadian-postal-code-format).",
+            "**Un code postal exact.** Un code manquant ou erroné fait passer l’article aux tarifs supérieurs du service Poste-lettres\u00a0: [le format du code postal canadien](/blog/canadian-postal-code-format).",
             "**Un affranchissement suffisant pour le poids,** selon le tarif international de votre propre service postal, ou aucun si la lettre est affranchie au Canada.",
             "**Une adresse de l’expéditeur** où l’on peut recevoir du courrier."
           ]
@@ -43,18 +43,18 @@
       "h2": "Les retards qui ne sont pas des retours",
       "blocks": [
         {
-          "p": "Les normes de livraison de la Poste-lettres de Postes Canada sont des estimations et ne sont pas garanties, et le courrier ordinaire n’est pas repérable. Voyez [combien de temps une lettre prend au Canada](/blog/how-long-does-a-letter-take-in-canada)."
+          "p": "Les normes de livraison du service Poste-lettres de Postes Canada sont des estimations et ne sont pas garanties, et le courrier ordinaire n’offre pas de repérage. Voyez [combien de temps une lettre prend au Canada](/blog/how-long-does-a-letter-take-in-canada)."
         }
       ]
     }
   ],
   "sources": [
     {
-      "label": "Postes Canada, aperçu du courrier non livrable",
+      "label": "Postes Canada, aperçu du courrier non distribuable",
       "url": "https://www.canadapost-postescanada.ca/scp/fr/soutien/sujet/envois-non-distribuables/apercu.page"
     },
     {
-      "label": "Postes Canada, ce qui arrive au courrier non livrable",
+      "label": "Postes Canada, ce qui arrive au courrier non distribuable",
       "url": "https://www.canadapost-postescanada.ca/scp/fr/soutien/sujet/envois-non-distribuables/traitement-envois-non-distribuables.page"
     },
     {
